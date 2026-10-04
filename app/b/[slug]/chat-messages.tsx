@@ -51,7 +51,7 @@ export function ChatMessages({
               key={m.id}
               className={`max-w-[80%] rounded-2xl px-3 py-2 text-sm ${
                 isUser
-                  ? "self-end bg-[#a8fe65] text-[#1a1a1a]"
+                  ? "self-end bg-[#0066ff] text-white"
                   : "self-start bg-neutral-100 text-neutral-900"
               }`}
             >

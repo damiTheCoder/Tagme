@@ -115,7 +115,7 @@ export function OrdersView({ orders, filter }: { orders: Order[]; filter: OrderF
                   <span className="text-gray-500">{timeAgo(order.created_at)}</span>
                 </div>
                 <div className="mt-3 flex flex-wrap items-center gap-2">
-                  <Link href={`/dashboard/orders/${order.id}`} className="self-center text-sm text-gray-500 underline hover:text-[#3d7a0a]">
+                  <Link href={`/dashboard/orders/${order.id}`} className="self-center text-sm text-gray-500 underline hover:text-[#0066ff]">
                     View chat
                   </Link>
                   {order.status === "pending" && <OrderActions orderId={order.id} />}

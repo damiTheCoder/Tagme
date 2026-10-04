@@ -21,7 +21,7 @@ export default async function AnalyticsPage() {
         title="Not enough data yet"
         description={`Share your business link to start taking orders: /b/${business.slug}`}
         action={
-          <Link href={`/b/${business.slug}`} className="text-sm text-[#3d7a0a] underline">
+          <Link href={`/b/${business.slug}`} className="text-sm text-[#0066ff] underline">
             View your public page
           </Link>
         }

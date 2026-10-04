@@ -26,9 +26,9 @@
     --card-foreground: 240 10% 3.9%;
     --popover: 0 0% 100%;
     --popover-foreground: 240 10% 3.9%;
-    /* Brand #a8fe65 (lime) */
-    --primary: 89 99% 70%;
-    --primary-foreground: 0 0% 10%;
+    /* Brand #0066ff (lime) */
+    --primary: 216 100% 50%;
+    --primary-foreground: 0 0% 100%;
     --secondary: 240 4.8% 95.9%;
     --secondary-foreground: 240 5.9% 10%;
     --muted: 240 4.8% 95.9%;
@@ -39,12 +39,12 @@
     --destructive-foreground: 0 0% 98%;
     --border: 240 5.9% 90%;
     --input: 240 5.9% 90%;
-    --ring: 89 99% 70%;
+    --ring: 216 100% 50%;
     --radius: 0.625rem;
-    --brand: #a8fe65;
-    --brand-hover: #92f04a;
-    --brand-tint-10: #a8fe6510;
-    --brand-tint-20: #a8fe6520;
+    --brand: #0066ff;
+    --brand-hover: #0052cc;
+    --brand-tint-10: #0066ff10;
+    --brand-tint-20: #0066ff20;
   }
 }
 

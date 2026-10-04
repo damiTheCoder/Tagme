@@ -75,7 +75,7 @@ export function DashboardShell({
   const nav = (
     <div className="flex h-full flex-col">
       <Link href="/dashboard" className="flex items-center gap-2.5 px-2 py-1">
-        <Image src="/TagMe.jpeg" alt="TagMe logo" width={36} height={36} className="h-9 w-9 shrink-0 rounded-lg object-contain" />
+        <Image src="/Tagme.png" alt="TagMe logo" width={36} height={36} className="h-9 w-9 shrink-0 rounded-lg object-contain" />
         <span className="text-lg font-semibold text-zinc-900">TagMe</span>
       </Link>
       <nav className="mt-6 flex flex-col gap-1">
@@ -88,13 +88,13 @@ export function DashboardShell({
               href={item.href}
               className={cn(
                 "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
-                active ? "bg-[#a8fe65] text-[#1a1a1a]" : "text-gray-600 hover:bg-gray-100"
+                active ? "bg-[#0066ff] text-white" : "text-gray-600 hover:bg-gray-100"
               )}
             >
-              <Icon size={20} className={active ? "text-[#1a1a1a]" : "text-gray-400"} />
+              <Icon size={20} className={active ? "text-white" : "text-gray-400"} />
               <span className="flex-1">{item.label}</span>
               {item.href === "/dashboard/orders" && pendingCount > 0 && (
-                <Badge className="bg-[#a8fe65] text-[#1a1a1a] hover:bg-[#a8fe65]">{pendingCount}</Badge>
+                <Badge className="bg-[#0066ff] text-white hover:bg-[#0066ff]">{pendingCount}</Badge>
               )}
             </Link>
           );
@@ -163,7 +163,7 @@ export function DashboardShell({
               </Sheet>
               <h1 className="hidden text-lg font-semibold text-zinc-900 md:block">{pageTitle(pathname)}</h1>
               <Link href="/dashboard" className="flex items-center gap-2 md:hidden">
-                <Image src="/TagMe.jpeg" alt="TagMe logo" width={28} height={28} className="h-7 w-7 shrink-0 rounded-md object-contain" />
+                <Image src="/Tagme.png" alt="TagMe logo" width={28} height={28} className="h-7 w-7 shrink-0 rounded-md object-contain" />
                 <span className="text-lg font-semibold text-zinc-900">TagMe</span>
               </Link>
               <div className="ml-auto flex items-center gap-2">
@@ -176,7 +176,7 @@ export function DashboardShell({
                     >
                       <Bell size={20} />
                       {pendingCount > 0 && (
-                        <span className="absolute -right-1.5 -top-1.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-[#a8fe65] px-1 text-[11px] font-semibold text-[#1a1a1a]">
+                        <span className="absolute -right-1.5 -top-1.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-[#0066ff] px-1 text-[11px] font-semibold text-white">
                           {pendingCount}
                         </span>
                       )}

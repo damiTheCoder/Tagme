@@ -47,7 +47,7 @@ export function OrderActions({ orderId, compact }: { orderId: string; compact?: 
           value={reason}
           onChange={(e) => setReason(e.target.value)}
           placeholder="Reason (optional, saved as a note)"
-          className="w-full rounded-lg border-0 bg-gray-50 px-3 py-2 text-sm placeholder:text-gray-400 focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#a8fe65]"
+          className="w-full rounded-lg border-0 bg-gray-50 px-3 py-2 text-sm placeholder:text-gray-400 focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#0066ff]"
         />
         <div className="flex gap-2">
           <Button size="sm" onClick={onDecline} disabled={working !== null}>

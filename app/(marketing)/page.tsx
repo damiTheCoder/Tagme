@@ -70,7 +70,7 @@ export default function LandingPage() {
         <div className="mx-auto flex h-16 max-w-6xl items-center gap-8 px-6">
           <a href="/" className="flex items-center gap-2">
             <Image
-              src="/TagMe.jpeg"
+              src="/Tagme.png"
               alt="TagMe logo"
               width={32}
               height={32}
@@ -95,7 +95,7 @@ export default function LandingPage() {
             </a>
             <a
               href="/signup"
-              className="rounded-lg bg-[#a8fe65] px-4 py-2 text-sm font-medium text-[#1a1a1a] transition-colors hover:bg-[#92f04a]"
+              className="rounded-lg bg-[#0066ff] px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-[#0052cc]"
             >
               Get your TagMe
             </a>
@@ -115,7 +115,7 @@ export default function LandingPage() {
         <div className="mt-8 flex items-center justify-center">
           <a
             href="/signup"
-            className="rounded-full border border-black bg-[#a8fe65] px-6 py-3 text-base font-medium text-[#1a1a1a] transition-colors hover:bg-[#92f04a]"
+            className="rounded-full border border-black bg-[#0066ff] px-6 py-3 text-base font-medium text-white transition-colors hover:bg-[#0052cc]"
           >
             Get started
           </a>
@@ -140,7 +140,7 @@ export default function LandingPage() {
             </p>
             <a
               href="/signup"
-              className="mt-6 inline-flex rounded-full bg-[#a8fe65] px-6 py-3 text-base font-medium text-[#1a1a1a] transition-colors hover:bg-[#92f04a]"
+              className="mt-6 inline-flex rounded-full bg-[#0066ff] px-6 py-3 text-base font-medium text-white transition-colors hover:bg-[#0052cc]"
             >
               Get started
             </a>
@@ -160,11 +160,11 @@ export default function LandingPage() {
 
       {/* How it works */}
       <section id="how-it-works" className="mx-auto max-w-6xl scroll-mt-20 px-6 pb-16">
-        <h2 className="mb-8 text-3xl font-semibold tracking-tight text-zinc-900 sm:mb-10 sm:text-4xl">How it works in <span className="whitespace-nowrap rounded-full border-2 border-black bg-[#a8fe65] px-4 py-1 text-[#1a1a1a]">3 Easy</span> steps</h2>
+        <h2 className="mb-8 text-3xl font-semibold tracking-tight text-zinc-900 sm:mb-10 sm:text-4xl">How it works in <span className="whitespace-nowrap rounded-full border-2 border-black bg-[#0066ff] px-4 py-1 text-white">3 Easy</span> steps</h2>
         <div className="mt-4 grid gap-4 md:grid-cols-2">
           {/* Step 1 — tall card */}
           <div className="flex flex-col rounded-3xl bg-gradient-to-br from-gray-100 to-gray-200 p-6 md:row-span-2">
-            <p className="text-center text-sm font-semibold text-[#3d7a0a]">Step 1</p>
+            <p className="text-center text-sm font-semibold text-[#0066ff]">Step 1</p>
             <p className="mt-2 text-center text-2xl font-medium tracking-tight text-zinc-900 sm:text-3xl">
               {STEPS[0].title}
             </p>
@@ -172,7 +172,7 @@ export default function LandingPage() {
               {STEPS[0].text}
             </p>
             <div className="mt-4 text-center">
-              <a href="/signup" className="inline-flex rounded-full bg-[#a8fe65] px-5 py-2 text-sm font-medium text-[#1a1a1a] transition-colors hover:bg-[#92f04a]">
+              <a href="/signup" className="inline-flex rounded-full bg-[#0066ff] px-5 py-2 text-sm font-medium text-white transition-colors hover:bg-[#0052cc]">
                 {STEPS[0].cta}
               </a>
             </div>
@@ -190,7 +190,7 @@ export default function LandingPage() {
           <div className="flex flex-col gap-4">
             {STEPS.slice(1).map((s, i) => (
               <div key={s.title} className="flex-1 rounded-3xl bg-gradient-to-br from-gray-100 to-gray-200 p-6">
-                <p className="text-center text-sm font-semibold text-[#3d7a0a]">Step {i + 2}</p>
+                <p className="text-center text-sm font-semibold text-[#0066ff]">Step {i + 2}</p>
                 <p className="mt-2 text-center text-xl font-medium tracking-tight text-zinc-900 sm:text-2xl">
                   {s.title}
                 </p>
@@ -198,7 +198,7 @@ export default function LandingPage() {
                   {s.text}
                 </p>
                 <div className="mt-4 text-center">
-                  <a href="/signup" className="inline-flex rounded-full bg-[#a8fe65] px-5 py-2 text-sm font-medium text-[#1a1a1a] transition-colors hover:bg-[#92f04a]">
+                  <a href="/signup" className="inline-flex rounded-full bg-[#0066ff] px-5 py-2 text-sm font-medium text-white transition-colors hover:bg-[#0052cc]">
                     {s.cta}
                   </a>
                 </div>
@@ -222,9 +222,9 @@ export default function LandingPage() {
         <h2 className="text-lg font-medium text-zinc-900">Features</h2>
         <div className="mt-4 grid gap-4 md:grid-cols-3">
           {FEATURES.map((f) => (
-            <div key={f.title} className="rounded-2xl border border-black bg-[#a8fe65] p-6">
-              <p className="font-medium text-[#1a1a1a]">{f.title}</p>
-              <p className="mt-1 text-sm text-[#1a1a1a]/70">{f.text}</p>
+            <div key={f.title} className="rounded-2xl border border-black bg-[#0066ff] p-6">
+              <p className="font-medium text-white">{f.title}</p>
+              <p className="mt-1 text-sm text-white/70">{f.text}</p>
             </div>
           ))}
         </div>
@@ -245,24 +245,24 @@ export default function LandingPage() {
 
       {/* Pricing */}
       <section id="pricing" className="mx-auto max-w-6xl scroll-mt-20 px-6 pb-20">
-        <div className="mx-auto max-w-sm rounded-3xl border border-white/50 bg-gradient-to-br from-[#a8fe65]/80 via-[#d4ff9e]/50 to-[#92f04a]/70 px-8 py-16 text-center backdrop-blur-xl sm:py-24">
+        <div className="mx-auto max-w-sm rounded-3xl border border-white/50 bg-gradient-to-br from-[#0066ff]/80 via-[#a3c6ff]/50 to-[#0052cc]/70 px-8 py-16 text-center backdrop-blur-xl sm:py-24">
           <div className="flex flex-col items-center gap-6">
             <div>
-              <p className="inline-flex rounded-full border border-[#1a1a1a]/20 px-3 py-1 text-xs font-semibold text-[#1a1a1a]">
+              <p className="inline-flex rounded-full border border-white/40 px-3 py-1 text-xs font-semibold text-white">
                 MONTHLY PLAN
               </p>
-              <h2 className="mt-3 text-lg font-medium text-[#1a1a1a]">Simple pricing</h2>
-              <p className="mx-auto mt-1 max-w-md text-sm text-[#1a1a1a]/70">
+              <h2 className="mt-3 text-lg font-medium text-white">Simple pricing</h2>
+              <p className="mx-auto mt-1 max-w-md text-sm text-white/70">
                 Start free. Upgrade when you need more.
               </p>
             </div>
             <div className="flex shrink-0 flex-col items-center gap-4">
-              <p className="text-4xl font-semibold text-[#1a1a1a]">
-                ₦2,500<span className="text-base font-normal text-[#1a1a1a]/70">/month</span>
+              <p className="text-4xl font-semibold text-white">
+                ₦2,500<span className="text-base font-normal text-white/70">/month</span>
               </p>
           <a
             href="/signup"
-            className="inline-flex rounded-full border border-black bg-[#a8fe65] px-6 py-3 text-base font-medium text-[#1a1a1a] transition-colors hover:bg-[#92f04a]"
+            className="inline-flex rounded-full border border-black bg-[#0066ff] px-6 py-3 text-base font-medium text-white transition-colors hover:bg-[#0052cc]"
           >
             Start for free
           </a>
@@ -284,7 +284,7 @@ export default function LandingPage() {
         </p>
         <a
           href="/signup"
-          className="mt-4 inline-flex rounded-full border border-black bg-[#a8fe65] px-6 py-3 text-base font-medium text-[#1a1a1a] transition-colors hover:bg-[#92f04a]"
+          className="mt-4 inline-flex rounded-full border border-black bg-[#0066ff] px-6 py-3 text-base font-medium text-white transition-colors hover:bg-[#0052cc]"
         >
           Get your TagMe →
         </a>

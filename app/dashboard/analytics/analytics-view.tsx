@@ -79,15 +79,15 @@ export function AnalyticsView({
               <AreaChart data={sliced}>
                 <defs>
                   <linearGradient id="revFill" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#a8fe65" stopOpacity={0.35} />
-                    <stop offset="100%" stopColor="#a8fe65" stopOpacity={0} />
+                    <stop offset="0%" stopColor="#0066ff" stopOpacity={0.35} />
+                    <stop offset="100%" stopColor="#0066ff" stopOpacity={0} />
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="date" tickFormatter={(d: string) => d.slice(5).replace("-", "/")} tick={{ fontSize: 11 }} interval={Math.max(0, Math.floor(sliced.length / 8))} />
                 <YAxis tick={{ fontSize: 11 }} tickFormatter={(v: number) => formatNumber(Number(v))} />
                 <Tooltip labelFormatter={(d) => String(d)} formatter={(v) => [`${currency} ${v}`, "Revenue"]} />
-                <Area type="monotone" dataKey="revenue" stroke="#3d7a0a" strokeWidth={2} fill="url(#revFill)" />
+                <Area type="monotone" dataKey="revenue" stroke="#0066ff" strokeWidth={2} fill="url(#revFill)" />
               </AreaChart>
             </ResponsiveContainer>
           </div>
@@ -106,7 +106,7 @@ export function AnalyticsView({
                 <XAxis dataKey="date" tickFormatter={(d: string) => d.slice(5).replace("-", "/")} tick={{ fontSize: 11 }} interval={Math.max(0, Math.floor(sliced.length / 8))} />
                 <YAxis allowDecimals={false} tick={{ fontSize: 11 }} tickFormatter={(v: number) => formatNumber(Number(v))} />
                 <Tooltip labelFormatter={(d) => String(d)} formatter={(v) => [v, "Orders"]} />
-                <Bar dataKey="orders" fill="#a8fe65" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="orders" fill="#0066ff" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>

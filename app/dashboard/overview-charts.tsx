@@ -28,7 +28,7 @@ export function OverviewCharts({ daily }: { daily: DayPoint[] }) {
               <XAxis dataKey="date" tickFormatter={(d: string) => d.slice(5).replace("-", "/")} tick={{ fontSize: 11 }} interval={2} />
               <YAxis allowDecimals={false} tick={{ fontSize: 11 }} tickFormatter={(v: number) => formatNumber(Number(v))} />
               <Tooltip labelFormatter={(d) => String(d)} formatter={(v) => [v, "Orders"]} />
-              <Line type="monotone" dataKey="orders" stroke="#3d7a0a" strokeWidth={2} dot={false} />
+              <Line type="monotone" dataKey="orders" stroke="#0066ff" strokeWidth={2} dot={false} />
             </LineChart>
           </ResponsiveContainer>
         </div>

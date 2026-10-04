@@ -42,7 +42,7 @@ export function OrderNote({ orderId, initialNote }: { orderId: string; initialNo
             setNote(initialNote);
             setEditing(true);
           }}
-          className="mt-1 text-sm text-[#3d7a0a] hover:underline"
+          className="mt-1 text-sm text-[#0066ff] hover:underline"
         >
           Edit
         </button>
@@ -57,7 +57,7 @@ export function OrderNote({ orderId, initialNote }: { orderId: string; initialNo
         value={note}
         onChange={(e) => setNote(e.target.value)}
         placeholder="Private note — only you can see this"
-        className="w-full rounded-lg border-0 bg-gray-50 px-3 py-2 text-sm placeholder:text-gray-400 focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#a8fe65]"
+        className="w-full rounded-lg border-0 bg-gray-50 px-3 py-2 text-sm placeholder:text-gray-400 focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#0066ff]"
       />
       <div className="flex gap-2">
         <Button size="sm" onClick={onSave} disabled={saving}>

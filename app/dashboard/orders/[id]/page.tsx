@@ -58,7 +58,7 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
 
   return (
     <div className="space-y-6">
-      <Link href="/dashboard/orders" className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-[#3d7a0a]">
+      <Link href="/dashboard/orders" className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-[#0066ff]">
         <ChevronLeft size={16} /> Back to orders
       </Link>
 
@@ -85,7 +85,7 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
                     <div
                       key={m.id}
                       className={`max-w-[80%] rounded-2xl px-3 py-2 text-sm ${
-                        m.role === "user" ? "self-end bg-[#a8fe65] text-[#1a1a1a]" : "self-start bg-white text-zinc-900"
+                        m.role === "user" ? "self-end bg-[#0066ff] text-white" : "self-start bg-white text-zinc-900"
                       }`}
                     >
                       <p className="whitespace-pre-wrap break-words">{m.content}</p>

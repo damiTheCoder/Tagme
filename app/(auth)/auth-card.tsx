@@ -14,10 +14,10 @@ export function AuthCard({
 }) {
   return (
     <main className="flex min-h-screen items-center justify-center bg-[url('/MobileHeroBG.jpeg')] bg-cover bg-center p-6 md:bg-[url('/HeroBG.jpeg')] md:bg-top">
-      <div className="w-full max-w-sm rounded-3xl bg-white p-8 shadow-xl">
+      <div className="w-full max-w-sm rounded-3xl border border-black bg-white p-8">
         <div className="flex flex-col items-center text-center">
           <Image
-            src="/TagMe.jpeg"
+            src="/Tagme.png"
             alt="TagMe logo"
             width={48}
             height={48}
@@ -38,14 +38,14 @@ export function AuthInput(props: React.InputHTMLAttributes<HTMLInputElement>) {
   return (
     <input
       {...props}
-      className="h-11 w-full rounded-lg border-0 bg-gray-50 px-3 py-2 text-sm text-zinc-900 placeholder:text-gray-400 focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#a8fe65]"
+      className="h-11 w-full rounded-lg border-0 bg-gray-50 px-3 py-2 text-sm text-zinc-900 placeholder:text-gray-400 focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#0066ff]"
     />
   );
 }
 
 export function AuthFooterLink({ href, label }: { href: string; label: string }) {
   return (
-    <Link href={href} className="font-medium text-[#3d7a0a] hover:underline">
+    <Link href={href} className="font-medium text-[#0066ff] hover:underline">
       {label}
     </Link>
   );

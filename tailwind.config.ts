@@ -19,8 +19,8 @@ const config: Config = {
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         primary: {
-          DEFAULT: "#a8fe65",
-          foreground: "#1a1a1a",
+          DEFAULT: "#0066ff",
+          foreground: "#ffffff",
         },
         secondary: {
           DEFAULT: "hsl(var(--secondary))",
@@ -47,12 +47,12 @@ const config: Config = {
           foreground: "hsl(var(--popover-foreground))",
         },
         brand: {
-          DEFAULT: "#a8fe65",
-          hover: "#92f04a",
-          tint: "#a8fe6510",
-          softer: "#a8fe6520",
-          text: "#1a1a1a",
-          dark: "#3d7a0a",
+          DEFAULT: "#0066ff",
+          hover: "#0052cc",
+          tint: "#0066ff10",
+          softer: "#0066ff20",
+          text: "#ffffff",
+          dark: "#0066ff",
         },
       },
       borderRadius: {

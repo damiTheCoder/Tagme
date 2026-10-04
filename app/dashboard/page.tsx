@@ -95,7 +95,7 @@ export default async function DashboardPage() {
         title={`Welcome, ${business.name}`}
         description="Here's what's happening in your shop today."
         action={
-          <Link href={`/b/${business.slug}`} target="_blank" className="text-sm text-[#3d7a0a] hover:underline inline-flex items-center gap-1">
+          <Link href={`/b/${business.slug}`} target="_blank" className="text-sm text-[#0066ff] hover:underline inline-flex items-center gap-1">
             <Link2 size={16} /> View public page
           </Link>
         }
@@ -114,7 +114,7 @@ export default async function DashboardPage() {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle>Recent orders</CardTitle>
-            <Link href="/dashboard/orders" className="inline-flex items-center gap-1 text-sm text-[#3d7a0a] hover:underline">
+            <Link href="/dashboard/orders" className="inline-flex items-center gap-1 text-sm text-[#0066ff] hover:underline">
               View all <ArrowRight size={16} />
             </Link>
           </CardHeader>
