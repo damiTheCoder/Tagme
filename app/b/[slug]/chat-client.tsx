@@ -29,7 +29,7 @@ export function ChatClient({
   businessSlug: string;
   businessName: string;
 }) {
-  const storageKey = `orderlink-chat:${businessSlug}`;
+  const storageKey = `tagly-chat:${businessSlug}`;
   const tokenRef = useRef<string | null>(null);
   const lastTsRef = useRef<string | null>(null);
   const seenIdsRef = useRef<Set<string>>(new Set());

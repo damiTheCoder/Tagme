@@ -17,13 +17,13 @@ export function AuthCard({
       <div className="w-full max-w-sm rounded-3xl border border-black bg-white p-8">
         <div className="flex flex-col items-center text-center">
           <Image
-            src="/Tagme.png"
-            alt="TagMe logo"
+            src="/Tagly.jpeg"
+            alt="Tagly logo"
             width={48}
             height={48}
             className="h-12 w-12 rounded-xl object-contain"
           />
-          <p className="mt-2 text-lg font-semibold text-zinc-900">TagMe</p>
+          <p className="mt-2 text-lg font-semibold text-zinc-900">Tagly</p>
           <h1 className="mt-4 text-2xl font-semibold tracking-tight text-zinc-900">{title}</h1>
           <p className="mt-1 text-sm text-gray-500">{subtitle}</p>
         </div>

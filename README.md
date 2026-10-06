@@ -1,4 +1,4 @@
-# orderlink
+# tagly
 
 AI chat ordering system for micro businesses
 

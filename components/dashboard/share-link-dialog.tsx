@@ -42,7 +42,7 @@ export function ShareLinkDialog({ url, triggerLabel = "Share your link", shortLa
     const blob = new Blob([str], { type: "image/svg+xml" });
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
-    a.download = "orderlink-qr.svg";
+    a.download = "tagly-qr.svg";
     a.click();
     URL.revokeObjectURL(a.href);
   }

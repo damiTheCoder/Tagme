@@ -1,5 +1,5 @@
 -- ============================================================
--- orderlink schema
+-- tagly schema
 -- Run this in Supabase SQL editor.
 --
 -- NOTE: The public chat page (/b/[slug]) and the AI agent will

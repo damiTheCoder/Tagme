@@ -52,7 +52,7 @@ export default async function DashboardPage() {
 
   if (orders.length === 0) {
     return (
-      <div className="space-y-6">
+      <div className="space-y-4 md:space-y-6">
         <PageHeader title={`Welcome, ${business.name}`} description="Here's what's happening in your shop today." />
         <EmptyState
           icon={ShoppingBag}
@@ -90,7 +90,7 @@ export default async function DashboardPage() {
   const topMax = Math.max(1, ...top.map((t) => t.count));
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 md:space-y-6">
       <PageHeader
         title={`Welcome, ${business.name}`}
         description="Here's what's happening in your shop today."
@@ -101,24 +101,24 @@ export default async function DashboardPage() {
         }
       />
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard title="Pending orders" value={String(pendingOrders.length)} trend={pendingOrders.length > 0 ? "Needs your review" : "All caught up"} />
-        <StatCard title="Orders this week" value={String(thisWeek.length)} trend={weekTrend} trendTone={thisWeek.length >= lastWeek.length ? "up" : "down"} />
-        <StatCard title="Revenue this month" value={formatMoney(Math.round(revenueMonth * 100) / 100, business.currency)} />
-        <StatCard title="Total customers" value={String(customers.size)} />
+      <div className="grid gap-0 sm:grid-cols-2 sm:gap-3 md:gap-4 lg:grid-cols-4 [&>*:last-child]:border-b-0">
+        <StatCard title="Pending orders" value={String(pendingOrders.length)} trend={pendingOrders.length > 0 ? "Needs your review" : "All caught up"} className="rounded-none border-b border-zinc-200 bg-white bg-none shadow-none sm:rounded-2xl sm:border-0 md:bg-gradient-to-br md:from-gray-100 md:to-gray-200" contentClassName="px-0 py-3 md:p-5" />
+        <StatCard title="Orders this week" value={String(thisWeek.length)} trend={weekTrend} trendTone={thisWeek.length >= lastWeek.length ? "up" : "down"} className="rounded-none border-b border-zinc-200 bg-white bg-none shadow-none sm:rounded-2xl sm:border-0 md:bg-gradient-to-br md:from-gray-100 md:to-gray-200" contentClassName="px-0 py-3 md:p-5" />
+        <StatCard title="Revenue this month" value={formatMoney(Math.round(revenueMonth * 100) / 100, business.currency)} className="rounded-none border-b border-zinc-200 bg-white bg-none shadow-none sm:rounded-2xl sm:border-0 md:bg-gradient-to-br md:from-gray-100 md:to-gray-200" contentClassName="px-0 py-3 md:p-5" />
+        <StatCard title="Total customers" value={String(customers.size)} className="rounded-none border-b border-zinc-200 bg-white bg-none shadow-none sm:rounded-2xl sm:border-0 md:bg-gradient-to-br md:from-gray-100 md:to-gray-200" contentClassName="px-0 py-3 md:p-5" />
       </div>
 
       <OverviewCharts daily={last14} />
 
-      <div className="grid gap-4 lg:grid-cols-2">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between">
+      <div className="grid gap-3 md:gap-4 lg:grid-cols-2">
+        <Card className="border-0 bg-white bg-none shadow-none md:border-0 md:bg-gradient-to-br md:from-gray-100 md:to-gray-200">
+          <CardHeader className="flex flex-row items-center justify-between px-0 pt-0 md:p-6">
             <CardTitle>Recent orders</CardTitle>
             <Link href="/dashboard/orders" className="inline-flex items-center gap-1 text-sm text-[#0066ff] hover:underline">
               View all <ArrowRight size={16} />
             </Link>
           </CardHeader>
-          <CardContent className="space-y-3">
+          <CardContent className="space-y-3 px-0 pb-0 md:p-6 md:pt-0">
             {recent.map((o) => (
               <div key={o.id} className="flex items-center gap-3 rounded-xl bg-white p-3">
                 <div className="min-w-0 flex-1">
@@ -138,11 +138,11 @@ export default async function DashboardPage() {
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader>
+        <Card className="border-0 bg-white bg-none shadow-none md:border-0 md:bg-gradient-to-br md:from-gray-100 md:to-gray-200">
+          <CardHeader className="px-0 pt-0 md:p-6">
             <CardTitle>Top products</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-3">
+          <CardContent className="space-y-3 px-0 pb-0 md:p-6 md:pt-0">
             {top.length === 0 ? (
               <p className="text-sm text-gray-500">No product data yet.</p>
             ) : (

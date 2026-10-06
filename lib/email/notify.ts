@@ -103,7 +103,7 @@ export async function sendOrderNotification(req: NotifyRequest): Promise<void> {
     const resend = new Resend(apiKey);
     // Empty string must fall back too — `??` alone would keep "".
     const rawFrom = (process.env.EMAIL_FROM ?? "").trim();
-    const from = rawFrom || "orderlink <onboarding@resend.dev>";
+    const from = rawFrom || "tagly <onboarding@resend.dev>";
     const { error: sendError } = await resend.emails.send({
       from,
       to: business.notification_email,

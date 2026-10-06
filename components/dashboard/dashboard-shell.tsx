@@ -75,8 +75,8 @@ export function DashboardShell({
   const nav = (
     <div className="flex h-full flex-col">
       <Link href="/dashboard" className="flex items-center gap-2.5 px-2 py-1">
-        <Image src="/Tagme.png" alt="TagMe logo" width={36} height={36} className="h-9 w-9 shrink-0 rounded-lg object-contain" />
-        <span className="text-lg font-semibold text-zinc-900">TagMe</span>
+        <Image src="/Tagly.jpeg" alt="Tagly logo" width={36} height={36} className="h-9 w-9 shrink-0 rounded-lg object-contain" />
+        <span className="text-lg font-semibold text-zinc-900">Tagly</span>
       </Link>
       <nav className="mt-6 flex flex-col gap-1">
         {NAV.map((item) => {
@@ -163,8 +163,8 @@ export function DashboardShell({
               </Sheet>
               <h1 className="hidden text-lg font-semibold text-zinc-900 md:block">{pageTitle(pathname)}</h1>
               <Link href="/dashboard" className="flex items-center gap-2 md:hidden">
-                <Image src="/Tagme.png" alt="TagMe logo" width={28} height={28} className="h-7 w-7 shrink-0 rounded-md object-contain" />
-                <span className="text-lg font-semibold text-zinc-900">TagMe</span>
+                <Image src="/Tagly.jpeg" alt="Tagly logo" width={28} height={28} className="h-7 w-7 shrink-0 rounded-md object-contain" />
+                <span className="text-lg font-semibold text-zinc-900">Tagly</span>
               </Link>
               <div className="ml-auto flex items-center gap-2">
                 <Tooltip>

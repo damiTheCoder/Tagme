@@ -6,15 +6,19 @@ export function StatCard({
   value,
   trend,
   trendTone = "neutral",
+  className,
+  contentClassName,
 }: {
   title: string;
   value: string;
   trend?: string;
   trendTone?: "up" | "down" | "neutral";
+  className?: string;
+  contentClassName?: string;
 }) {
   return (
-    <Card>
-      <CardContent className="p-5">
+    <Card className={className}>
+      <CardContent className={contentClassName ?? "p-5"}>
         <p className="text-sm font-medium text-[#1a1a1a]/60">{title}</p>
         <p className="mt-1 text-3xl font-semibold tabular-nums text-[#1a1a1a]">{value}</p>
         {trend && (

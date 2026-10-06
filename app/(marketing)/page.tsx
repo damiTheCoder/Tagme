@@ -2,18 +2,18 @@ import Image from "next/image";
 
 const STEPS = [
   {
-    title: "Tell TagMe about your business",
+    title: "Tell Tagly about your business",
     text: "Add your products, services, prices, FAQs, policies, and opening hours. Your AI business assistant learns what your business offers.",
     image: "/S1.jpeg",
-    alt: "Tell TagMe about your business",
+    alt: "Tell Tagly about your business",
     cta: "Set up your business",
   },
   {
-    title: "Share your TagMe",
-    text: "Post your TagMe link on Instagram, TikTok, WhatsApp, your website, email, ads, or turn it into a QR code.",
+    title: "Share your Tagly",
+    text: "Post your Tagly link on Instagram, TikTok, WhatsApp, your website, email, ads, or turn it into a QR code.",
     image: "/S2.jpeg",
-    alt: "Share your TagMe",
-    cta: "Share your TagMe",
+    alt: "Share your Tagly",
+    cta: "Share your Tagly",
   },
   {
     title: "Let customers talk to your business",
@@ -43,7 +43,7 @@ const FEATURES = [
   },
   {
     title: "Everywhere your customers are",
-    text: "Share your TagMe on social media, WhatsApp, email, ads, QR codes, and anywhere else your business gets attention.",
+    text: "Share your Tagly on social media, WhatsApp, email, ads, QR codes, and anywhere else your business gets attention.",
   },
   {
     title: "You stay in control",
@@ -70,13 +70,13 @@ export default function LandingPage() {
         <div className="mx-auto flex h-16 max-w-6xl items-center gap-8 px-6">
           <a href="/" className="flex items-center gap-2">
             <Image
-              src="/Tagme.png"
-              alt="TagMe logo"
+              src="/Tagly.jpeg"
+              alt="Tagly logo"
               width={32}
               height={32}
               className="h-8 w-8 shrink-0 rounded-lg object-contain"
             />
-            <span className="text-lg font-semibold text-zinc-900">TagMe</span>
+            <span className="text-lg font-semibold text-zinc-900">Tagly</span>
           </a>
           <nav className="hidden items-center gap-6 text-sm text-gray-600 md:flex">
             <a href="#how-it-works" className="hover:text-gray-900">
@@ -97,7 +97,7 @@ export default function LandingPage() {
               href="/signup"
               className="rounded-lg bg-[#0066ff] px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-[#0052cc]"
             >
-              Get your TagMe
+              Get your Tagly
             </a>
           </div>
         </div>
@@ -136,7 +136,7 @@ export default function LandingPage() {
               One link. Zero friction.
             </h2>
             <p className="mt-4 text-base text-white/70 sm:text-lg">
-              Share your TagMe anywhere — Instagram, TikTok, WhatsApp, your bio, email, ads, or even a QR code. Customers tap, ask questions, discover what you offer, place orders, book services, or make inquiries without having to navigate your website.
+              Share your Tagly anywhere — Instagram, TikTok, WhatsApp, your bio, email, ads, or even a QR code. Customers tap, ask questions, discover what you offer, place orders, book services, or make inquiries without having to navigate your website.
             </p>
             <a
               href="/signup"
@@ -148,7 +148,7 @@ export default function LandingPage() {
           <div>
             <Image
               src="/A1.jpeg"
-              alt="Customer interacting with a business through TagMe"
+              alt="Customer interacting with a business through Tagly"
               width={800}
               height={600}
               className="w-full rounded-2xl object-cover"
@@ -280,18 +280,18 @@ export default function LandingPage() {
           It needs a better way to interact.
         </p>
         <p className="mt-6 font-medium text-zinc-900">
-          TagMe — The AI front door for your business.
+          Tagly — The AI front door for your business.
         </p>
         <a
           href="/signup"
           className="mt-4 inline-flex rounded-full border border-black bg-[#0066ff] px-6 py-3 text-base font-medium text-white transition-colors hover:bg-[#0052cc]"
         >
-          Get your TagMe →
+          Get your Tagly →
         </a>
       </section>
 
       <footer className="mx-auto max-w-6xl px-6 pb-8 text-sm text-gray-500">
-        TagMe — The AI front door for your business.
+        Tagly — The AI front door for your business.
       </footer>
     </main>
   );

@@ -3,7 +3,7 @@ import { Toaster } from "sonner";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "TagMe",
+  title: "Tagly",
   description: "AI chat ordering system for micro businesses",
 };
 

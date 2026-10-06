@@ -67,6 +67,17 @@
       display: none;
     }
   }
+  /* Grey gradient border for the mobile chat modal */
+  @media (max-width: 767px) {
+    .modal-gradient-border-mobile {
+      border-style: solid;
+      border-width: 3px 3px 0 3px;
+      border-color: transparent;
+      background:
+        linear-gradient(#fff, #fff) padding-box,
+        linear-gradient(135deg, #e5e7eb, #9ca3af, #4b5563) border-box;
+    }
+  }
 }
 
 @layer utilities {
