@@ -10,7 +10,17 @@ export type PromptProduct = {
   name: string;
   price: number | string;
   in_stock: boolean;
+  stock_count?: number | null;
+  description?: string | null;
+  details?: string | null;
 };
+
+function truncate(text: string | null | undefined, max: number): string | null {
+  if (text == null) return null;
+  const trimmed = text.trim();
+  if (!trimmed) return null;
+  return trimmed.length > max ? trimmed.slice(0, max) + "…" : trimmed;
+}
 
 export function buildSystemPrompt(
   business: PromptBusiness,
@@ -33,8 +43,13 @@ export function buildSystemPrompt(
     lines.push(`- (no products listed yet)`);
   } else {
     for (const p of products.slice(0, 100)) {
+      const stock = p.in_stock ? "In stock" : "Sold out";
+      const extras = [
+        truncate(p.description, 200),
+        truncate(p.details, 200),
+      ].filter((v): v is string => v != null);
       lines.push(
-        `- ${p.name} — ${p.price} ${business.currency}${p.in_stock ? "" : " (out of stock)"}`
+        `- ${p.name} — ${p.price} ${business.currency} — ${stock}${extras.length > 0 ? ` — ${extras.join(" | ")}` : ""}`
       );
     }
   }
@@ -46,7 +61,10 @@ export function buildSystemPrompt(
     `- When a customer wants to order, confirm the items and total with them first, then call create_order.`,
     `- After create_order succeeds, tell them: "I've sent your order to ${business.name} for confirmation. You'll see an update here shortly."`,
     `- Never say an order is "confirmed" or "placed" — the owner approves orders.`,
-    `- If a product is out of stock, say so and suggest alternatives.`,
+    `- Before quoting a product, verify it's in stock. If out of stock, tell the customer it's sold out and offer an alternative.`,
+    `- When a customer asks about a product, use the description and details in the catalog to give a warm, helpful answer. Don't just quote the name and price — explain what it is, who it's for, and anything the vendor wrote that helps.`,
+    `- If a customer asks a question the details don't answer, say so honestly and offer to check with the owner.`,
+    `- Never invent facts about a product (ingredients, sizes, allergens, delivery times). Only state what's in the product's description or details.`,
     `- If unsure about anything, call escalate_to_owner.`,
     `- Currency is ${business.currency}.`
   );

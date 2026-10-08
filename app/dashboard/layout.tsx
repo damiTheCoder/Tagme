@@ -8,10 +8,11 @@ export default async function DashboardLayout({ children }: { children: React.Re
   const user = await getCurrentUser();
   if (!user) redirect("/login");
 
-  const business = await getCurrentBusiness();
+  const [business, pendingResult] = await Promise.all([
+    getCurrentBusiness(),
+    getPendingOrderCount(),
+  ]);
   if (!business) redirect("/onboarding");
-
-  const pendingResult = await getPendingOrderCount();
   const pendingCount = pendingResult.ok ? pendingResult.count : 0;
 
   const headerList = await headers();

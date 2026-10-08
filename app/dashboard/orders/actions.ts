@@ -118,6 +118,60 @@ async function notifyCustomer(
   await touchConversation(conversationId);
 }
 
+type StockClient = Awaited<ReturnType<typeof createClient>>;
+
+async function readStocks(
+  supabase: StockClient,
+  businessId: string,
+  productIds: string[]
+): Promise<Map<string, { stock_count: number | null }>> {
+  const { data, error } = await supabase
+    .from("products")
+    .select("id, stock_count")
+    .eq("business_id", businessId)
+    .in("id", productIds);
+  if (error) throw new Error(error.message);
+  return new Map((data ?? []).map((p) => [p.id, { stock_count: p.stock_count }]));
+}
+
+async function restoreStock(
+  supabase: StockClient,
+  businessId: string,
+  items: unknown
+) {
+  if (!Array.isArray(items) || items.length === 0) return;
+  const ids = [
+    ...new Set(
+      items
+        .map((i) => (i as { product_id?: string })?.product_id)
+        .filter((v): v is string => typeof v === "string" && v.length > 0)
+    ),
+  ];
+  if (ids.length === 0) return;
+  const stocks = await readStocks(supabase, businessId, ids);
+  const qtyById = new Map<string, number>();
+  for (const i of items) {
+    const row = i as { product_id?: string; quantity?: number };
+    if (typeof row?.product_id !== "string") continue;
+    qtyById.set(
+      row.product_id,
+      (qtyById.get(row.product_id) ?? 0) + (Number(row.quantity) || 0)
+    );
+  }
+  for (const [productId, qty] of qtyById) {
+    const current = stocks.get(productId)?.stock_count;
+    // stock_count null = pre-migration row without tracking: nothing to restore.
+    if (current == null || qty <= 0) continue;
+    const next = current + qty;
+    const { error } = await supabase
+      .from("products")
+      .update({ stock_count: next, in_stock: next > 0 })
+      .eq("id", productId)
+      .eq("business_id", businessId);
+    if (error) throw new Error(error.message);
+  }
+}
+
 export async function approveOrder(id: string): Promise<OrderActionResult> {
   try {
     const business = await getCurrentBusiness();
@@ -177,7 +231,7 @@ export async function declineOrder(
     const supabase = await createClient();
     const { data: order, error: fetchError } = await supabase
       .from("orders")
-      .select("id, status, conversation_id")
+      .select("id, status, conversation_id, items")
       .eq("id", id)
       .eq("business_id", business.id)
       .maybeSingle();
@@ -194,6 +248,13 @@ export async function declineOrder(
       .eq("id", id)
       .eq("business_id", business.id);
     if (updateError) throw new Error(updateError.message);
+
+    // Stock was decremented when the order was placed — restore it, but
+    // only if this order was still pending (declining twice must not
+    // double-restore).
+    if (order.status === "pending" && Array.isArray(order.items)) {
+      await restoreStock(supabase, business.id, order.items);
+    }
 
     await notifyCustomer(
       order.conversation_id,
@@ -257,11 +318,13 @@ export async function getPendingOrderCount(): Promise<OrderCountResult> {  try {
     if (!business) throw new Error("No business found.");
 
     const supabase = await createClient();
+    const t0 = Date.now();
     const { count, error } = await supabase
       .from("orders")
       .select("id", { count: "exact", head: true })
       .eq("business_id", business.id)
       .eq("status", "pending");
+    console.log(`[perf] getPendingOrderCount count query +${Date.now() - t0}ms`);
     if (error) throw new Error(error.message);
     return { ok: true, count: count ?? 0 };
   } catch (e) {

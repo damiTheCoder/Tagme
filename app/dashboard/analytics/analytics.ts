@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { getCurrentBusiness } from "@/lib/auth";
 
 export type DailyPoint = {
   date: string;
@@ -23,8 +24,11 @@ function dayKey(d: Date): string {
   return d.toISOString().slice(0, 10);
 }
 
-/** Aggregate recent rows in TypeScript. Caps at the newest 1000 orders. */
-export async function getAnalytics(businessId: string, windowDays = 90): Promise<AnalyticsSummary> {
+/** Aggregate recent rows in TypeScript. Caps at the newest 1000 orders. Resolves the caller's business from the session — never accepts a business ID argument. */
+export async function getAnalytics(windowDays = 90): Promise<AnalyticsSummary> {
+  const business = await getCurrentBusiness();
+  if (!business) throw new Error("No business found");
+  const businessId = business.id;
   const supabase = await createClient();
 
   const [{ count: totalOrders }, { count: conversationsTotal }, { data: orders }] =

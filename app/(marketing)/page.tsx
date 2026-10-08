@@ -186,8 +186,8 @@ export default function LandingPage() {
               />
             </div>
           </div>
-          {/* Steps 2 & 3 — stacked */}
-          <div className="flex flex-col gap-4">
+          {/* Steps 2 & 3 — stacked on mobile, direct grid rows on desktop so bottoms align with Step 1 */}
+          <div className="flex flex-col gap-4 md:contents">
             {STEPS.slice(1).map((s, i) => (
               <div key={s.title} className="flex-1 rounded-3xl bg-gradient-to-br from-gray-100 to-gray-200 p-6">
                 <p className="text-center text-sm font-semibold text-[#0066ff]">Step {i + 2}</p>

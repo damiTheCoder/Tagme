@@ -172,7 +172,7 @@ export async function POST(req: Request) {
 
   const { data: products } = await supabase
     .from("products")
-    .select("id, name, price, in_stock")
+    .select("id, name, price, in_stock, stock_count, description, details")
     .eq("business_id", business.id)
     .limit(100);
 

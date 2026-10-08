@@ -12,7 +12,7 @@ export default async function AnalyticsPage() {
   const business = await getCurrentBusiness();
   if (!business) redirect("/onboarding");
 
-  const stats = await getAnalytics(business.id, 90);
+  const stats = await getAnalytics(90);
 
   if (stats.totalOrders === 0) {
     return (

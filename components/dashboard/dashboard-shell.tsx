@@ -34,7 +34,7 @@ import { ShareLinkDialog } from "./share-link-dialog";
 const NAV = [
   { href: "/dashboard", label: "Overview", icon: LayoutDashboard, exact: true },
   { href: "/dashboard/orders", label: "Orders", icon: ShoppingBag, exact: false },
-  { href: "/dashboard/products", label: "Products", icon: Package, exact: false },
+  { href: "/dashboard/inventory", label: "Inventory", icon: Package, exact: false },
   { href: "/dashboard/analytics", label: "Analytics", icon: BarChart3, exact: false },
   { href: "/dashboard/settings", label: "Settings", icon: Settings, exact: false },
 ];
@@ -42,7 +42,7 @@ const NAV = [
 const TITLES: { prefix: string; title: string }[] = [
   { prefix: "/dashboard/orders/", title: "Order detail" },
   { prefix: "/dashboard/orders", title: "Orders" },
-  { prefix: "/dashboard/products", title: "Products" },
+  { prefix: "/dashboard/inventory", title: "Inventory" },
   { prefix: "/dashboard/analytics", title: "Analytics" },
   { prefix: "/dashboard/settings", title: "Settings" },
   { prefix: "/dashboard", title: "Overview" },

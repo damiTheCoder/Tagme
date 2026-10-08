@@ -67,7 +67,7 @@ export function ImportDialog({ onClose }: { onClose: () => void }) {
   async function onImport() {
     if (rows == null || rows.length === 0) return;
     setImporting(true);
-    const result = await createProductsBulk(rows.map((r) => ({ name: r.name, price: r.price, in_stock: r.in_stock })));
+    const result = await createProductsBulk(rows.map((r) => ({ name: r.name, price: r.price, in_stock: r.in_stock, stock_count: 100, low_stock_threshold: 3 })));
     setImporting(false);
     if (!result.ok) {
       toast.error(result.error);

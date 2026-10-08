@@ -49,7 +49,7 @@ export function createTools(opts: {
         const clean = query.replace(/[%_]/g, "").trim().slice(0, 100);
         const { data, error } = await admin()
           .from("products")
-          .select("id, name, price, in_stock")
+          .select("id, name, price, in_stock, stock_count, description, details")
           .eq("business_id", business.id)
           .ilike("name", `%${clean}%`)
           .limit(10);
@@ -59,6 +59,9 @@ export function createTools(opts: {
           name: p.name,
           price: p.price,
           in_stock: p.in_stock,
+          stock_count: p.stock_count,
+          description: p.description,
+          details: p.details,
         }));
       },
     }),
@@ -83,13 +86,32 @@ export function createTools(opts: {
         const ids = [...new Set(items.map((i) => i.product_id))];
         const { data: products, error: lookupError } = await supabase
           .from("products")
-          .select("id, name, price")
+          .select("id, name, price, stock_count")
           .eq("business_id", business.id)
           .in("id", ids);
         if (lookupError) throw new Error(lookupError.message);
         const byId = new Map((products ?? []).map((p) => [p.id, p]));
         for (const id of ids) {
           if (!byId.has(id)) throw new Error("A product was not found.");
+        }
+
+        // Stock gate: reject before creating anything when the total
+        // ordered quantity exceeds available stock. stock_count null =
+        // untracked legacy row (pre-migration): skip the check for those.
+        const qtyById = new Map<string, number>();
+        for (const i of items) {
+          qtyById.set(i.product_id, (qtyById.get(i.product_id) ?? 0) + i.quantity);
+        }
+        const stockById = new Map<string, number | null>();
+        for (const [productId, qty] of qtyById) {
+          const p = byId.get(productId)!;
+          const stock = p.stock_count as number | null;
+          if (stock != null && stock < qty) {
+            throw new Error(
+              `Insufficient stock for ${p.name}. Only ${stock} available.`
+            );
+          }
+          stockById.set(productId, stock == null ? null : Math.max(0, stock - qty));
         }
 
         const orderItems = items.map((i) => {
@@ -122,6 +144,20 @@ export function createTools(opts: {
           .select("id")
           .single();
         if (orderError) throw new Error(orderError.message);
+
+        // Decrement stock now that the order exists. Validated above so
+        // this cannot go negative; capped defensively. Skips untracked
+        // (null) rows. Best-effort per item — a failure throws and
+        // surfaces to the AI rather than silently drifting.
+        for (const [productId, next] of stockById) {
+          if (next == null) continue;
+          const { error: stockError } = await supabase
+            .from("products")
+            .update({ stock_count: next, in_stock: next > 0 })
+            .eq("id", productId)
+            .eq("business_id", business.id);
+          if (stockError) throw new Error(stockError.message);
+        }
 
         const patch: { name?: string; phone?: string } = {};
         // Never overwrite known details — only fill in blanks.

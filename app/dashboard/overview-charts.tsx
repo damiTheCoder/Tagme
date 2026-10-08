@@ -23,10 +23,10 @@ export function OverviewCharts({ daily }: { daily: DayPoint[] }) {
       <CardContent className="px-0 pb-0 md:p-6 md:pt-0">
         <div className="h-56">
           <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={daily}>
+            <LineChart data={daily} margin={{ top: 8, right: 8, bottom: 8, left: 0 }}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="date" tickFormatter={(d: string) => d.slice(5).replace("-", "/")} tick={{ fontSize: 11 }} interval={2} />
-              <YAxis allowDecimals={false} tick={{ fontSize: 11 }} tickFormatter={(v: number) => formatNumber(Number(v))} />
+              <YAxis width={32} allowDecimals={false} tick={{ fontSize: 11 }} tickFormatter={(v: number) => formatNumber(Number(v))} />
               <Tooltip labelFormatter={(d) => String(d)} formatter={(v) => [v, "Orders"]} />
               <Line type="monotone" dataKey="orders" stroke="#0066ff" strokeWidth={2} dot={false} />
             </LineChart>

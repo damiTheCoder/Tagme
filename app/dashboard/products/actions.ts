@@ -11,6 +11,9 @@ export type Product = {
   description: string | null;
   price: number;
   in_stock: boolean;
+  stock_count: number | null;
+  low_stock_threshold: number | null;
+  details: string | null;
   created_at: string;
 };
 
@@ -61,6 +64,34 @@ function cleanInStock(inStock: unknown): boolean {
   return Boolean(inStock);
 }
 
+function cleanDetails(details: unknown): string | null {
+  if (details == null || details === "") return null;
+  if (typeof details !== "string") throw new Error("Details must be a string.");
+  const trimmed = details.trim();
+  if (!trimmed) return null;
+  if (trimmed.length > 2000)
+    throw new Error("Details must be at most 2000 characters.");
+  return trimmed;
+}
+
+function cleanStockCount(value: unknown): number | null {
+  if (value == null || value === "") return null;
+  const n = typeof value === "string" ? Number(value) : value;
+  if (typeof n !== "number" || !Number.isFinite(n) || Math.floor(n) !== n)
+    throw new Error("Stock count must be a whole number.");
+  if (n < 0) throw new Error("Stock count must be 0 or more.");
+  return n;
+}
+
+function cleanThreshold(value: unknown): number | null {
+  if (value == null || value === "") return null;
+  const n = typeof value === "string" ? Number(value) : value;
+  if (typeof n !== "number" || !Number.isFinite(n) || Math.floor(n) !== n)
+    throw new Error("Low stock threshold must be a whole number.");
+  if (n < 0) throw new Error("Low stock threshold must be 0 or more.");
+  return n;
+}
+
 export async function listProducts(): Promise<ProductsResult> {
   try {
     const business = await getCurrentBusiness();
@@ -69,7 +100,7 @@ export async function listProducts(): Promise<ProductsResult> {
     const supabase = await createClient();
     const { data, error } = await supabase
       .from("products")
-      .select("id, business_id, name, description, price, in_stock, created_at")
+      .select("id, business_id, name, description, price, in_stock, stock_count, low_stock_threshold, details, created_at")
       .eq("business_id", business.id)
       .order("created_at", { ascending: false });
 
@@ -85,6 +116,7 @@ export async function createProduct(input: {
   description?: string | null;
   price: number | string;
   in_stock?: boolean;
+  details?: string | null;
 }): Promise<MutateResult> {
   try {
     const business = await getCurrentBusiness();
@@ -99,8 +131,9 @@ export async function createProduct(input: {
         description: cleanDescription(input.description),
         price: cleanPrice(input.price),
         in_stock: cleanInStock(input.in_stock),
+        details: cleanDetails(input.details),
       })
-      .select("id, business_id, name, description, price, in_stock, created_at")
+      .select("id, business_id, name, description, price, in_stock, stock_count, low_stock_threshold, details, created_at")
       .single();
 
     if (error) throw new Error(error.message);
@@ -118,6 +151,7 @@ export async function updateProduct(
     description?: string | null;
     price?: number | string;
     in_stock?: boolean;
+    details?: string | null;
   }
 ): Promise<MutateResult> {
   try {
@@ -130,12 +164,14 @@ export async function updateProduct(
       description?: string | null;
       price?: number;
       in_stock?: boolean;
+      details?: string | null;
     } = {};
     if (input.name !== undefined) patch.name = cleanName(input.name);
     if (input.description !== undefined)
       patch.description = cleanDescription(input.description);
     if (input.price !== undefined) patch.price = cleanPrice(input.price);
     if (input.in_stock !== undefined) patch.in_stock = Boolean(input.in_stock);
+    if (input.details !== undefined) patch.details = cleanDetails(input.details);
     if (Object.keys(patch).length === 0)
       throw new Error("Nothing to update.");
 
@@ -145,7 +181,7 @@ export async function updateProduct(
       .update(patch)
       .eq("id", id)
       .eq("business_id", business.id)
-      .select("id, business_id, name, description, price, in_stock, created_at")
+      .select("id, business_id, name, description, price, in_stock, stock_count, low_stock_threshold, details, created_at")
       .single();
 
     if (error) throw new Error(error.message);
@@ -183,6 +219,8 @@ export async function createProductsBulk(
     description?: string | null;
     price: number | string;
     in_stock?: boolean;
+    stock_count?: number | string | null;
+    low_stock_threshold?: number | string | null;
   }>
 ): Promise<BulkResult> {
   try {
@@ -195,12 +233,17 @@ export async function createProductsBulk(
 
     const rows = products.map((p, i) => {
       try {
+        const stock_count = cleanStockCount(p.stock_count);
+        const in_stock =
+          stock_count != null ? stock_count > 0 : cleanInStock(p.in_stock);
         return {
           business_id: business.id,
           name: cleanName(p.name),
           description: cleanDescription(p.description),
           price: cleanPrice(p.price),
-          in_stock: cleanInStock(p.in_stock),
+          in_stock,
+          stock_count: stock_count ?? 100,
+          low_stock_threshold: cleanThreshold(p.low_stock_threshold) ?? 3,
         };
       } catch (e) {
         throw new Error(

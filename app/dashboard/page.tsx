@@ -13,6 +13,7 @@ import { PageHeader } from "@/components/dashboard/page-header";
 import { EmptyState } from "@/components/dashboard/empty-state";
 import { OrderStatusBadge } from "@/components/dashboard/order-status-badge";
 import { ShareLinkDialog } from "@/components/dashboard/share-link-dialog";
+import { LazyAssistantBar as AssistantBar } from "@/components/dashboard/assistant/assistant-bar-lazy";
 import { listOrders, type Order } from "./orders/actions";
 import { getAnalytics } from "./analytics/analytics";
 import { OverviewCharts } from "./overview-charts";
@@ -39,7 +40,7 @@ export default async function DashboardPage() {
   const [allResult, pendingResult, stats] = await Promise.all([
     listOrders("all"),
     listOrders("pending"),
-    getAnalytics(business.id),
+    getAnalytics(),
   ]);
   if (!allResult.ok) throw new Error(allResult.error);
   const orders = allResult.orders;
@@ -53,6 +54,7 @@ export default async function DashboardPage() {
   if (orders.length === 0) {
     return (
       <div className="space-y-4 md:space-y-6">
+        <AssistantBar business={business} />
         <PageHeader title={`Welcome, ${business.name}`} description="Here's what's happening in your shop today." />
         <EmptyState
           icon={ShoppingBag}
@@ -91,6 +93,7 @@ export default async function DashboardPage() {
 
   return (
     <div className="space-y-4 md:space-y-6">
+      <AssistantBar business={business} />
       <PageHeader
         title={`Welcome, ${business.name}`}
         description="Here's what's happening in your shop today."
