@@ -17,15 +17,15 @@ function rotatedPalette(shift: number): { color: string; width: number }[] {
 const VARIANTS = {
   white: {
     label: "text-sm font-medium text-gray-500 dark:text-zinc-400",
-    value: "text-3xl font-semibold tabular-nums text-[#1a1a1a] dark:text-zinc-100",
+    value: "text-2xl md:text-3xl font-semibold tabular-nums text-[#1a1a1a] dark:text-zinc-100",
   },
   blue: {
     label: "text-sm font-medium text-gray-500 dark:text-zinc-400",
-    value: "text-3xl font-semibold tabular-nums text-[#1a1a1a] dark:text-zinc-100",
+    value: "text-2xl md:text-3xl font-semibold tabular-nums text-[#1a1a1a] dark:text-zinc-100",
   },
   dark: {
     label: "text-sm font-medium text-gray-500 dark:text-zinc-400",
-    value: "text-3xl font-semibold tabular-nums text-[#1a1a1a] dark:text-zinc-100",
+    value: "text-2xl md:text-3xl font-semibold tabular-nums text-[#1a1a1a] dark:text-zinc-100",
   },
 } as const;
 
@@ -54,8 +54,8 @@ export function StatCard({
 }) {
   const v = VARIANTS[variant];
   return (
-    <Card className={cn("border-0 bg-gray-100 dark:bg-zinc-800", className)}>
-      <CardContent className={contentClassName ?? "p-6"}>
+    <Card className={cn("bg-gray-100 dark:bg-zinc-800", className)}>
+      <CardContent className={contentClassName ?? "p-4 md:p-6"}>
         <div className="mb-2 flex items-center gap-2">
           {icon && (
             <IconBadge
