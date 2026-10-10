@@ -88,29 +88,59 @@ export function createTools(opts: {
           conversation_id: conversationId,
           items_count: items?.length,
         });
+        // Fail loudly instead of hanging: every DB round-trip races an 8s
+        // timeout so pool stalls surface in logs instead of silence.
+        const withTimeout = <T>(label: string, work: PromiseLike<T>): Promise<T> => {
+          let timer: ReturnType<typeof setTimeout>;
+          const timeout = new Promise<never>((_, reject) => {
+            timer = setTimeout(
+              () => reject(new Error(`DB query timeout after 8s (${label})`)),
+              8000
+            );
+          });
+          return Promise.race([work, timeout]).finally(() => clearTimeout(timer));
+        };
         try {
           console.log("[create_order] entering validation", {
             items: JSON.stringify(items).slice(0, 500),
           });
           const supabase = admin();
-          const ids = [...new Set(items.map((i) => i.product_id))];
+          const keys = [
+            ...new Set(
+              items.map((i) =>
+                String(i.product_id ?? "")
+                  .replace(/[,()"']/g, "")
+                  .trim()
+              )
+            ),
+          ].filter(Boolean);
+          if (keys.length === 0) throw new Error("No valid product references.");
+          const list = keys.join(",");
           console.log("[create_order] looking up products", {
-            item_ids: ids,
+            item_keys: keys,
           });
-          const { data: products, error: lookupError } = await supabase
-            .from("products")
-            .select("id, name, price, stock_count")
-            .eq("business_id", business.id)
-            .in("id", ids);
+          // Accept row UUIDs and public IDs (PRD-001…) — the model may send either.
+          const { data: products, error: lookupError } = await withTimeout(
+            "product lookup",
+            supabase
+              .from("products")
+              .select("id, public_id, name, price, stock_count")
+              .eq("business_id", business.id)
+              .or(`id.in.(${list}),public_id.in.(${list})`)
+          );
           console.log("[create_order] products resolved", {
             count: products?.length,
             lookupError: lookupError?.message ?? null,
           });
           if (lookupError) throw new Error(lookupError.message);
-          const byId = new Map((products ?? []).map((p) => [p.id, p]));
-          for (const id of ids) {
-            if (!byId.has(id)) {
-              console.log("[create_order] product not found", { product_id: id });
+          const byKey = new Map<string, (typeof products)[number]>();
+          for (const p of products ?? []) {
+            byKey.set(p.id, p);
+            if (p.public_id) byKey.set(p.public_id.toUpperCase(), p);
+          }
+          for (const key of keys) {
+            if (!byKey.has(key) && !byKey.has(key.toUpperCase())) {
+              console.log("[create_order] product not found", { product_ref: key });
               throw new Error("A product was not found.");
             }
           }
@@ -118,13 +148,22 @@ export function createTools(opts: {
         // Stock gate: reject before creating anything when the total
         // ordered quantity exceeds available stock. stock_count null =
         // untracked legacy row (pre-migration): skip the check for those.
-        const qtyById = new Map<string, number>();
+        const resolveRow = (key: string) =>
+          byKey.get(key) ?? byKey.get(key.toUpperCase());
+        const qtyByRowId = new Map<string, number>();
         for (const i of items) {
-          qtyById.set(i.product_id, (qtyById.get(i.product_id) ?? 0) + i.quantity);
+          const row = resolveRow(String(i.product_id ?? ""));
+          if (!row) {
+            console.log("[create_order] product not found", {
+              product_ref: i.product_id,
+            });
+            throw new Error("A product was not found.");
+          }
+          qtyByRowId.set(row.id, (qtyByRowId.get(row.id) ?? 0) + i.quantity);
         }
         const stockById = new Map<string, number | null>();
-        for (const [productId, qty] of qtyById) {
-          const p = byId.get(productId)!;
+        for (const [rowId, qty] of qtyByRowId) {
+          const p = byKey.get(rowId)!;
           const stock = p.stock_count as number | null;
           if (stock != null && stock < qty) {
             console.log("[create_order] insufficient stock", {
@@ -136,11 +175,11 @@ export function createTools(opts: {
               `Insufficient stock for ${p.name}. Only ${stock} available.`
             );
           }
-          stockById.set(productId, stock == null ? null : Math.max(0, stock - qty));
+          stockById.set(rowId, stock == null ? null : Math.max(0, stock - qty));
         }
 
         const orderItems = items.map((i) => {
-          const p = byId.get(i.product_id)!;
+          const p = resolveRow(String(i.product_id ?? ""))!;
           const unitPrice = Number(p.price);
           return {
             product_id: p.id,
@@ -161,19 +200,22 @@ export function createTools(opts: {
           status: "pending",
           customer_id_resolved: customerId,
         });
-        const { data: order, error: orderError } = await supabase
-          .from("orders")
-          .insert({
-            business_id: business.id,
-            customer_id: customerId,
-            conversation_id: conversationId,
-            items: orderItems,
-            total,
-            currency: business.currency,
-            status: "pending",
-          })
-          .select("id")
-          .single();
+        const { data: order, error: orderError } = await withTimeout(
+          "order insert",
+          supabase
+            .from("orders")
+            .insert({
+              business_id: business.id,
+              customer_id: customerId,
+              conversation_id: conversationId,
+              items: orderItems,
+              total,
+              currency: business.currency,
+              status: "pending",
+            })
+            .select("id")
+            .single()
+        );
         if (orderError) throw new Error(orderError.message);
         console.log("[create_order] SUCCESS", { order_id: order.id });
 
@@ -183,11 +225,14 @@ export function createTools(opts: {
         // surfaces to the AI rather than silently drifting.
         for (const [productId, next] of stockById) {
           if (next == null) continue;
-          const { error: stockError } = await supabase
-            .from("products")
-            .update({ stock_count: next, in_stock: next > 0 })
-            .eq("id", productId)
-            .eq("business_id", business.id);
+          const { error: stockError } = await withTimeout(
+            "stock decrement",
+            supabase
+              .from("products")
+              .update({ stock_count: next, in_stock: next > 0 })
+              .eq("id", productId)
+              .eq("business_id", business.id)
+          );
           if (stockError) throw new Error(stockError.message);
         }
 
@@ -198,7 +243,10 @@ export function createTools(opts: {
         if (!customer.phone && customer_phone?.trim())
           patch.phone = customer_phone.trim().slice(0, 50);
         if (Object.keys(patch).length > 0) {
-          await supabase.from("customers").update(patch).eq("id", customerId);
+          await withTimeout(
+            "customer patch",
+            supabase.from("customers").update(patch).eq("id", customerId)
+          );
         }
 
         // Fire-and-forget owner email — never blocks the AI response.
