@@ -89,13 +89,23 @@ export function createTools(opts: {
           items_count: items?.length,
         });
         try {
+          console.log("[create_order] entering validation", {
+            items: JSON.stringify(items).slice(0, 500),
+          });
           const supabase = admin();
           const ids = [...new Set(items.map((i) => i.product_id))];
+          console.log("[create_order] looking up products", {
+            item_ids: ids,
+          });
           const { data: products, error: lookupError } = await supabase
             .from("products")
             .select("id, name, price, stock_count")
             .eq("business_id", business.id)
             .in("id", ids);
+          console.log("[create_order] products resolved", {
+            count: products?.length,
+            lookupError: lookupError?.message ?? null,
+          });
           if (lookupError) throw new Error(lookupError.message);
           const byId = new Map((products ?? []).map((p) => [p.id, p]));
           for (const id of ids) {
