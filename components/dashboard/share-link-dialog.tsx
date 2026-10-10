@@ -16,7 +16,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-export function ShareLinkDialog({ url, triggerLabel = "Share your link", shortLabel = "Link" }: { url: string; triggerLabel?: string; shortLabel?: string }) {
+export function ShareLinkDialog({ url, triggerLabel = "Share your link" }: { url: string; triggerLabel?: string }) {
   const [copied, setCopied] = useState(false);
   const [open, setOpen] = useState(false);
 
@@ -99,7 +99,6 @@ export function ShareLinkDialog({ url, triggerLabel = "Share your link", shortLa
         <Button>
           <Share2 size={16} />
           <span className="hidden sm:inline">{triggerLabel}</span>
-          <span className="sm:hidden">{shortLabel}</span>
         </Button>
       </DialogTrigger>
       <DialogContent>

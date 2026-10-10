@@ -3,21 +3,29 @@ import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { IconBadge } from "./icon-badge";
 
+const PALETTE = ["#1e40af", "#2563eb", "#006DFF", "#38bdf8", "#7dd3fc", "#bae6fd"];
+const WIDTHS = [18, 18, 14, 12, 10, 6];
+
+function rotatedPalette(shift: number): { color: string; width: number }[] {
+  const n = ((shift % PALETTE.length) + PALETTE.length) % PALETTE.length;
+  return PALETTE.map((_, i) => ({
+    color: PALETTE[(i + n) % PALETTE.length],
+    width: WIDTHS[i],
+  }));
+}
+
 const VARIANTS = {
   white: {
-    card: "bg-[#59a1ff]",
-    label: "text-sm font-medium text-white",
-    value: "text-3xl font-semibold tabular-nums text-white",
+    label: "text-sm font-medium text-gray-500 dark:text-zinc-400",
+    value: "text-3xl font-semibold tabular-nums text-[#1a1a1a] dark:text-zinc-100",
   },
   blue: {
-    card: "bg-[#7dd3fc15]",
-    label: "text-sm font-medium text-gray-500",
+    label: "text-sm font-medium text-gray-500 dark:text-zinc-400",
     value: "text-3xl font-semibold tabular-nums text-[#1a1a1a] dark:text-zinc-100",
   },
   dark: {
-    card: "bg-[#1a1a1a] dark:border-zinc-700 dark:bg-zinc-900",
-    label: "text-sm font-medium text-gray-400",
-    value: "text-3xl font-semibold tabular-nums text-white",
+    label: "text-sm font-medium text-gray-500 dark:text-zinc-400",
+    value: "text-3xl font-semibold tabular-nums text-[#1a1a1a] dark:text-zinc-100",
   },
 } as const;
 
@@ -27,6 +35,7 @@ export function StatCard({
   trend,
   trendTone = "neutral",
   variant = "white",
+  accentShift = 0,
   icon,
   iconVariant,
   className,
@@ -37,6 +46,7 @@ export function StatCard({
   trend?: string;
   trendTone?: "up" | "down" | "neutral";
   variant?: keyof typeof VARIANTS;
+  accentShift?: number;
   icon?: LucideIcon;
   iconVariant?: "blue" | "purple" | "purple-solid" | "dark" | "light";
   className?: string;
@@ -44,31 +54,38 @@ export function StatCard({
 }) {
   const v = VARIANTS[variant];
   return (
-    <Card className={cn("border-0", v.card, className)}>
+    <Card className={cn("border-0 bg-gray-100 dark:bg-zinc-800", className)}>
       <CardContent className={contentClassName ?? "p-6"}>
-        <div className="mb-2 flex items-center gap-2.5">
+        <div className="mb-2 flex items-center gap-2">
           {icon && (
             <IconBadge
               icon={icon}
-              variant={iconVariant ?? (variant === "dark" ? "dark" : variant === "blue" ? "blue" : "dark")}
+              variant={iconVariant ?? "blue"}
             />
           )}
           <p className={v.label}>{title}</p>
         </div>
         <p className={v.value}>{value}</p>
+        <div
+          aria-hidden
+          className="mb-2 mt-3 flex h-6 w-full items-stretch gap-[3px] rounded-full bg-transparent p-[3px] dark:bg-[#1f2937]"
+        >
+          {rotatedPalette(accentShift).map((s, i) => (
+            <span
+              key={i}
+              className="shrink-0 rounded-[5px]"
+              style={{ width: `${s.width}%`, backgroundColor: s.color }}
+            />
+          ))}
+          <span className="ml-[5px] min-w-0 flex-1 rounded-[5px] bg-[#111827]" />
+        </div>
         {trend && (
           <p
             className={cn(
               "mt-1 text-xs",
-              variant === "dark"
-                ? "text-gray-400"
-                : variant === "white"
-                  ? "text-white"
-                  : trendTone === "up"
-                    ? "text-green-600"
-                    : trendTone === "down"
-                      ? "text-red-600"
-                      : "text-gray-500"
+              trendTone === "up" && "text-green-600",
+              trendTone === "down" && "text-red-600",
+              trendTone === "neutral" && "text-gray-500"
             )}
           >
             {trend}

@@ -21,12 +21,12 @@ export function IconBadge({
   return (
     <span
       className={cn(
-        "flex h-10 w-10 shrink-0 items-center justify-center rounded-xl",
+        "flex h-8 w-8 shrink-0 items-center justify-center rounded-xl",
         VARIANTS[variant],
         className
       )}
     >
-      <Icon size={20} />
+      <Icon size={16} />
     </span>
   );
 }

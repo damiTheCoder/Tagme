@@ -215,6 +215,20 @@ export function DashboardShell({
                     {pendingCount > 0 ? `${pendingCount} pending orders` : "No pending orders"}
                   </TooltipContent>
                 </Tooltip>
+                <div className="flex items-center" aria-hidden>
+                  <div className="flex -space-x-2">
+                    {["/k1.jpeg", "/k2.jpeg", "/k3.jpeg"].map((src) => (
+                      <Image
+                        key={src}
+                        src={src}
+                        alt=""
+                        width={64}
+                        height={64}
+                        className="h-8 w-8 rounded-full object-cover ring-2 ring-black"
+                      />
+                    ))}
+                  </div>
+                </div>
                 <ShareLinkDialog url={publicUrl} />
               </div>
             </div>

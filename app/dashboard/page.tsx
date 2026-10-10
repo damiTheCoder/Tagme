@@ -56,7 +56,17 @@ export default async function DashboardPage() {
     return (
       <div className="space-y-4 md:space-y-6">
         <AssistantBar business={business} />
-        <PageHeader title={`Welcome, ${business.name}`} description="Here's what's happening in your shop today." />
+        <PageHeader
+          title={
+            <>
+              Welcome,{" "}
+              <span className="whitespace-nowrap rounded-full border-2 border-black bg-[#006DFF] px-3 py-0.5 text-white">
+                {business.name}
+              </span>
+            </>
+          }
+          description="Here's what's happening in your shop today."
+        />
         <EmptyState
           icon={ShoppingBag}
           title="No orders yet"
@@ -96,7 +106,14 @@ export default async function DashboardPage() {
     <div className="space-y-4 md:space-y-6">
       <AssistantBar business={business} />
       <PageHeader
-        title={`Welcome, ${business.name}`}
+        title={
+          <>
+            Welcome,{" "}
+            <span className="whitespace-nowrap rounded-full border-2 border-black bg-[#006DFF] px-3 py-0.5 text-white">
+              {business.name}
+            </span>
+          </>
+        }
         description="Here's what's happening in your shop today."
         action={
           <Link href={`/b/${business.slug}`} target="_blank" className="text-sm text-[#0c4a6e] dark:text-[#7dd3fc] hover:underline inline-flex items-center gap-1">
@@ -106,10 +123,10 @@ export default async function DashboardPage() {
       />
 
       <div className="grid gap-3 sm:grid-cols-2 md:gap-4 lg:grid-cols-4">
-        <StatCard title="Pending orders" value={String(pendingOrders.length)} trend={pendingOrders.length > 0 ? "Needs your review" : "All caught up"} variant="blue" icon={Bell} />
-        <StatCard title="Orders this week" value={String(thisWeek.length)} trend={weekTrend} trendTone={thisWeek.length >= lastWeek.length ? "up" : "down"} variant="white" icon={ShoppingBag} />
-        <StatCard title="Revenue this month" value={formatMoney(Math.round(revenueMonth * 100) / 100, business.currency)} variant="dark" icon={Banknote} />
-        <StatCard title="Total customers" value={String(customers.size)} variant="white" icon={Users} />
+        <StatCard title="Pending orders" value={String(pendingOrders.length)} trend={pendingOrders.length > 0 ? "Needs your review" : "All caught up"} variant="blue" accentShift={0} icon={Bell} />
+        <StatCard title="Orders this week" value={String(thisWeek.length)} trend={weekTrend} trendTone={thisWeek.length >= lastWeek.length ? "up" : "down"} variant="white" accentShift={1} icon={ShoppingBag} />
+        <StatCard title="Revenue this month" value={formatMoney(Math.round(revenueMonth * 100) / 100, business.currency)} variant="dark" accentShift={2} icon={Banknote} />
+        <StatCard title="Total customers" value={String(customers.size)} variant="white" accentShift={3} icon={Users} />
       </div>
 
       <OverviewCharts daily={last14} />

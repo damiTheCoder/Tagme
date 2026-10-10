@@ -71,10 +71,10 @@ export function AnalyticsView({
       />
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard title="Total orders" value={String(totalOrders)} icon={ShoppingBag} variant="white" />
-        <StatCard title="Total revenue" value={formatMoney(totalRevenue, currency)} icon={TrendingUp} variant="dark" />
-        <StatCard title="Repeat customers" value={String(repeatCustomers)} icon={Repeat} variant="white" />
-        <StatCard title="Conversion rate" value={`${conversionRate}%`} icon={Percent} variant="blue" />
+        <StatCard title="Total orders" value={String(totalOrders)} icon={ShoppingBag} variant="white" accentShift={1} />
+        <StatCard title="Total revenue" value={formatMoney(totalRevenue, currency)} icon={TrendingUp} variant="dark" accentShift={2} />
+        <StatCard title="Repeat customers" value={String(repeatCustomers)} icon={Repeat} variant="white" accentShift={3} />
+        <StatCard title="Conversion rate" value={`${conversionRate}%`} icon={Percent} variant="blue" accentShift={4} />
       </div>
 
       <Card>

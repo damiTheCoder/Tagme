@@ -185,7 +185,7 @@ export function InventoryView({
       />
 
       <div className="grid gap-4 sm:grid-cols-3">
-        <StatCard title="Total products" value={String(counts.total)} icon={Boxes} variant="white" />
+        <StatCard title="Total products" value={String(counts.total)} icon={Boxes} variant="white" accentShift={2} />
         <StatCard
           title="Low stock"
           value={String(counts.low)}
@@ -193,6 +193,7 @@ export function InventoryView({
           trendTone={counts.low > 0 ? "down" : "neutral"}
           icon={AlertTriangle}
           variant="blue"
+          accentShift={0}
         />
         <StatCard
           title="Out of stock"
@@ -201,6 +202,7 @@ export function InventoryView({
           trendTone={counts.out > 0 ? "down" : "neutral"}
           icon={XCircle}
           variant="white"
+          accentShift={1}
         />
       </div>
 
