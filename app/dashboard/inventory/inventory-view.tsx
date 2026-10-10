@@ -278,7 +278,7 @@ export function InventoryView({
                                 className="h-10 w-10 shrink-0 rounded-lg object-cover"
                               />
                             ) : (
-                              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-gray-100 text-gray-400">
+                              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-gray-100 dark:bg-zinc-800 text-gray-400">
                                 <Package size={18} />
                               </span>
                             )}

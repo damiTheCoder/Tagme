@@ -29,7 +29,7 @@ export function ProductCarousel({
         return (
           <div
             key={p.id}
-            className="w-[200px] shrink-0 snap-start overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-sm"
+            className="w-[200px] shrink-0 snap-start overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-sm dark:border-zinc-700 dark:bg-zinc-900"
           >
             {p.image_url ? (
               <Image
@@ -40,12 +40,12 @@ export function ProductCarousel({
                 className="aspect-square w-full object-cover"
               />
             ) : (
-              <div className="flex aspect-square w-full items-center justify-center bg-neutral-100 text-neutral-400">
+              <div className="flex aspect-square w-full items-center justify-center bg-neutral-100 text-neutral-400 dark:bg-zinc-800 dark:text-zinc-500">
                 <Package size={40} />
               </div>
             )}
             <div className="flex flex-col gap-1 p-3">
-              <p className="truncate text-sm font-medium text-neutral-900">{p.name}</p>
+              <p className="truncate text-sm font-medium text-neutral-900 dark:text-zinc-100">{p.name}</p>
               <p className="text-sm font-bold text-[#0066ff]">
                 {formatCurrency(Number(p.price), p.currency)}
               </p>

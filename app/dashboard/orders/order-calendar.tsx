@@ -15,7 +15,7 @@ const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "
 const ROW_LABELS = ["", "Mon", "", "Wed", "", "Fri", ""];
 
 function levelClass(count: number, max: number): string {
-  if (count === 0) return "bg-gray-100";
+  if (count === 0) return "bg-gray-100 dark:bg-zinc-800";
   const t = count / Math.max(1, max);
   if (t <= 0.25) return "bg-[#006DFF]/25";
   if (t <= 0.5) return "bg-[#006DFF]/50";
@@ -137,7 +137,7 @@ export function OrderCalendar({
 
       <div className="flex items-center gap-1.5 text-[11px] text-gray-500">
         <span>Less</span>
-        <span className="h-3 w-3 rounded-[3px] bg-gray-100" />
+        <span className="h-3 w-3 rounded-[3px] bg-gray-100 dark:bg-zinc-800" />
         <span className="h-3 w-3 rounded-[3px] bg-[#006DFF]/25" />
         <span className="h-3 w-3 rounded-[3px] bg-[#006DFF]/50" />
         <span className="h-3 w-3 rounded-[3px] bg-[#006DFF]/75" />

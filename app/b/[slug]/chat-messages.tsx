@@ -78,7 +78,7 @@ export function ChatMessages({
             return (
               <div
                 key={m.id}
-                className="self-center rounded-full bg-neutral-100 px-3 py-1 text-center text-xs text-muted-foreground"
+                className="self-center rounded-full bg-neutral-100 px-3 py-1 text-center text-xs text-muted-foreground dark:bg-zinc-800"
               >
                 {text}
               </div>
@@ -92,7 +92,7 @@ export function ChatMessages({
                   className={`max-w-[80%] rounded-2xl px-3 py-2 text-sm ${
                     isUser
                       ? "self-end bg-[#0066ff] text-white"
-                      : "self-start bg-neutral-100 text-neutral-900"
+                      : "self-start bg-neutral-100 text-neutral-900 dark:bg-zinc-800 dark:text-zinc-100"
                   }`}
                 >
                   <p className="whitespace-pre-wrap break-words">{text}</p>
@@ -112,7 +112,7 @@ export function ChatMessages({
           </div>
         )}
         {busy && (
-          <div className="flex items-center gap-1 self-start rounded-2xl bg-neutral-100 px-4 py-3">
+          <div className="flex items-center gap-1 self-start rounded-2xl bg-neutral-100 px-4 py-3 dark:bg-zinc-800">
             <span className="h-2 w-2 animate-bounce rounded-full bg-neutral-400" />
             <span
               className="h-2 w-2 animate-bounce rounded-full bg-neutral-400"

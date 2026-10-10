@@ -134,7 +134,7 @@ export function ProductDialog({
             onClick={() => fileRef.current?.click()}
             onDragOver={(e) => e.preventDefault()}
             onDrop={onDropFile}
-            className="flex items-center gap-3 rounded-xl border border-dashed border-gray-300 bg-gray-50 p-3 text-left transition-colors hover:border-gray-400"
+            className="flex items-center gap-3 rounded-xl border border-dashed border-gray-300 dark:border-zinc-700 bg-gray-50 dark:bg-zinc-800 p-3 text-left transition-colors hover:border-gray-400 dark:hover:border-zinc-500"
           >
             {preview ? (
               <Image
@@ -150,7 +150,7 @@ export function ProductDialog({
               </span>
             )}
             <span>
-              <span className="block text-sm font-medium text-[#1a1a1a]">
+              <span className="block text-sm font-medium text-[#1a1a1a] dark:text-zinc-100">
                 {preview ? "Replace product image" : "Click or drag to upload product image"}
               </span>
               <span className="block text-xs text-gray-500">JPG, PNG, or WebP · max 5MB</span>
@@ -170,7 +170,7 @@ export function ProductDialog({
                     onRemoveImage();
                   }
                 }}
-                className="ml-auto rounded-full p-1 text-gray-400 hover:bg-gray-200 hover:text-gray-600"
+                className="ml-auto rounded-full p-1 text-gray-400 hover:bg-gray-200 dark:hover:bg-zinc-700 hover:text-gray-600 dark:hover:text-zinc-300 dark:text-zinc-400"
               >
                 <X size={16} />
               </span>
@@ -199,7 +199,7 @@ export function ProductDialog({
             onChange={(e) => setPrice(e.target.value)}
           />
           <div className="grid grid-cols-2 gap-3">
-            <label className="flex flex-col gap-1 text-sm text-gray-600">
+            <label className="flex flex-col gap-1 text-sm text-gray-600 dark:text-zinc-400">
               Stock count
               <Input
                 type="number"
@@ -209,7 +209,7 @@ export function ProductDialog({
                 onChange={(e) => setStockCount(e.target.value)}
               />
             </label>
-            <label className="flex flex-col gap-1 text-sm text-gray-600">
+            <label className="flex flex-col gap-1 text-sm text-gray-600 dark:text-zinc-400">
               Low stock threshold
               <Input
                 type="number"
@@ -220,7 +220,7 @@ export function ProductDialog({
               />
             </label>
           </div>
-          <label className="flex flex-col gap-1 text-sm text-gray-600">
+          <label className="flex flex-col gap-1 text-sm text-gray-600 dark:text-zinc-400">
             Details for the AI
             <textarea
               rows={6}
@@ -228,7 +228,7 @@ export function ProductDialog({
               placeholder="Everything the AI should know about this product. Ingredients, size, who it's for, how long it takes to make, common questions — write it like you're explaining to a new staff member."
               value={details}
               onChange={(e) => setDetails(e.target.value)}
-              className="min-h-28 w-full rounded-lg border-0 bg-gray-50 px-3 py-2 text-sm text-zinc-900 placeholder:text-gray-400 focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#7dd3fc]"
+              className="min-h-28 w-full rounded-lg border-0 bg-gray-50 dark:bg-zinc-800 px-3 py-2 text-sm text-zinc-900 dark:text-zinc-100 placeholder:text-gray-400 focus:bg-white dark:focus:bg-zinc-900 focus:outline-none focus:ring-1 focus:ring-[#7dd3fc]"
             />
           </label>
           <p className="-mt-1 text-xs text-gray-500">

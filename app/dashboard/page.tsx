@@ -99,7 +99,7 @@ export default async function DashboardPage() {
         title={`Welcome, ${business.name}`}
         description="Here's what's happening in your shop today."
         action={
-          <Link href={`/b/${business.slug}`} target="_blank" className="text-sm text-[#0c4a6e] hover:underline inline-flex items-center gap-1">
+          <Link href={`/b/${business.slug}`} target="_blank" className="text-sm text-[#0c4a6e] dark:text-[#7dd3fc] hover:underline inline-flex items-center gap-1">
             <Link2 size={16} /> View public page
           </Link>
         }
@@ -114,27 +114,29 @@ export default async function DashboardPage() {
 
       <OverviewCharts daily={last14} />
 
-      <div className="grid gap-3 md:gap-4 lg:grid-cols-3">
+      <div className="grid min-w-0 grid-cols-1 gap-3 md:gap-4 lg:grid-cols-3">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle>Recent orders</CardTitle>
-            <Link href="/dashboard/orders" className="inline-flex items-center gap-1 text-sm text-[#0c4a6e] hover:underline">
+            <Link href="/dashboard/orders" className="inline-flex items-center gap-1 text-sm text-[#0c4a6e] dark:text-[#7dd3fc] hover:underline">
               View all <ArrowRight size={16} />
             </Link>
           </CardHeader>
           <CardContent className="space-y-3">
             {recent.map((o) => (
-              <div key={o.id} className="flex items-center gap-3 rounded-2xl bg-gray-50 p-3">
+              <div key={o.id} className="flex min-w-0 items-center gap-3 rounded-2xl bg-gray-50 dark:bg-zinc-800 p-3">
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-sm font-medium">{o.customer_name || "Anonymous customer"}</p>
                   <p className="truncate text-xs text-gray-500">{itemsSummary(o)}</p>
                 </div>
-                <div className="text-right">
-                  <p className="text-sm font-medium">{formatMoney(o.total, o.currency)}</p>
-                  <p className="text-xs text-gray-500">{timeAgo(o.created_at)}</p>
+                <div className="min-w-0 shrink-0 text-right">
+                  <p className="truncate text-sm font-medium">{formatMoney(o.total, o.currency)}</p>
+                  <p className="truncate text-xs text-gray-500">{timeAgo(o.created_at)}</p>
                 </div>
-                <OrderStatusBadge status={o.status} />
-                <Link href={`/dashboard/orders/${o.id}`}>
+                <span className="shrink-0">
+                  <OrderStatusBadge status={o.status} />
+                </span>
+                <Link href={`/dashboard/orders/${o.id}`} className="shrink-0">
                   <Button variant="outline" size="sm">View</Button>
                 </Link>
               </div>
@@ -151,10 +153,10 @@ export default async function DashboardPage() {
               <p className="text-sm text-gray-500">No product data yet.</p>
             ) : (
               top.map((p) => (
-                <div key={p.name}>
-                  <div className="flex justify-between text-sm">
-                    <span className="truncate font-medium">{p.name}</span>
-                    <span className="text-gray-500">{formatNumber(p.count)} order{p.count === 1 ? "" : "s"}</span>
+                <div key={p.name} className="min-w-0">
+                  <div className="flex justify-between gap-2 text-sm">
+                    <span className="min-w-0 truncate font-medium">{p.name}</span>
+                    <span className="shrink-0 text-gray-500">{formatNumber(p.count)} order{p.count === 1 ? "" : "s"}</span>
                   </div>
                   <Progress value={Math.round((p.count / topMax) * 100)} className="mt-1.5" />
                 </div>

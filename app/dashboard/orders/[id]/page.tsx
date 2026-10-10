@@ -58,7 +58,7 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
 
   return (
     <div className="space-y-6">
-      <Link href="/dashboard/orders" className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-[#0c4a6e]">
+      <Link href="/dashboard/orders" className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-[#0c4a6e] dark:hover:text-[#7dd3fc]">
         <ChevronLeft size={16} /> Back to orders
       </Link>
 
@@ -71,21 +71,21 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
           </CardHeader>
           <CardContent>
             {messages.length === 0 ? (
-              <div className="rounded-xl bg-gray-50 p-12 text-center text-gray-500">
+              <div className="rounded-xl bg-gray-50 dark:bg-zinc-800 p-12 text-center text-gray-500">
                 <p className="text-sm">No messages in this conversation.</p>
               </div>
             ) : (
               <div className="flex flex-col gap-2">
                 {messages.map((m) =>
                   m.role === "system" ? (
-                    <p key={m.id} className="self-center rounded-full bg-gray-50 px-3 py-1 text-center text-xs text-zinc-500">
+                    <p key={m.id} className="self-center rounded-full bg-gray-50 dark:bg-zinc-800 px-3 py-1 text-center text-xs text-zinc-500">
                       {m.content}
                     </p>
                   ) : (
                     <div
                       key={m.id}
                       className={`max-w-[80%] rounded-2xl px-3 py-2 text-sm ${
-                        m.role === "user" ? "self-end bg-[#006DFF] text-white" : "self-start bg-white text-zinc-900"
+                        m.role === "user" ? "self-end bg-[#006DFF] text-white" : "self-start bg-white text-zinc-900 dark:bg-zinc-800 dark:text-zinc-100"
                       }`}
                     >
                       <p className="whitespace-pre-wrap break-words">{m.content}</p>

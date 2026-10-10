@@ -41,7 +41,7 @@ function toolParts(message: UIMessage): ToolPart[] {
 
 function TypingDots() {
   return (
-    <div className="flex items-center gap-1 self-start rounded-2xl bg-gray-100 px-3 py-2.5" aria-label="Assistant is typing">
+    <div className="flex items-center gap-1 self-start rounded-2xl bg-gray-100 dark:bg-zinc-800 px-3 py-2.5" aria-label="Assistant is typing">
       {[0, 1, 2].map((i) => (
         <span
           key={i}
@@ -137,7 +137,7 @@ export function AssistantBar({ business }: { business: Business }) {
           <button
             type="button"
             onClick={onClear}
-            className="text-xs text-gray-500 hover:text-[#1a1a1a] hover:underline"
+            className="text-xs text-gray-500 hover:text-[#1a1a1a] dark:text-zinc-100 hover:underline"
             aria-label="Clear assistant conversation"
           >
             Clear
@@ -157,7 +157,7 @@ export function AssistantBar({ business }: { business: Business }) {
                 ) : (
                   <>
                     {messageText(m).trim() && (
-                      <div className="animate-in slide-in-from-bottom-2 self-start rounded-2xl bg-gray-100 px-3 py-2 text-sm text-[#1a1a1a] duration-300">
+                      <div className="animate-in slide-in-from-bottom-2 self-start rounded-2xl bg-gray-100 dark:bg-zinc-800 px-3 py-2 text-sm text-[#1a1a1a] dark:text-zinc-100 duration-300">
                         <div className="prose prose-sm max-w-none [&_p]:my-1 [&_ul]:my-1 [&_ol]:my-1">
                           <ReactMarkdown remarkPlugins={[remarkGfm]}>
                             {messageText(m)}
@@ -189,14 +189,14 @@ export function AssistantBar({ business }: { business: Business }) {
         </div>
       )}
 
-      <div className="rounded-2xl border border-gray-200 bg-gray-100 px-2 py-1 transition-all duration-300">
+      <div className="rounded-2xl border border-gray-200 dark:border-zinc-800 bg-gray-100 dark:bg-zinc-800 px-2 py-1 transition-all duration-300">
         <form onSubmit={onSubmit} className="flex min-h-[44px] items-center gap-2">
           <Image
             src="/AI.png"
             alt="Tagly assistant"
             width={44}
             height={44}
-            className="ml-3 h-[22px] w-[22px] shrink-0"
+            className="ml-3 h-[22px] w-[22px] shrink-0 rounded-md"
             aria-hidden
           />
           <input
@@ -205,7 +205,7 @@ export function AssistantBar({ business }: { business: Business }) {
             onChange={(e) => setInput(e.target.value)}
             placeholder={expanded ? "Follow up…" : "Ask me anything about your shop…"}
             aria-label={`Ask the ${business.name} assistant`}
-            className="flex-1 border-0 bg-transparent text-base text-zinc-900 placeholder:text-gray-400 focus:outline-none"
+            className="flex-1 border-0 bg-transparent text-base text-zinc-900 dark:text-zinc-100 placeholder:text-gray-400 focus:outline-none"
           />
           <button
             type="submit"
@@ -228,7 +228,7 @@ export function AssistantBar({ business }: { business: Business }) {
             key={s}
             type="button"
             onClick={() => onChipClick(s)}
-            className="rounded-full bg-gray-100 px-3 py-1.5 text-sm text-[#1a1a1a] transition-colors hover:bg-gray-200"
+            className="rounded-full bg-gray-100 dark:bg-zinc-800 px-3 py-1.5 text-sm text-[#1a1a1a] dark:text-zinc-100 transition-colors hover:bg-gray-200 dark:hover:bg-zinc-700"
           >
             {s}
           </button>

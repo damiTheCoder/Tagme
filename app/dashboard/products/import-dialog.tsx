@@ -92,7 +92,7 @@ export function ImportDialog({ onClose }: { onClose: () => void }) {
               value={text}
               onChange={(e) => setText(e.target.value)}
               placeholder={"Chocolate cake - 15000\nVanilla cake - 12000\nCupcakes (6 pack) - 8000"}
-              className="w-full rounded-lg border-0 bg-gray-50 px-3 py-2 text-sm placeholder:text-gray-400 focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#7dd3fc]"
+              className="w-full rounded-lg border-0 bg-gray-50 dark:bg-zinc-800 px-3 py-2 text-sm placeholder:text-gray-400 focus:bg-white dark:focus:bg-zinc-900 focus:outline-none focus:ring-1 focus:ring-[#7dd3fc]"
             />
             {parseError && <p className="text-sm text-red-600">{parseError}</p>}
             <Button onClick={onParse} disabled={parsing || !text.trim()}>
@@ -109,7 +109,7 @@ export function ImportDialog({ onClose }: { onClose: () => void }) {
                   <Input placeholder="Name" value={row.name} onChange={(e) => updateRow(i, { name: e.target.value })} />
                   <Input type="number" min="0" step="0.01" placeholder="Price" value={row.price} onChange={(e) => updateRow(i, { price: e.target.value })} className="w-28" />
                   <input type="checkbox" title="In stock" checked={row.in_stock} onChange={(e) => updateRow(i, { in_stock: e.target.checked })} />
-                  <button onClick={() => removeRow(i)} aria-label="Remove row" className="rounded px-2 py-1 text-sm text-red-600 hover:bg-gray-50">
+                  <button onClick={() => removeRow(i)} aria-label="Remove row" className="rounded px-2 py-1 text-sm text-red-600 hover:bg-gray-50 dark:bg-zinc-800">
                     ✕
                   </button>
                 </div>

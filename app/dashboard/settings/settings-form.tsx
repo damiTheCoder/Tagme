@@ -75,7 +75,7 @@ export function SettingsForm({ initial }: { initial: SettingsInitial }) {
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="What do you sell?"
-                className="mt-1 w-full rounded-lg border-0 bg-gray-50 px-3 py-2 text-sm placeholder:text-gray-400 focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#7dd3fc]"
+                className="mt-1 w-full rounded-lg border-0 bg-gray-50 dark:bg-zinc-800 px-3 py-2 text-sm placeholder:text-gray-400 focus:bg-white dark:focus:bg-zinc-900 focus:outline-none focus:ring-1 focus:ring-[#7dd3fc]"
               />
             </label>
             <label className="text-sm font-medium">
@@ -83,7 +83,7 @@ export function SettingsForm({ initial }: { initial: SettingsInitial }) {
               <select
                 value={currency}
                 onChange={(e) => setCurrency(e.target.value)}
-                className="mt-1 flex h-10 w-full rounded-lg border-0 bg-gray-50 px-3 py-2 text-sm focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#7dd3fc]"
+                className="mt-1 flex h-10 w-full rounded-lg border-0 bg-gray-50 dark:bg-zinc-800 px-3 py-2 text-sm focus:bg-white dark:focus:bg-zinc-900 focus:outline-none focus:ring-1 focus:ring-[#7dd3fc]"
               >
                 {CURRENCIES.map((c) => (
                   <option key={c} value={c}>
@@ -108,7 +108,7 @@ export function SettingsForm({ initial }: { initial: SettingsInitial }) {
                   value={hours}
                   onChange={(e) => setHours(e.target.value)}
                   placeholder={"Mon-Fri 9am-6pm\nSat 10am-4pm\nSun closed"}
-                  className="mt-1 w-full rounded-lg border-0 bg-gray-50 px-3 py-2 text-sm placeholder:text-gray-400 focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#7dd3fc]"
+                  className="mt-1 w-full rounded-lg border-0 bg-gray-50 dark:bg-zinc-800 px-3 py-2 text-sm placeholder:text-gray-400 focus:bg-white dark:focus:bg-zinc-900 focus:outline-none focus:ring-1 focus:ring-[#7dd3fc]"
                 />
               </label>
               <label className="text-sm font-medium">
@@ -118,7 +118,7 @@ export function SettingsForm({ initial }: { initial: SettingsInitial }) {
                   value={policies}
                   onChange={(e) => setPolicies(e.target.value)}
                   placeholder="No refunds after 24 hours. Delivery within Lagos only."
-                  className="mt-1 w-full rounded-lg border-0 bg-gray-50 px-3 py-2 text-sm placeholder:text-gray-400 focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#7dd3fc]"
+                  className="mt-1 w-full rounded-lg border-0 bg-gray-50 dark:bg-zinc-800 px-3 py-2 text-sm placeholder:text-gray-400 focus:bg-white dark:focus:bg-zinc-900 focus:outline-none focus:ring-1 focus:ring-[#7dd3fc]"
                 />
               </label>
             </CardContent>
@@ -150,7 +150,7 @@ export function SettingsForm({ initial }: { initial: SettingsInitial }) {
         </div>
       </div>
 
-      <div className="sticky bottom-0 -mx-1 bg-white px-1 py-3">
+      <div className="sticky bottom-0 -mx-1 bg-white px-1 py-3 dark:bg-zinc-950">
         <Button type="submit" disabled={saving} className="w-full sm:w-auto">
           {saving && <Loader2 size={16} className="animate-spin" />}
           {saving ? "Saving…" : "Save settings"}

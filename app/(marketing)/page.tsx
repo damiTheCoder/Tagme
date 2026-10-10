@@ -62,7 +62,7 @@ const BUSINESS_TYPES = [
 
 export default function LandingPage() {
   return (
-    <main className="min-h-screen bg-white">
+    <main className="min-h-screen bg-white dark:bg-zinc-950">
       {/* Desktop: header + hero share the bg image */}
       <div className="md:bg-[url('/HeroBG.jpeg')] md:bg-top md:bg-no-repeat md:bg-[length:100%_auto]">
       {/* Top header */}
@@ -76,9 +76,9 @@ export default function LandingPage() {
               height={32}
               className="h-8 w-8 shrink-0 rounded-lg object-contain"
             />
-            <span className="text-lg font-semibold text-zinc-900">Tagly</span>
+            <span className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">Tagly</span>
           </a>
-          <nav className="hidden items-center gap-6 text-sm text-gray-600 md:flex">
+          <nav className="hidden items-center gap-6 text-sm text-gray-600 dark:text-zinc-400 md:flex">
             <a href="#how-it-works" className="hover:text-gray-900">
               How it works
             </a>
@@ -90,7 +90,7 @@ export default function LandingPage() {
             </a>
           </nav>
           <div className="ml-auto flex items-center gap-2">
-            <a href="/login" className="rounded-lg px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900">
+            <a href="/login" className="rounded-lg px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-900 dark:text-zinc-400 dark:hover:text-zinc-100">
               Log in
             </a>
             <a
@@ -106,7 +106,7 @@ export default function LandingPage() {
       {/* Hero */}
       <section className="bg-[url('/MobileHeroBG.jpeg')] bg-top bg-no-repeat bg-[length:100%_auto] md:bg-none">
         <div className="mx-auto max-w-6xl px-6 py-24 text-center sm:py-32 md:pb-56">
-        <h1 className="mx-auto max-w-3xl text-5xl font-semibold tracking-tight text-zinc-900 sm:text-7xl">
+        <h1 className="mx-auto max-w-3xl text-5xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100 sm:text-7xl">
           Your business, now conversational.
         </h1>
         <p className="mx-auto mt-4 max-w-xl text-lg text-gray-500 sm:text-xl">
@@ -160,12 +160,12 @@ export default function LandingPage() {
 
       {/* How it works */}
       <section id="how-it-works" className="mx-auto max-w-6xl scroll-mt-20 px-6 pb-16">
-        <h2 className="mb-8 text-3xl font-semibold tracking-tight text-zinc-900 sm:mb-10 sm:text-4xl">How it works in <span className="whitespace-nowrap rounded-full border-2 border-black bg-[#0066ff] px-4 py-1 text-white">3 Easy</span> steps</h2>
+        <h2 className="mb-8 text-3xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100 sm:mb-10 sm:text-4xl">How it works in <span className="whitespace-nowrap rounded-full border-2 border-black bg-[#0066ff] px-4 py-1 text-white">3 Easy</span> steps</h2>
         <div className="mt-4 grid gap-4 md:grid-cols-2">
           {/* Step 1 — tall card */}
-          <div className="flex flex-col rounded-3xl bg-gradient-to-br from-gray-100 to-gray-200 p-6 md:row-span-2">
+          <div className="flex flex-col rounded-3xl bg-gradient-to-br from-gray-100 to-gray-200 dark:from-zinc-900 dark:to-zinc-800 p-6 md:row-span-2">
             <p className="text-center text-sm font-semibold text-[#0066ff]">Step 1</p>
-            <p className="mt-2 text-center text-2xl font-medium tracking-tight text-zinc-900 sm:text-3xl">
+            <p className="mt-2 text-center text-2xl font-medium tracking-tight text-zinc-900 dark:text-zinc-100 sm:text-3xl">
               {STEPS[0].title}
             </p>
             <p className="mx-auto mt-2 max-w-sm text-center text-sm text-gray-500">
@@ -189,9 +189,9 @@ export default function LandingPage() {
           {/* Steps 2 & 3 — stacked on mobile, direct grid rows on desktop so bottoms align with Step 1 */}
           <div className="flex flex-col gap-4 md:contents">
             {STEPS.slice(1).map((s, i) => (
-              <div key={s.title} className="flex-1 rounded-3xl bg-gradient-to-br from-gray-100 to-gray-200 p-6">
+              <div key={s.title} className="flex-1 rounded-3xl bg-gradient-to-br from-gray-100 to-gray-200 dark:from-zinc-900 dark:to-zinc-800 p-6">
                 <p className="text-center text-sm font-semibold text-[#0066ff]">Step {i + 2}</p>
-                <p className="mt-2 text-center text-xl font-medium tracking-tight text-zinc-900 sm:text-2xl">
+                <p className="mt-2 text-center text-xl font-medium tracking-tight text-zinc-900 dark:text-zinc-100 sm:text-2xl">
                   {s.title}
                 </p>
                 <p className="mx-auto mt-2 max-w-sm text-center text-sm text-gray-500">
@@ -219,7 +219,7 @@ export default function LandingPage() {
 
       {/* Features */}
       <section id="features" className="mx-auto max-w-6xl scroll-mt-20 px-6 pb-16">
-        <h2 className="text-lg font-medium text-zinc-900">Features</h2>
+        <h2 className="text-lg font-medium text-zinc-900 dark:text-zinc-100">Features</h2>
         <div className="mt-4 grid gap-4 md:grid-cols-3">
           {FEATURES.map((f) => (
             <div key={f.title} className="rounded-2xl border border-black bg-[#0066ff] p-6">
@@ -232,11 +232,11 @@ export default function LandingPage() {
 
       {/* Business types */}
       <section className="mx-auto max-w-6xl scroll-mt-20 px-6 pb-16">
-        <h2 className="text-lg font-medium text-zinc-900">For every kind of business</h2>
+        <h2 className="text-lg font-medium text-zinc-900 dark:text-zinc-100">For every kind of business</h2>
         <div className="mt-4 grid gap-4 sm:grid-cols-2 md:grid-cols-3">
           {BUSINESS_TYPES.map((b) => (
-            <div key={b.title} className="rounded-2xl bg-gradient-to-br from-gray-100 to-gray-200 p-6">
-              <p className="font-medium text-zinc-900">{b.title}</p>
+            <div key={b.title} className="rounded-2xl bg-gradient-to-br from-gray-100 to-gray-200 dark:from-zinc-900 dark:to-zinc-800 p-6">
+              <p className="font-medium text-zinc-900 dark:text-zinc-100">{b.title}</p>
               <p className="mt-1 text-sm text-gray-500">{b.text}</p>
             </div>
           ))}
@@ -273,13 +273,13 @@ export default function LandingPage() {
 
       {/* Final CTA */}
       <section className="mx-auto max-w-6xl px-6 pb-20 text-center">
-        <h2 className="mx-auto max-w-2xl text-3xl font-semibold tracking-tight text-zinc-900 sm:text-4xl">
+        <h2 className="mx-auto max-w-2xl text-3xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100 sm:text-4xl">
           Your business doesn&apos;t need another website.
         </h2>
         <p className="mx-auto mt-2 max-w-xl text-lg text-gray-500">
           It needs a better way to interact.
         </p>
-        <p className="mt-6 font-medium text-zinc-900">
+        <p className="mt-6 font-medium text-zinc-900 dark:text-zinc-100">
           Tagly — The AI front door for your business.
         </p>
         <a

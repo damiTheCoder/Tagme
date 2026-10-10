@@ -32,7 +32,7 @@ export function Gauge({
         <path
           d={`M 8 60 A ${R} ${R} 0 0 1 112 60`}
           fill="none"
-          stroke="#e5e7eb"
+          className="gauge-track"
           strokeWidth="12"
           strokeLinecap="round"
         />
@@ -46,7 +46,7 @@ export function Gauge({
           strokeDashoffset={(CIRCUMFERENCE * (1 - pct / 100)).toFixed(1)}
         />
       </svg>
-      <p className="-mt-7 text-3xl font-semibold tabular-nums text-[#1a1a1a]">{pct}%</p>
+      <p className="-mt-7 text-3xl font-semibold tabular-nums text-[#1a1a1a] dark:text-zinc-100">{pct}%</p>
       <p className="mt-1 text-xs text-gray-500">{label}</p>
     </div>
   );

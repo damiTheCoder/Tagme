@@ -19,6 +19,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { StatCard } from "@/components/dashboard/stat-card";
 import { PageHeader } from "@/components/dashboard/page-header";
 import { formatCurrency, formatNumber } from "@/lib/format";
+import { useTheme } from "next-themes";
 import type { DailyPoint } from "./analytics";
 
 function formatMoney(total: number, currency: string) {
@@ -43,6 +44,12 @@ export function AnalyticsView({
   topProducts: { name: string; count: number }[];
 }) {
   const [range, setRange] = useState<"7d" | "30d" | "90d">("30d");
+  const { resolvedTheme } = useTheme();
+  const dark = resolvedTheme === "dark";
+  const grid = dark ? "#27272a" : "#f3f4f6";
+  const tickFill = dark ? "#a1a1aa" : "#9ca3af";
+  const tooltipBg = dark ? "#18181b" : "#ffffff";
+  const cursorFill = dark ? "#27272a" : "#f3f4f6";
   const days = range === "7d" ? 7 : range === "90d" ? 90 : 30;
   const sliced = daily.slice(-days);
   const topMax = Math.max(1, ...topProducts.map((t) => t.count));
@@ -84,10 +91,10 @@ export function AnalyticsView({
                     <stop offset="100%" stopColor="#006DFF" stopOpacity={0} />
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" />
-                <XAxis dataKey="date" tickFormatter={(d: string) => d.slice(5).replace("-", "/")} tick={{ fontSize: 12, fill: "#9ca3af" }} tickLine={false} axisLine={false} interval={Math.max(0, Math.floor(sliced.length / 8))} />
-                <YAxis tick={{ fontSize: 12, fill: "#9ca3af" }} tickLine={false} axisLine={false} tickFormatter={(v: number) => formatNumber(Number(v))} />
-                <Tooltip labelFormatter={(d) => String(d)} formatter={(v) => [`${currency} ${v}`, "Revenue"]} contentStyle={{ backgroundColor: "#ffffff", borderRadius: 12, border: "none", boxShadow: "0 1px 3px rgba(0,0,0,0.04),0 1px 2px rgba(0,0,0,0.02)", fontSize: 12 }} />
+                <CartesianGrid strokeDasharray="3 3" stroke={grid} />
+                <XAxis dataKey="date" tickFormatter={(d: string) => d.slice(5).replace("-", "/")} tick={{ fontSize: 12, fill: tickFill }} tickLine={false} axisLine={false} interval={Math.max(0, Math.floor(sliced.length / 8))} />
+                <YAxis tick={{ fontSize: 12, fill: tickFill }} tickLine={false} axisLine={false} tickFormatter={(v: number) => formatNumber(Number(v))} />
+                <Tooltip labelFormatter={(d) => String(d)} formatter={(v) => [`${currency} ${v}`, "Revenue"]} contentStyle={{ backgroundColor: tooltipBg, borderRadius: 12, border: "none", boxShadow: "0 1px 3px rgba(0,0,0,0.04),0 1px 2px rgba(0,0,0,0.02)", fontSize: 12 }} />
                 <Area type="monotone" dataKey="revenue" stroke="#006DFF" strokeWidth={2} fill="url(#revFill)" />
               </AreaChart>
             </ResponsiveContainer>
@@ -103,9 +110,9 @@ export function AnalyticsView({
           <div className="h-56">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={sliced} margin={{ top: 8, right: 8, bottom: 8, left: 0 }}>
-                <XAxis dataKey="date" tickFormatter={(d: string) => d.slice(5).replace("-", "/")} tick={{ fontSize: 12, fill: "#9ca3af" }} tickLine={false} axisLine={false} interval={Math.max(0, Math.floor(sliced.length / 8))} />
-                <YAxis allowDecimals={false} tick={{ fontSize: 12, fill: "#9ca3af" }} tickLine={false} axisLine={false} tickFormatter={(v: number) => formatNumber(Number(v))} />
-                <Tooltip labelFormatter={(d) => String(d)} formatter={(v) => [v, "Orders"]} contentStyle={{ backgroundColor: "#ffffff", borderRadius: 12, border: "none", boxShadow: "0 1px 3px rgba(0,0,0,0.04),0 1px 2px rgba(0,0,0,0.02)", fontSize: 12 }} cursor={{ fill: "#f3f4f6" }} />
+                <XAxis dataKey="date" tickFormatter={(d: string) => d.slice(5).replace("-", "/")} tick={{ fontSize: 12, fill: tickFill }} tickLine={false} axisLine={false} interval={Math.max(0, Math.floor(sliced.length / 8))} />
+                <YAxis allowDecimals={false} tick={{ fontSize: 12, fill: tickFill }} tickLine={false} axisLine={false} tickFormatter={(v: number) => formatNumber(Number(v))} />
+                <Tooltip labelFormatter={(d) => String(d)} formatter={(v) => [v, "Orders"]} contentStyle={{ backgroundColor: tooltipBg, borderRadius: 12, border: "none", boxShadow: "0 1px 3px rgba(0,0,0,0.04),0 1px 2px rgba(0,0,0,0.02)", fontSize: 12 }} cursor={{ fill: cursorFill }} />
                 <Bar dataKey="orders" fill="#006DFF" radius={[8, 8, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>

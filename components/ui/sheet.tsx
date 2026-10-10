@@ -25,7 +25,7 @@ const SheetContent = React.forwardRef<
     <SheetPrimitive.Content
       ref={ref}
       className={cn(
-        "fixed z-50 gap-4 bg-white p-6 shadow-xl",
+        "fixed z-50 gap-4 bg-white p-6 shadow-xl dark:bg-zinc-950",
         side === "left" && "inset-y-0 left-0 h-full w-3/4 max-w-xs",
         side === "right" && "inset-y-0 right-0 h-full w-3/4 max-w-xs",
         className

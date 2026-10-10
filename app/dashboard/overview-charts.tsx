@@ -11,10 +11,16 @@ import {
 } from "recharts";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatNumber } from "@/lib/format";
+import { useTheme } from "next-themes";
 
 export type DayPoint = { date: string; orders: number; revenue: number };
 
 export function OverviewCharts({ daily }: { daily: DayPoint[] }) {
+  const { resolvedTheme } = useTheme();
+  const dark = resolvedTheme === "dark";
+  const grid = dark ? "#27272a" : "#f3f4f6";
+  const tickFill = dark ? "#a1a1aa" : "#9ca3af";
+  const tooltipBg = dark ? "#18181b" : "#ffffff";
   return (
     <Card>
       <CardHeader className="px-4 pt-4 md:p-6">
@@ -30,11 +36,11 @@ export function OverviewCharts({ daily }: { daily: DayPoint[] }) {
                   <stop offset="100%" stopColor="#006DFF" stopOpacity={0} />
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" />
+              <CartesianGrid strokeDasharray="3 3" stroke={grid} />
               <XAxis
                 dataKey="date"
                 tickFormatter={(d: string) => d.slice(5).replace("-", "/")}
-                tick={{ fontSize: 12, fill: "#9ca3af" }}
+                tick={{ fontSize: 12, fill: tickFill }}
                 tickLine={false}
                 axisLine={false}
                 interval={2}
@@ -42,7 +48,7 @@ export function OverviewCharts({ daily }: { daily: DayPoint[] }) {
               <YAxis
                 width={32}
                 allowDecimals={false}
-                tick={{ fontSize: 12, fill: "#9ca3af" }}
+                tick={{ fontSize: 12, fill: tickFill }}
                 tickLine={false}
                 axisLine={false}
                 tickFormatter={(v: number) => formatNumber(Number(v))}
@@ -51,7 +57,7 @@ export function OverviewCharts({ daily }: { daily: DayPoint[] }) {
                 labelFormatter={(d) => String(d)}
                 formatter={(v) => [v, "Orders"]}
                 contentStyle={{
-                  backgroundColor: "#ffffff",
+                  backgroundColor: tooltipBg,
                   borderRadius: 12,
                   border: "none",
                   boxShadow: "0 1px 3px rgba(0,0,0,0.04),0 1px 2px rgba(0,0,0,0.02)",

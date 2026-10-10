@@ -12,10 +12,10 @@ const VARIANTS = {
   blue: {
     card: "bg-[#7dd3fc15]",
     label: "text-sm font-medium text-gray-500",
-    value: "text-3xl font-semibold tabular-nums text-[#1a1a1a]",
+    value: "text-3xl font-semibold tabular-nums text-[#1a1a1a] dark:text-zinc-100",
   },
   dark: {
-    card: "bg-[#1a1a1a]",
+    card: "bg-[#1a1a1a] dark:border-zinc-700 dark:bg-zinc-900",
     label: "text-sm font-medium text-gray-400",
     value: "text-3xl font-semibold tabular-nums text-white",
   },

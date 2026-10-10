@@ -26,6 +26,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { formatCurrency, formatNumber } from "@/lib/format";
+import { useTheme } from "next-themes";
 
 export type ToolPart = {
   type: string;
@@ -67,7 +68,7 @@ function CopyButton({ text }: { text: string }) {
     <button
       type="button"
       onClick={onCopy}
-      className="inline-flex items-center gap-1.5 rounded-full bg-gray-100 px-3 py-1.5 text-xs font-medium text-[#1a1a1a] transition-colors hover:bg-gray-200"
+      className="inline-flex items-center gap-1.5 rounded-full bg-gray-100 dark:bg-zinc-800 px-3 py-1.5 text-xs font-medium text-[#1a1a1a] dark:text-zinc-100 transition-colors hover:bg-gray-200"
     >
       {copied ? <Check size={14} /> : <Copy size={14} />}
       {copied ? "Copied" : "Copy"}
@@ -79,9 +80,9 @@ function StatRow({ items }: { items: { label: string; value: string }[] }) {
   return (
     <div className="grid grid-cols-3 gap-2">
       {items.map((s) => (
-        <div key={s.label} className="rounded-xl bg-gray-50 px-3 py-2">
+        <div key={s.label} className="rounded-xl bg-gray-50 dark:bg-zinc-800 px-3 py-2">
           <p className="text-[11px] text-gray-500">{s.label}</p>
-          <p className="truncate text-sm font-semibold text-[#1a1a1a]">{s.value}</p>
+          <p className="truncate text-sm font-semibold text-[#1a1a1a] dark:text-zinc-100">{s.value}</p>
         </div>
       ))}
     </div>
@@ -110,7 +111,7 @@ function WriteResult({ name, part }: { name: string; part: ToolPart }) {
   const out = asRecord(part.output);
   if (part.state === "output-error" || (out.ok === false && out.error !== "User confirmation required")) {
     return (
-      <div className="flex items-start gap-2 rounded-2xl border border-red-200 bg-red-50 px-3 py-2 text-sm text-[#1a1a1a]">
+      <div className="flex items-start gap-2 rounded-2xl border border-red-200 bg-red-50 px-3 py-2 text-sm text-[#1a1a1a] dark:text-zinc-100">
         <XCircle size={16} className="mt-0.5 shrink-0 text-red-600" />
         <span>{typeof out.error === "string" ? out.error : part.errorText || "Something went wrong."}</span>
       </div>
@@ -118,14 +119,14 @@ function WriteResult({ name, part }: { name: string; part: ToolPart }) {
   }
   if (out.ok === false) {
     return (
-      <div className="rounded-2xl bg-gray-100 px-3 py-2 text-sm text-[#1a1a1a]">
+      <div className="rounded-2xl bg-gray-100 dark:bg-zinc-800 px-3 py-2 text-sm text-[#1a1a1a] dark:text-zinc-100">
         Confirmation is needed before I can do that — please confirm and I’ll proceed.
       </div>
     );
   }
   const input = asRecord(part.input);
   return (
-    <div className="flex items-start gap-2 rounded-2xl border border-green-200 bg-green-50 px-3 py-2 text-sm text-[#1a1a1a]">
+    <div className="flex items-start gap-2 rounded-2xl border border-green-200 bg-green-50 px-3 py-2 text-sm text-[#1a1a1a] dark:text-zinc-100">
       <CheckCircle2 size={16} className="mt-0.5 shrink-0 text-green-600" />
       <span className="flex-1">{meta?.label ?? "Done"}</span>
       {meta && (
@@ -138,6 +139,11 @@ function WriteResult({ name, part }: { name: string; part: ToolPart }) {
 }
 
 function ReadResult({ name, part }: { name: string; part: ToolPart }) {
+  const { resolvedTheme } = useTheme();
+  const dark = resolvedTheme === "dark";
+  const grid = dark ? "#27272a" : "#f3f4f6";
+  const tickFill = dark ? "#a1a1aa" : "#9ca3af";
+  const tooltipBg = dark ? "#18181b" : "#ffffff";
   const out = asRecord(part.output);
 
   switch (name) {
@@ -158,9 +164,9 @@ function ReadResult({ name, part }: { name: string; part: ToolPart }) {
           <div className="h-40">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={daily} margin={{ top: 8, right: 8, bottom: 8, left: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="date" tickFormatter={(d: string) => d.slice(5).replace("-", "/")} tick={{ fontSize: 10 }} interval={Math.max(0, Math.floor(daily.length / 6))} />
-                <Tooltip labelFormatter={(d) => String(d)} />
+                <CartesianGrid strokeDasharray="3 3" stroke={grid} />
+                <XAxis dataKey="date" tickFormatter={(d: string) => d.slice(5).replace("-", "/")} tick={{ fontSize: 10, fill: tickFill }} tickLine={false} axisLine={false} interval={Math.max(0, Math.floor(daily.length / 6))} />
+                <Tooltip labelFormatter={(d) => String(d)} contentStyle={{ backgroundColor: tooltipBg, borderRadius: 12, border: "none", fontSize: 12 }} />
                 <Line type="monotone" dataKey="revenue" stroke="#006DFF" strokeWidth={2} dot={false} />
               </LineChart>
             </ResponsiveContainer>
@@ -183,13 +189,13 @@ function ReadResult({ name, part }: { name: string; part: ToolPart }) {
       return (
         <div className="flex flex-col gap-2">
           {orders.map((o) => (
-            <div key={o.id} className="flex items-center gap-2 rounded-xl bg-gray-50 p-2.5">
+            <div key={o.id} className="flex items-center gap-2 rounded-xl bg-gray-50 dark:bg-zinc-800 p-2.5">
               <div className="min-w-0 flex-1">
-                <p className="truncate text-sm font-medium text-[#1a1a1a]">{o.customer_name}</p>
+                <p className="truncate text-sm font-medium text-[#1a1a1a] dark:text-zinc-100">{o.customer_name}</p>
                 <p className="truncate text-xs text-gray-500">{o.items_summary}</p>
               </div>
               <div className="shrink-0 text-right">
-                <p className="text-sm font-medium text-[#1a1a1a]">
+                <p className="text-sm font-medium text-[#1a1a1a] dark:text-zinc-100">
                   {formatCurrency(Number(o.total), String(o.currency))}
                 </p>
                 <OrderStatusBadge status={o.status} />
@@ -208,9 +214,9 @@ function ReadResult({ name, part }: { name: string; part: ToolPart }) {
       const customer = asRecord(out.customer);
       const messages = (out.messages ?? []) as { role: string; content: string; created_at: string }[];
       return (
-        <div className="flex flex-col gap-2 rounded-2xl bg-gray-50 p-3 text-sm">
+        <div className="flex flex-col gap-2 rounded-2xl bg-gray-50 dark:bg-zinc-800 p-3 text-sm">
           <div className="flex items-center justify-between">
-            <span className="font-medium text-[#1a1a1a]">
+            <span className="font-medium text-[#1a1a1a] dark:text-zinc-100">
               {formatCurrency(Number(order.total ?? 0), String(order.currency ?? ""))}
             </span>
             <OrderStatusBadge status={String(order.status ?? "")} />
@@ -222,7 +228,7 @@ function ReadResult({ name, part }: { name: string; part: ToolPart }) {
             </p>
           )}
           {messages.length > 0 && (
-            <div className="max-h-40 overflow-y-auto border-t border-gray-200 pt-2">
+            <div className="max-h-40 overflow-y-auto border-t border-gray-200 dark:border-zinc-700 pt-2">
               {messages.slice(-6).map((m, i) => (
                 <p key={i} className="truncate text-xs text-gray-600">
                   <span className="font-medium">{m.role}:</span> {m.content}
@@ -241,10 +247,10 @@ function ReadResult({ name, part }: { name: string; part: ToolPart }) {
         <div className="h-44">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={products} layout="vertical" margin={{ top: 8, right: 8, bottom: 8, left: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" horizontal={false} />
-              <XAxis type="number" tick={{ fontSize: 10 }} />
-              <YAxis type="category" dataKey="name" width={90} tick={{ fontSize: 10 }} />
-              <Tooltip />
+              <CartesianGrid strokeDasharray="3 3" stroke={grid} horizontal={false} />
+              <XAxis type="number" tick={{ fontSize: 10, fill: tickFill }} tickLine={false} axisLine={false} />
+              <YAxis type="category" dataKey="name" width={90} tick={{ fontSize: 10, fill: tickFill }} tickLine={false} axisLine={false} />
+              <Tooltip contentStyle={{ backgroundColor: tooltipBg, borderRadius: 12, border: "none", fontSize: 12 }} />
               <Bar dataKey="count" fill="#006DFF" radius={[0, 8, 8, 0]} />
             </BarChart>
           </ResponsiveContainer>
@@ -305,11 +311,11 @@ function ReadResult({ name, part }: { name: string; part: ToolPart }) {
         ["Notifications", out.notification_email],
       ];
       return (
-        <div className="flex flex-col gap-1.5 rounded-2xl bg-gray-50 p-3 text-sm">
+        <div className="flex flex-col gap-1.5 rounded-2xl bg-gray-50 dark:bg-zinc-800 p-3 text-sm">
           {rows
             .filter(([, v]) => v != null && String(v).trim() !== "")
             .map(([k, v]) => (
-              <p key={k} className="text-[#1a1a1a]">
+              <p key={k} className="text-[#1a1a1a] dark:text-zinc-100">
                 <span className="text-gray-500">{k}: </span>
                 {String(v)}
               </p>
@@ -321,8 +327,8 @@ function ReadResult({ name, part }: { name: string; part: ToolPart }) {
     case "get_public_link": {
       const url = String(out.url ?? "");
       return (
-        <div className="flex items-center gap-2 rounded-2xl bg-gray-50 p-3">
-          <p className="min-w-0 flex-1 truncate text-sm text-[#1a1a1a]">{url}</p>
+        <div className="flex items-center gap-2 rounded-2xl bg-gray-50 dark:bg-zinc-800 p-3">
+          <p className="min-w-0 flex-1 truncate text-sm text-[#1a1a1a] dark:text-zinc-100">{url}</p>
           <CopyButton text={url} />
         </div>
       );
@@ -342,9 +348,9 @@ function ReadResult({ name, part }: { name: string; part: ToolPart }) {
         <div className="h-40">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={daily} margin={{ top: 8, right: 8, bottom: 8, left: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="date" tickFormatter={(d: string) => d.slice(5).replace("-", "/")} tick={{ fontSize: 10 }} interval={Math.max(0, Math.floor(daily.length / 6))} />
-              <Tooltip labelFormatter={(d) => String(d)} />
+              <CartesianGrid strokeDasharray="3 3" stroke={grid} />
+              <XAxis dataKey="date" tickFormatter={(d: string) => d.slice(5).replace("-", "/")} tick={{ fontSize: 10, fill: tickFill }} tickLine={false} axisLine={false} interval={Math.max(0, Math.floor(daily.length / 6))} />
+              <Tooltip labelFormatter={(d) => String(d)} contentStyle={{ backgroundColor: tooltipBg, borderRadius: 12, border: "none", fontSize: 12 }} />
               <Line type="monotone" dataKey="revenue" stroke="#006DFF" strokeWidth={2} dot={false} />
             </LineChart>
           </ResponsiveContainer>
@@ -377,8 +383,8 @@ function ReadResult({ name, part }: { name: string; part: ToolPart }) {
       return (
         <div className="flex flex-col gap-1.5">
           {list.map((p) => (
-            <div key={p.id} className="flex items-center gap-2 rounded-xl bg-gray-50 px-3 py-2 text-sm">
-              <span className="min-w-0 flex-1 truncate font-medium text-[#1a1a1a]">{p.name}</span>
+            <div key={p.id} className="flex items-center gap-2 rounded-xl bg-gray-50 dark:bg-zinc-800 px-3 py-2 text-sm">
+              <span className="min-w-0 flex-1 truncate font-medium text-[#1a1a1a] dark:text-zinc-100">{p.name}</span>
               <span className="shrink-0 text-gray-500">
                 {p.currency ? formatCurrency(Number(p.price), String(p.currency)) : String(p.price)}
               </span>
@@ -416,13 +422,13 @@ function ReadResult({ name, part }: { name: string; part: ToolPart }) {
       return (
         <div className="flex flex-col gap-1.5">
           {products.map((p) => (
-            <div key={p.id} className="flex items-center gap-2 rounded-xl bg-gray-50 px-3 py-2 text-sm">
+            <div key={p.id} className="flex items-center gap-2 rounded-xl bg-gray-50 dark:bg-zinc-800 px-3 py-2 text-sm">
               <span
                 className={`h-2.5 w-2.5 shrink-0 rounded-full ${
                   p.stock_count === 0 ? "bg-red-500" : "bg-amber-500"
                 }`}
               />
-              <span className="min-w-0 flex-1 truncate font-medium text-[#1a1a1a]">{p.name}</span>
+              <span className="min-w-0 flex-1 truncate font-medium text-[#1a1a1a] dark:text-zinc-100">{p.name}</span>
               <span className="shrink-0 text-gray-500">
                 {p.stock_count ?? "—"} left
               </span>
@@ -438,13 +444,18 @@ function ReadResult({ name, part }: { name: string; part: ToolPart }) {
 }
 
 export function AssistantToolPart({ part }: { part: ToolPart }) {
+  const { resolvedTheme } = useTheme();
+  const dark = resolvedTheme === "dark";
+  const grid = dark ? "#27272a" : "#f3f4f6";
+  const tickFill = dark ? "#a1a1aa" : "#9ca3af";
+  const tooltipBg = dark ? "#18181b" : "#ffffff";
   const name = toolNameOf(part);
   if (!name) return null;
   if (part.state === "input-streaming" || part.state === "input-available") return null;
   if (name in WRITE_TOOLS) return <WriteResult name={name} part={part} />;
   if (part.state === "output-error") {
     return (
-      <div className="flex items-start gap-2 rounded-2xl border border-red-200 bg-red-50 px-3 py-2 text-sm text-[#1a1a1a]">
+      <div className="flex items-start gap-2 rounded-2xl border border-red-200 bg-red-50 px-3 py-2 text-sm text-[#1a1a1a] dark:text-zinc-100">
         <XCircle size={16} className="mt-0.5 shrink-0 text-red-600" />
         <span>{part.errorText || "Something went wrong."}</span>
       </div>

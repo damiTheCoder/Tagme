@@ -9,11 +9,15 @@ import {
   ExternalLink,
   LayoutDashboard,
   LogOut,
+  Moon,
   Package,
   PanelLeft,
   Settings,
   ShoppingBag,
+  Sun,
 } from "lucide-react";
+import { useTheme } from "next-themes";
+import { useEffect, useState } from "react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -55,6 +59,28 @@ function pageTitle(pathname: string) {
   return "Overview";
 }
 
+function ThemeToggle() {
+  const { resolvedTheme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  const dark = mounted && resolvedTheme === "dark";
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <Button
+          variant="ghost"
+          size="icon"
+          aria-label={dark ? "Switch to light mode" : "Switch to dark mode"}
+          onClick={() => setTheme(dark ? "light" : "dark")}
+        >
+          {dark ? <Sun size={20} /> : <Moon size={20} />}
+        </Button>
+      </TooltipTrigger>
+      <TooltipContent>{dark ? "Light mode" : "Dark mode"}</TooltipContent>
+    </Tooltip>
+  );
+}
+
 export function DashboardShell({
   children,
   businessName,
@@ -76,7 +102,7 @@ export function DashboardShell({
     <div className="flex h-full flex-col">
       <Link href="/dashboard" className="flex items-center gap-2.5 px-2 py-1">
         <Image src="/Tagly.jpeg" alt="Tagly logo" width={36} height={36} className="h-9 w-9 shrink-0 rounded-lg object-contain" />
-        <span className="text-lg font-semibold text-[#0c4a6e]">Tagly</span>
+        <span className="text-lg font-semibold text-[#0c4a6e] dark:text-[#7dd3fc]">Tagly</span>
       </Link>
       <nav className="mt-6 flex flex-col gap-1">
         {NAV.map((item) => {
@@ -88,10 +114,10 @@ export function DashboardShell({
               href={item.href}
               className={cn(
                 "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
-                active ? "bg-[#7dd3fc20] text-[#0c4a6e]" : "text-gray-600 hover:bg-gray-100"
+                active ? "bg-[#7dd3fc20] text-[#0c4a6e] dark:bg-[#7dd3fc15] dark:text-[#7dd3fc]" : "text-gray-600 hover:bg-gray-100 dark:text-zinc-400 dark:hover:bg-zinc-900"
               )}
             >
-              <Icon size={20} className={active ? "text-[#0c4a6e]" : "text-gray-400"} />
+              <Icon size={20} className={active ? "text-[#0c4a6e] dark:text-[#7dd3fc]" : "text-gray-400 dark:text-zinc-500"} />
               <span className="flex-1">{item.label}</span>
               {item.href === "/dashboard/orders" && pendingCount > 0 && (
                 <Badge className="bg-[#006DFF] text-white hover:bg-[#005DD9]">{pendingCount}</Badge>
@@ -101,9 +127,12 @@ export function DashboardShell({
         })}
       </nav>
       <div className="mt-auto pt-6">
+        <div className="px-3 pb-1">
+          <ThemeToggle />
+        </div>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <button className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left hover:bg-gray-100">
+            <button className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-zinc-900 hover:bg-gray-100 dark:text-zinc-100 dark:hover:bg-zinc-900">
               <Avatar className="h-8 w-8">
                 <AvatarFallback>{(userEmail || "U").slice(0, 1).toUpperCase()}</AvatarFallback>
               </Avatar>
@@ -136,15 +165,15 @@ export function DashboardShell({
 
   return (
     <TooltipProvider>
-      <div className="flex min-h-screen bg-white">
+      <div className="flex min-h-screen bg-white dark:bg-zinc-950">
         {/* Desktop sidebar */}
-        <aside className="hidden w-64 shrink-0 bg-white md:block">
+        <aside className="hidden w-64 shrink-0 bg-white dark:bg-zinc-950 md:block">
           <div className="sticky top-0 h-screen overflow-hidden p-4 py-6">{nav}</div>
         </aside>
 
         <div className="flex min-w-0 flex-1 flex-col">
           {/* Top bar */}
-          <header className="sticky top-0 z-30 bg-white">
+          <header className="sticky top-0 z-30 bg-white dark:bg-zinc-950">
             <div className="mx-auto flex max-w-6xl items-center gap-3 px-6 py-4">
               <Sheet>
                 <SheetTrigger asChild>
@@ -161,17 +190,17 @@ export function DashboardShell({
                   </div>
                 </SheetContent>
               </Sheet>
-              <h1 className="hidden text-lg font-semibold text-zinc-900 md:block">{pageTitle(pathname)}</h1>
+              <h1 className="hidden text-lg font-semibold text-zinc-900 dark:text-zinc-100 md:block">{pageTitle(pathname)}</h1>
               <Link href="/dashboard" className="flex items-center gap-2 md:hidden">
                 <Image src="/Tagly.jpeg" alt="Tagly logo" width={28} height={28} className="h-7 w-7 shrink-0 rounded-md object-contain" />
-                <span className="text-lg font-semibold text-[#0c4a6e]">Tagly</span>
+                <span className="text-lg font-semibold text-[#0c4a6e] dark:text-[#7dd3fc]">Tagly</span>
               </Link>
               <div className="ml-auto flex items-center gap-2">
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Link
                       href="/dashboard/orders?filter=pending"
-                      className="relative inline-flex h-10 w-10 items-center justify-center rounded-lg text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+                      className="relative inline-flex h-10 w-10 items-center justify-center rounded-lg text-gray-600 hover:bg-gray-100 hover:text-gray-900 dark:text-zinc-400 dark:hover:bg-zinc-900 dark:hover:text-zinc-100"
                       aria-label="Pending orders"
                     >
                       <Bell size={20} />
@@ -192,7 +221,7 @@ export function DashboardShell({
           </header>
 
           <main className="mx-auto w-full max-w-6xl flex-1 p-6">
-            <div className="space-y-6 py-2">{children}</div>
+            <div className="space-y-6 overflow-x-clip py-2">{children}</div>
           </main>
         </div>
       </div>

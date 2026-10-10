@@ -69,7 +69,7 @@ export function IdentityForm({
           <button
             type="submit"
             disabled={submitting || !name.trim() || !phone.trim()}
-            className="h-10 w-full rounded-md bg-black text-sm font-medium text-white hover:bg-gray-800 disabled:opacity-40"
+            className="h-10 w-full rounded-md bg-black text-sm font-medium text-white hover:bg-gray-800 disabled:opacity-40 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200"
           >
             {submitting ? "Setting up…" : "Start chatting"}
           </button>
