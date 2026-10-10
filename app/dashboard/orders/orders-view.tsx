@@ -96,7 +96,7 @@ export function OrdersView({ orders, filter }: { orders: Order[]; filter: OrderF
       ) : (
         <div className="grid gap-3">
           {visible.map((order) => (
-            <Card key={order.id} className="transition-colors hover:bg-gray-200">
+            <Card key={order.id} className="transition-colors hover:bg-gray-50">
               <CardContent className="p-4">
                 <div className="flex items-start justify-between gap-2">
                   <div>
@@ -115,7 +115,7 @@ export function OrdersView({ orders, filter }: { orders: Order[]; filter: OrderF
                   <span className="text-gray-500">{timeAgo(order.created_at)}</span>
                 </div>
                 <div className="mt-3 flex flex-wrap items-center gap-2">
-                  <Link href={`/dashboard/orders/${order.id}`} className="self-center text-sm text-gray-500 underline hover:text-[#0066ff]">
+                  <Link href={`/dashboard/orders/${order.id}`} className="self-center text-sm text-gray-500 underline hover:text-[#0c4a6e]">
                     View chat
                   </Link>
                   {order.status === "pending" && <OrderActions orderId={order.id} />}

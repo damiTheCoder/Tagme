@@ -17,10 +17,10 @@ const ROW_LABELS = ["", "Mon", "", "Wed", "", "Fri", ""];
 function levelClass(count: number, max: number): string {
   if (count === 0) return "bg-gray-100";
   const t = count / Math.max(1, max);
-  if (t <= 0.25) return "bg-[#0066ff]/25";
-  if (t <= 0.5) return "bg-[#0066ff]/50";
-  if (t <= 0.75) return "bg-[#0066ff]/75";
-  return "bg-[#0066ff]";
+  if (t <= 0.25) return "bg-[#006DFF]/25";
+  if (t <= 0.5) return "bg-[#006DFF]/50";
+  if (t <= 0.75) return "bg-[#006DFF]/75";
+  return "bg-[#006DFF]";
 }
 
 export function OrderCalendar({
@@ -138,10 +138,10 @@ export function OrderCalendar({
       <div className="flex items-center gap-1.5 text-[11px] text-gray-500">
         <span>Less</span>
         <span className="h-3 w-3 rounded-[3px] bg-gray-100" />
-        <span className="h-3 w-3 rounded-[3px] bg-[#0066ff]/25" />
-        <span className="h-3 w-3 rounded-[3px] bg-[#0066ff]/50" />
-        <span className="h-3 w-3 rounded-[3px] bg-[#0066ff]/75" />
-        <span className="h-3 w-3 rounded-[3px] bg-[#0066ff]" />
+        <span className="h-3 w-3 rounded-[3px] bg-[#006DFF]/25" />
+        <span className="h-3 w-3 rounded-[3px] bg-[#006DFF]/50" />
+        <span className="h-3 w-3 rounded-[3px] bg-[#006DFF]/75" />
+        <span className="h-3 w-3 rounded-[3px] bg-[#006DFF]" />
         <span>More</span>
       </div>
     </div>

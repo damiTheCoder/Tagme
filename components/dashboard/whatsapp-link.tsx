@@ -9,7 +9,7 @@ export function WhatsAppLink({ phone, name }: { phone: string | null | undefined
       href={href}
       target="_blank"
       rel="noreferrer"
-      className="inline-flex items-center gap-1.5 text-sm text-[#0066ff] hover:underline"
+      className="inline-flex items-center gap-1.5 text-sm text-[#0c4a6e] hover:underline"
     >
       <MessageCircle size={16} />
       <span>{name ?? phone}</span>

@@ -1,12 +1,13 @@
+import { notFound } from "next/navigation";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { ChatShell } from "./chat-shell";
+import { ChatShell } from "../chat-shell";
 
-export default async function PublicChatPage({
+export default async function ProductChatPage({
   params,
 }: {
-  params: Promise<{ slug: string }>;
+  params: Promise<{ slug: string; publicId: string }>;
 }) {
-  const { slug } = await params;
+  const { slug, publicId } = await params;
 
   const supabase = createAdminClient();
   const { data: business } = await supabase
@@ -15,19 +16,16 @@ export default async function PublicChatPage({
     .eq("slug", slug)
     .maybeSingle();
 
-  if (!business) {
-    return (
-      <main className="flex min-h-screen flex-col items-center justify-center bg-neutral-100 p-8">
-        <div className="w-full max-w-sm rounded-2xl bg-white p-8 text-center shadow">
-          <h1 className="text-xl font-bold">This link is not available</h1>
-          <p className="mt-2 text-sm text-muted-foreground">
-            The shop you&apos;re looking for doesn&apos;t exist or the link is
-            incorrect.
-          </p>
-        </div>
-      </main>
-    );
-  }
+  if (!business) notFound();
+
+  const { data: product } = await supabase
+    .from("products")
+    .select("id, public_id, name, price, image_url, in_stock")
+    .eq("business_id", business.id)
+    .eq("public_id", publicId.toUpperCase())
+    .maybeSingle();
+
+  if (!product) notFound();
 
   const { data: products } = await supabase
     .from("products")
@@ -49,6 +47,7 @@ export default async function PublicChatPage({
         image_url: p.image_url,
         in_stock: p.in_stock,
       }))}
+      initialInterest={{ name: product.name, publicId: product.public_id }}
     />
   );
 }

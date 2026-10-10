@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Percent, Repeat, ShoppingBag, TrendingUp } from "lucide-react";
 import {
   Area,
   AreaChart,
@@ -63,10 +64,10 @@ export function AnalyticsView({
       />
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard title="Total orders" value={String(totalOrders)} />
-        <StatCard title="Total revenue" value={formatMoney(totalRevenue, currency)} />
-        <StatCard title="Repeat customers" value={String(repeatCustomers)} />
-        <StatCard title="Conversion rate" value={`${conversionRate}%`} />
+        <StatCard title="Total orders" value={String(totalOrders)} icon={ShoppingBag} variant="white" />
+        <StatCard title="Total revenue" value={formatMoney(totalRevenue, currency)} icon={TrendingUp} variant="dark" />
+        <StatCard title="Repeat customers" value={String(repeatCustomers)} icon={Repeat} variant="white" />
+        <StatCard title="Conversion rate" value={`${conversionRate}%`} icon={Percent} variant="blue" />
       </div>
 
       <Card>
@@ -79,15 +80,15 @@ export function AnalyticsView({
               <AreaChart data={sliced}>
                 <defs>
                   <linearGradient id="revFill" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#0066ff" stopOpacity={0.35} />
-                    <stop offset="100%" stopColor="#0066ff" stopOpacity={0} />
+                    <stop offset="0%" stopColor="#006DFF" stopOpacity={0.25} />
+                    <stop offset="100%" stopColor="#006DFF" stopOpacity={0} />
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="date" tickFormatter={(d: string) => d.slice(5).replace("-", "/")} tick={{ fontSize: 11 }} interval={Math.max(0, Math.floor(sliced.length / 8))} />
-                <YAxis tick={{ fontSize: 11 }} tickFormatter={(v: number) => formatNumber(Number(v))} />
-                <Tooltip labelFormatter={(d) => String(d)} formatter={(v) => [`${currency} ${v}`, "Revenue"]} />
-                <Area type="monotone" dataKey="revenue" stroke="#0066ff" strokeWidth={2} fill="url(#revFill)" />
+                <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" />
+                <XAxis dataKey="date" tickFormatter={(d: string) => d.slice(5).replace("-", "/")} tick={{ fontSize: 12, fill: "#9ca3af" }} tickLine={false} axisLine={false} interval={Math.max(0, Math.floor(sliced.length / 8))} />
+                <YAxis tick={{ fontSize: 12, fill: "#9ca3af" }} tickLine={false} axisLine={false} tickFormatter={(v: number) => formatNumber(Number(v))} />
+                <Tooltip labelFormatter={(d) => String(d)} formatter={(v) => [`${currency} ${v}`, "Revenue"]} contentStyle={{ backgroundColor: "#ffffff", borderRadius: 12, border: "none", boxShadow: "0 1px 3px rgba(0,0,0,0.04),0 1px 2px rgba(0,0,0,0.02)", fontSize: 12 }} />
+                <Area type="monotone" dataKey="revenue" stroke="#006DFF" strokeWidth={2} fill="url(#revFill)" />
               </AreaChart>
             </ResponsiveContainer>
           </div>
@@ -101,12 +102,11 @@ export function AnalyticsView({
         <CardContent>
           <div className="h-56">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={sliced}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="date" tickFormatter={(d: string) => d.slice(5).replace("-", "/")} tick={{ fontSize: 11 }} interval={Math.max(0, Math.floor(sliced.length / 8))} />
-                <YAxis allowDecimals={false} tick={{ fontSize: 11 }} tickFormatter={(v: number) => formatNumber(Number(v))} />
-                <Tooltip labelFormatter={(d) => String(d)} formatter={(v) => [v, "Orders"]} />
-                <Bar dataKey="orders" fill="#0066ff" radius={[4, 4, 0, 0]} />
+              <BarChart data={sliced} margin={{ top: 8, right: 8, bottom: 8, left: 0 }}>
+                <XAxis dataKey="date" tickFormatter={(d: string) => d.slice(5).replace("-", "/")} tick={{ fontSize: 12, fill: "#9ca3af" }} tickLine={false} axisLine={false} interval={Math.max(0, Math.floor(sliced.length / 8))} />
+                <YAxis allowDecimals={false} tick={{ fontSize: 12, fill: "#9ca3af" }} tickLine={false} axisLine={false} tickFormatter={(v: number) => formatNumber(Number(v))} />
+                <Tooltip labelFormatter={(d) => String(d)} formatter={(v) => [v, "Orders"]} contentStyle={{ backgroundColor: "#ffffff", borderRadius: 12, border: "none", boxShadow: "0 1px 3px rgba(0,0,0,0.04),0 1px 2px rgba(0,0,0,0.02)", fontSize: 12 }} cursor={{ fill: "#f3f4f6" }} />
+                <Bar dataKey="orders" fill="#006DFF" radius={[8, 8, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>

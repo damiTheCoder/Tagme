@@ -92,7 +92,7 @@ export function ImportDialog({ onClose }: { onClose: () => void }) {
               value={text}
               onChange={(e) => setText(e.target.value)}
               placeholder={"Chocolate cake - 15000\nVanilla cake - 12000\nCupcakes (6 pack) - 8000"}
-              className="w-full rounded-lg border-0 bg-gray-50 px-3 py-2 text-sm placeholder:text-gray-400 focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#0066ff]"
+              className="w-full rounded-lg border-0 bg-gray-50 px-3 py-2 text-sm placeholder:text-gray-400 focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#7dd3fc]"
             />
             {parseError && <p className="text-sm text-red-600">{parseError}</p>}
             <Button onClick={onParse} disabled={parsing || !text.trim()}>

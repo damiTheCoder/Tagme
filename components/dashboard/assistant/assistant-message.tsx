@@ -161,7 +161,7 @@ function ReadResult({ name, part }: { name: string; part: ToolPart }) {
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="date" tickFormatter={(d: string) => d.slice(5).replace("-", "/")} tick={{ fontSize: 10 }} interval={Math.max(0, Math.floor(daily.length / 6))} />
                 <Tooltip labelFormatter={(d) => String(d)} />
-                <Line type="monotone" dataKey="revenue" stroke="#0066ff" strokeWidth={2} dot={false} />
+                <Line type="monotone" dataKey="revenue" stroke="#006DFF" strokeWidth={2} dot={false} />
               </LineChart>
             </ResponsiveContainer>
           </div>
@@ -245,7 +245,7 @@ function ReadResult({ name, part }: { name: string; part: ToolPart }) {
               <XAxis type="number" tick={{ fontSize: 10 }} />
               <YAxis type="category" dataKey="name" width={90} tick={{ fontSize: 10 }} />
               <Tooltip />
-              <Bar dataKey="count" fill="#0066ff" radius={[0, 4, 4, 0]} />
+              <Bar dataKey="count" fill="#006DFF" radius={[0, 8, 8, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>
@@ -345,7 +345,7 @@ function ReadResult({ name, part }: { name: string; part: ToolPart }) {
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="date" tickFormatter={(d: string) => d.slice(5).replace("-", "/")} tick={{ fontSize: 10 }} interval={Math.max(0, Math.floor(daily.length / 6))} />
               <Tooltip labelFormatter={(d) => String(d)} />
-              <Line type="monotone" dataKey="revenue" stroke="#0066ff" strokeWidth={2} dot={false} />
+              <Line type="monotone" dataKey="revenue" stroke="#006DFF" strokeWidth={2} dot={false} />
             </LineChart>
           </ResponsiveContainer>
         </div>

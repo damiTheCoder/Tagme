@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { getCurrentBusiness } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
+import { assignPublicId } from "@/app/dashboard/inventory/actions";
 
 export type Product = {
   id: string;
@@ -14,6 +15,7 @@ export type Product = {
   stock_count: number | null;
   low_stock_threshold: number | null;
   details: string | null;
+  public_id?: string | null;
   created_at: string;
 };
 
@@ -137,8 +139,9 @@ export async function createProduct(input: {
       .single();
 
     if (error) throw new Error(error.message);
+    const public_id = await assignPublicId(business.id, data.id);
     revalidatePath("/dashboard/products");
-    return { ok: true, product: data };
+    return { ok: true, product: { ...data, public_id } };
   } catch (e) {
     return { ok: false, error: e instanceof Error ? e.message : "Failed to create product." };
   }
@@ -255,6 +258,22 @@ export async function createProductsBulk(
     const supabase = await createClient();
     const { error } = await supabase.from("products").insert(rows);
     if (error) throw new Error(error.message);
+
+    // Sequential public IDs in import order for rows missing one.
+    const { data: missing } = await supabase
+      .from("products")
+      .select("id")
+      .eq("business_id", business.id)
+      .is("public_id", null)
+      .order("created_at", { ascending: true });
+    for (const row of missing ?? []) {
+      try {
+        await assignPublicId(business.id, row.id);
+      } catch {
+        // Best-effort: a collision retry failure shouldn't fail the import.
+        break;
+      }
+    }
 
     revalidatePath("/dashboard/products");
     return { ok: true, count: rows.length };

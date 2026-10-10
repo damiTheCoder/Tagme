@@ -3,6 +3,10 @@
 import { revalidatePath } from "next/cache";
 import { getCurrentBusiness } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
+import {
+  uploadProductImage,
+  deleteProductImage,
+} from "@/lib/storage/upload-product-image";
 
 export type InventoryProduct = {
   id: string;
@@ -14,6 +18,8 @@ export type InventoryProduct = {
   stock_count: number | null;
   low_stock_threshold: number | null;
   details: string | null;
+  public_id: string | null;
+  image_url: string | null;
   created_at: string;
 };
 
@@ -26,7 +32,7 @@ export type InventoryMutateResult =
   | { ok: false; error: string };
 
 const SELECT =
-  "id, business_id, name, description, price, in_stock, stock_count, low_stock_threshold, details, created_at";
+  "id, business_id, name, description, price, in_stock, stock_count, low_stock_threshold, details, public_id, image_url, created_at";
 
 function cleanName(name: unknown): string {
   if (typeof name !== "string") throw new Error("Product name is required.");
@@ -88,6 +94,48 @@ function cleanThreshold(value: unknown): number {
 
 function touch(paths: string[]) {
   for (const p of paths) revalidatePath(p);
+}
+
+/**
+ * Assign the next sequential public ID (PRD-001, PRD-002, …) for a
+ * business. Gaps from deleted products are left alone. Retries on
+ * unique-violation races.
+ */
+export async function assignPublicId(
+  businessId: string,
+  productId: string
+): Promise<string> {
+  const supabase = await createClient();
+  for (let attempt = 0; attempt < 3; attempt++) {
+    const { data, error } = await supabase
+      .from("products")
+      .select("public_id")
+      .eq("business_id", businessId)
+      .not("public_id", "is", null);
+    if (error) throw new Error(error.message);
+    let max = 0;
+    for (const row of data ?? []) {
+      const m = /^PRD-(\d+)$/.exec(row.public_id ?? "");
+      if (m) max = Math.max(max, parseInt(m[1], 10));
+    }
+    const next = `PRD-${String(max + 1).padStart(3, "0")}`;
+    const { error: updateError } = await supabase
+      .from("products")
+      .update({ public_id: next })
+      .eq("id", productId)
+      .eq("business_id", businessId)
+      .is("public_id", null);
+    if (!updateError) return next;
+    // Unique violation (concurrent create) or already assigned: retry,
+    // unless the row already has an ID.
+    const { data: current } = await supabase
+      .from("products")
+      .select("public_id")
+      .eq("id", productId)
+      .maybeSingle();
+    if (current?.public_id) return current.public_id as string;
+  }
+  throw new Error("Could not assign a product ID. Please try again.");
 }
 
 export async function listInventory(): Promise<InventoryResult> {
@@ -153,8 +201,9 @@ export async function createProduct(input: {
       .single();
 
     if (error) throw new Error(error.message);
+    const public_id = await assignPublicId(business.id, data.id);
     touch(["/dashboard/inventory", "/dashboard"]);
-    return { ok: true, product: data as InventoryProduct };
+    return { ok: true, product: { ...(data as InventoryProduct), public_id } };
   } catch (e) {
     return {
       ok: false,
@@ -308,12 +357,47 @@ export async function deleteProduct(
       .eq("business_id", business.id);
 
     if (error) throw new Error(error.message);
+    // Best-effort image cleanup; never blocks the delete.
+    await deleteProductImage(business.id, id);
     touch(["/dashboard/inventory", "/dashboard"]);
     return { ok: true };
   } catch (e) {
     return {
       ok: false,
       error: e instanceof Error ? e.message : "Failed to delete product.",
+    };
+  }
+}
+
+export async function setProductImage(
+  id: string,
+  formData: FormData
+): Promise<InventoryMutateResult> {
+  try {
+    const business = await getCurrentBusiness();
+    if (!business) throw new Error("No business found.");
+    if (!id) throw new Error("Product id is required.");
+    const file = formData.get("image");
+    if (!(file instanceof File) || file.size === 0)
+      throw new Error("No image selected.");
+
+    const image_url = await uploadProductImage(business.id, id, file);
+    const supabase = await createClient();
+    const { data, error } = await supabase
+      .from("products")
+      .update({ image_url })
+      .eq("id", id)
+      .eq("business_id", business.id)
+      .select(SELECT)
+      .single();
+
+    if (error) throw new Error(error.message);
+    touch(["/dashboard/inventory", "/dashboard"]);
+    return { ok: true, product: data as InventoryProduct };
+  } catch (e) {
+    return {
+      ok: false,
+      error: e instanceof Error ? e.message : "Failed to upload image.",
     };
   }
 }

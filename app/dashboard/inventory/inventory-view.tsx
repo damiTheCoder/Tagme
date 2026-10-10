@@ -1,16 +1,22 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import {
+  AlertTriangle,
   Boxes,
+  Check,
   ClipboardPaste,
+  Link2,
   Loader2,
   Minus,
   MoreHorizontal,
+  Package,
   Pencil,
   Plus,
   Trash2,
+  XCircle,
 } from "lucide-react";
 import { toast } from "sonner";
 import { formatCurrency } from "@/lib/format";
@@ -66,11 +72,14 @@ function stockState(p: InventoryProduct): "out" | "low" | "ok" | "unknown" {
 export function InventoryView({
   products,
   currency,
+  shareBase,
 }: {
   products: InventoryProduct[];
   currency: string;
+  shareBase: string;
 }) {
   const router = useRouter();
+  const [copiedId, setCopiedId] = useState<string | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editing, setEditing] = useState<InventoryProduct | null>(null);
   const [importOpen, setImportOpen] = useState(false);
@@ -124,6 +133,27 @@ export function InventoryView({
     router.refresh();
   }
 
+  async function onCopyLink(product: InventoryProduct) {
+    if (!product.public_id) {
+      toast.error("This product has no public ID yet.");
+      return;
+    }
+    const link = `${shareBase}/${product.public_id}`;
+    try {
+      await navigator.clipboard.writeText(link);
+    } catch {
+      const el = document.createElement("textarea");
+      el.value = link;
+      document.body.appendChild(el);
+      el.select();
+      document.execCommand("copy");
+      document.body.removeChild(el);
+    }
+    setCopiedId(product.id);
+    setTimeout(() => setCopiedId((v) => (v === product.id ? null : v)), 2000);
+    toast.success("Product link copied");
+  }
+
   async function onDelete(id: string) {
     setDeleting(true);
     const result = await deleteProduct(id);
@@ -155,18 +185,22 @@ export function InventoryView({
       />
 
       <div className="grid gap-4 sm:grid-cols-3">
-        <StatCard title="Total products" value={String(counts.total)} />
+        <StatCard title="Total products" value={String(counts.total)} icon={Boxes} variant="white" />
         <StatCard
           title="Low stock"
           value={String(counts.low)}
           trend={counts.low > 0 ? "Needs restocking" : "All healthy"}
           trendTone={counts.low > 0 ? "down" : "neutral"}
+          icon={AlertTriangle}
+          variant="blue"
         />
         <StatCard
           title="Out of stock"
           value={String(counts.out)}
           trend={counts.out > 0 ? "Selling opportunity lost" : "Nothing sold out"}
           trendTone={counts.out > 0 ? "down" : "neutral"}
+          icon={XCircle}
+          variant="white"
         />
       </div>
 
@@ -234,12 +268,32 @@ export function InventoryView({
                         }
                       >
                         <TableCell>
-                          <p className="font-medium">{p.name}</p>
-                          {p.description && (
-                            <p className="max-w-40 truncate text-xs text-gray-500">
-                              {p.description}
-                            </p>
-                          )}
+                          <div className="flex items-center gap-2.5">
+                            {p.image_url ? (
+                              <Image
+                                src={p.image_url}
+                                alt={p.name}
+                                width={80}
+                                height={80}
+                                className="h-10 w-10 shrink-0 rounded-lg object-cover"
+                              />
+                            ) : (
+                              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-gray-100 text-gray-400">
+                                <Package size={18} />
+                              </span>
+                            )}
+                            <div className="min-w-0">
+                              <p className="font-medium">{p.name}</p>
+                              {p.public_id && (
+                                <p className="font-mono text-xs text-gray-500">ID: {p.public_id}</p>
+                              )}
+                              {p.description && (
+                                <p className="max-w-40 truncate text-xs text-gray-500">
+                                  {p.description}
+                                </p>
+                              )}
+                            </div>
+                          </div>
                         </TableCell>
                         <TableCell>{formatCurrency(p.price, currency)}</TableCell>
                         <TableCell>
@@ -295,6 +349,14 @@ export function InventoryView({
                             </Button>
                             <Button size="sm" variant="outline" onClick={() => openEdit(p)}>
                               <Pencil size={16} /> Edit
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => onCopyLink(p)}
+                              aria-label={`Copy public link for ${p.name}`}
+                            >
+                              {copiedId === p.id ? <Check size={16} /> : <Link2 size={16} />}
                             </Button>
                             <DropdownMenu>
                               <DropdownMenuTrigger asChild>

@@ -23,6 +23,45 @@ function extractText(message: UIMessage | undefined): string {
     .trim();
 }
 
+const MAX_PARTS_BYTES = 20 * 1024;
+
+type PersistedToolPart = {
+  toolName: string;
+  output: unknown;
+};
+
+/**
+ * Keep only what the client needs to re-render rich content
+ * (currently: show_product_catalog product lists). Caps total size
+ * to avoid DB bloat; drops parts entirely when over budget.
+ */
+function sanitizeAssistantParts(toolResults: unknown): PersistedToolPart[] {
+  if (!Array.isArray(toolResults)) return [];
+  const kept: PersistedToolPart[] = [];
+  for (const r of toolResults) {
+    const row = r as {
+      toolName?: unknown;
+      output?: unknown;
+      input?: unknown;
+    };
+    if (typeof row?.toolName !== "string") continue;
+    let output: unknown = row.output;
+    // Trim large product lists; keep the rest as-is.
+    const out = (output ?? {}) as { products?: unknown };
+    if (Array.isArray(out.products) && out.products.length > 10) {
+      output = { ...out, products: out.products.slice(0, 10) };
+    }
+    kept.push({ toolName: row.toolName, output });
+  }
+  if (kept.length === 0) return [];
+  try {
+    if (JSON.stringify(kept).length > MAX_PARTS_BYTES) return [];
+  } catch {
+    return [];
+  }
+  return kept;
+}
+
 export async function POST(req: Request) {
   let body: unknown;
   try {
@@ -200,13 +239,38 @@ export async function POST(req: Request) {
       customer: { name: customerName, phone: customerPhone },
     }),
     stopWhen: stepCountIs(5),
-    onFinish: async ({ text }) => {
-      if (text && text.trim()) {
-        await supabase.from("messages").insert({
-          conversation_id: resolvedConversationId,
-          role: "assistant",
-          content: text.slice(0, 8000),
-        });
+    onFinish: async ({ text, toolResults }) => {
+      const content = (text ?? "").trim().slice(0, 8000);
+      const parts = sanitizeAssistantParts(toolResults);
+      if (!content && parts.length === 0) {
+        await supabase
+          .from("conversations")
+          .update({ last_message_at: new Date().toISOString() })
+          .eq("id", resolvedConversationId);
+        return;
+      }
+      const row: Record<string, unknown> = {
+        conversation_id: resolvedConversationId,
+        role: "assistant",
+        // A space keeps NOT NULL + client truthiness filters happy when
+        // the turn was tool calls with no prose; the bubble itself is
+        // hidden client-side (see chat-messages).
+        content: content || " ",
+      };
+      if (parts.length > 0) row.parts = parts;
+      const { error } = await supabase.from("messages").insert(row);
+      if (error) {
+        if (parts.length > 0 && /parts/i.test(error.message)) {
+          // Pre-migration fallback: parts column doesn't exist yet.
+          // Persist text-only so history keeps working.
+          const { parts: _dropped, ...textOnly } = row;
+          const retry = await supabase.from("messages").insert(textOnly);
+          if (retry.error) {
+            console.error("[chat] assistant persist failed:", retry.error.message);
+          }
+        } else {
+          console.error("[chat] assistant persist failed:", error.message);
+        }
       }
       await supabase
         .from("conversations")

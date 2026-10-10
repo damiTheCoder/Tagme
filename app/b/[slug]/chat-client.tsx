@@ -6,28 +6,49 @@ import { DefaultChatTransport } from "ai";
 import { ChatMessages } from "./chat-messages";
 import { ChatInput } from "./chat-input";
 import { IdentityForm } from "./identity-form";
+import type { CarouselProduct } from "./product-carousel";
+import { playReceiveSound, playSendSound } from "@/lib/sound/chat-sounds";
 
 type HistoryRow = {
   id: string;
   role: string;
   content: string;
   created_at: string;
+  parts?: Array<{ toolName: string; output: unknown }> | null;
 };
 
 function toUIMessage(m: HistoryRow): UIMessage {
+  const parts: UIMessage["parts"] = [{ type: "text" as const, text: m.content }];
+  if (Array.isArray(m.parts)) {
+    m.parts.forEach((p, i) => {
+      if (!p || typeof p.toolName !== "string") return;
+      parts.push({
+        type: "dynamic-tool",
+        toolName: p.toolName,
+        toolCallId: `${m.id}-tool-${i}`,
+        state: "output-available",
+        input: {},
+        output: p.output ?? null,
+      } as UIMessage["parts"][number]);
+    });
+  }
   return {
     id: m.id,
     role: m.role === "user" ? "user" : m.role === "system" ? "system" : "assistant",
-    parts: [{ type: "text" as const, text: m.content }],
+    parts,
   };
 }
 
 export function ChatClient({
   businessSlug,
   businessName,
+  initialProducts = [],
+  initialInterest = null,
 }: {
   businessSlug: string;
   businessName: string;
+  initialProducts?: CarouselProduct[];
+  initialInterest?: { name: string; publicId: string } | null;
 }) {
   const storageKey = `tagly-chat:${businessSlug}`;
   const tokenRef = useRef<string | null>(null);
@@ -35,6 +56,11 @@ export function ChatClient({
   const seenIdsRef = useRef<Set<string>>(new Set());
   const [phase, setPhase] = useState<"loading" | "identify" | "chat">("loading");
   const [sendError, setSendError] = useState<string | null>(null);
+  // Deep-link entries auto-send product interest once chat starts.
+  const interestSentRef = useRef(false);
+  // Sound triggers: only chime for replies to messages sent this session.
+  const sentRef = useRef(false);
+  const lastAssistantIdRef = useRef<string | null>(null);
 
   const transport = useMemo(
     () =>
@@ -65,6 +91,31 @@ export function ChatClient({
     transport,
     onError: (e) => setSendError(e.message),
   });
+
+  function handleSelectProduct(p: CarouselProduct) {
+    setSendError(null);
+    sentRef.current = true;
+    playSendSound();
+    sendMessage({ text: `I'm interested in ${p.name} (ID: ${p.public_id ?? p.id})` });
+  }
+
+  // Deep-link entries (…/b/slug/PRD-001) start the chat focused on one product.
+  useEffect(() => {
+    if (
+      phase !== "chat" ||
+      !initialInterest ||
+      interestSentRef.current ||
+      status === "streaming" ||
+      status === "submitted"
+    ) {
+      return;
+    }
+    interestSentRef.current = true;
+    setSendError(null);
+    sendMessage({
+      text: `I'm interested in ${initialInterest.name} (ID: ${initialInterest.publicId})`,
+    });
+  }, [phase, initialInterest, status, sendMessage]);
 
   const loadHistory = useCallback(
     async (stored: string): Promise<boolean> => {
@@ -175,8 +226,29 @@ export function ChatClient({
 
   const busy = status === "streaming" || status === "submitted";
 
+  // Chime when a reply to this session's messages finishes arriving.
+  useEffect(() => {
+    if (!sentRef.current || busy) return;
+    const last = [...messages]
+      .reverse()
+      .find(
+        (m) =>
+          m.role === "assistant" &&
+          Array.isArray(m.parts) &&
+          m.parts.some(
+            (p) => p.type === "text" && (p as { text: string }).text.trim() !== ""
+          )
+      );
+    if (last && last.id !== lastAssistantIdRef.current) {
+      lastAssistantIdRef.current = last.id;
+      playReceiveSound();
+    }
+  }, [messages, busy]);
+
   function handleSend(text: string) {
     setSendError(null);
+    sentRef.current = true;
+    playSendSound();
     sendMessage({ text });
   }
 
@@ -215,7 +287,12 @@ export function ChatClient({
 
   return (
     <>
-      <ChatMessages messages={messages} busy={busy} />
+      <ChatMessages
+        messages={messages}
+        busy={busy}
+        onSelectProduct={handleSelectProduct}
+        initialProducts={initialProducts}
+      />
       {(sendError || error) && (
         <p className="px-4 pt-2 text-xs text-red-600">
           {sendError ?? error?.message ?? "Something went wrong. Try again."}

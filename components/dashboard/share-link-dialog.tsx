@@ -129,7 +129,7 @@ export function ShareLinkDialog({ url, triggerLabel = "Share your link", shortLa
             <div className="flex flex-col items-center gap-3 rounded-xl bg-gray-100 p-6">
               <div className="relative">
                 <QRCode id="share-qr-svg" value={url} size={180} level="H" />
-                <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-lg bg-white p-1.5 shadow-sm">
+                <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-lg border border-gray-200 bg-white p-1.5">
                   <Image
                     src="/Tagly.jpeg"
                     alt="Tagly logo"

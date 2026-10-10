@@ -42,31 +42,47 @@ export async function GET(req: Request) {
     );
   }
 
-  let query = supabase
-    .from("messages")
-    .select("id, role, content, created_at")
-    .eq("conversation_id", conversationId)
-    .neq("role", "system")
-    .order("created_at", { ascending: true })
-    .limit(200);
+  async function loadMessages(select: string) {
+    let query = supabase
+      .from("messages")
+      .select(select)
+      .eq("conversation_id", conversationId)
+      .neq("role", "system")
+      .order("created_at", { ascending: true })
+      .limit(200);
 
-  // Delta mode for realtime polling: only messages after `since`.
-  // System messages are always included so owner notifications arrive
-  // even if their timestamp equals the cursor.
-  if (since) {
-    const d = new Date(since);
-    if (!isNaN(d.getTime())) {
-      query = supabase
-        .from("messages")
-        .select("id, role, content, created_at")
-        .eq("conversation_id", conversationId)
-        .or(`created_at.gt.${d.toISOString()},role.eq.system`)
-        .order("created_at", { ascending: true })
-        .limit(200);
+    // Delta mode for realtime polling: only messages after `since`.
+    // System messages are always included so owner notifications arrive
+    // even if their timestamp equals the cursor.
+    if (since) {
+      const d = new Date(since);
+      if (!isNaN(d.getTime())) {
+        query = supabase
+          .from("messages")
+          .select(select)
+          .eq("conversation_id", conversationId)
+          .or(`created_at.gt.${d.toISOString()},role.eq.system`)
+          .order("created_at", { ascending: true })
+          .limit(200);
+      }
     }
+
+    return query;
   }
 
-  const { data: messages } = await query;
+  let { data: messages, error } = await loadMessages("id, role, content, created_at, parts");
+  if (error && /parts/i.test(error.message)) {
+    // Pre-migration fallback: parts column doesn't exist yet.
+    const retry = await loadMessages("id, role, content, created_at");
+    messages = retry.data;
+    error = retry.error;
+  }
+  if (error) {
+    return NextResponse.json(
+      { ok: false, error: "Could not load history." },
+      { status: 500 }
+    );
+  }
 
   return NextResponse.json({ ok: true, messages: messages ?? [] });
 }

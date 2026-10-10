@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { ArrowRight, Link2, ShoppingBag } from "lucide-react";
+import { ArrowRight, Banknote, Bell, Link2, Percent, ShoppingBag, Users } from "lucide-react";
 import { getCurrentBusiness, getCurrentUser } from "@/lib/auth";
 import { timeAgo } from "@/lib/utils";
 import { formatCurrency, formatNumber } from "@/lib/format";
@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { StatCard } from "@/components/dashboard/stat-card";
+import { Gauge } from "@/components/dashboard/gauge";
 import { PageHeader } from "@/components/dashboard/page-header";
 import { EmptyState } from "@/components/dashboard/empty-state";
 import { OrderStatusBadge } from "@/components/dashboard/order-status-badge";
@@ -98,32 +99,32 @@ export default async function DashboardPage() {
         title={`Welcome, ${business.name}`}
         description="Here's what's happening in your shop today."
         action={
-          <Link href={`/b/${business.slug}`} target="_blank" className="text-sm text-[#0066ff] hover:underline inline-flex items-center gap-1">
+          <Link href={`/b/${business.slug}`} target="_blank" className="text-sm text-[#0c4a6e] hover:underline inline-flex items-center gap-1">
             <Link2 size={16} /> View public page
           </Link>
         }
       />
 
-      <div className="grid gap-0 sm:grid-cols-2 sm:gap-3 md:gap-4 lg:grid-cols-4 [&>*:last-child]:border-b-0">
-        <StatCard title="Pending orders" value={String(pendingOrders.length)} trend={pendingOrders.length > 0 ? "Needs your review" : "All caught up"} className="rounded-none border-b border-zinc-200 bg-white bg-none shadow-none sm:rounded-2xl sm:border-0 md:bg-gradient-to-br md:from-gray-100 md:to-gray-200" contentClassName="px-0 py-3 md:p-5" />
-        <StatCard title="Orders this week" value={String(thisWeek.length)} trend={weekTrend} trendTone={thisWeek.length >= lastWeek.length ? "up" : "down"} className="rounded-none border-b border-zinc-200 bg-white bg-none shadow-none sm:rounded-2xl sm:border-0 md:bg-gradient-to-br md:from-gray-100 md:to-gray-200" contentClassName="px-0 py-3 md:p-5" />
-        <StatCard title="Revenue this month" value={formatMoney(Math.round(revenueMonth * 100) / 100, business.currency)} className="rounded-none border-b border-zinc-200 bg-white bg-none shadow-none sm:rounded-2xl sm:border-0 md:bg-gradient-to-br md:from-gray-100 md:to-gray-200" contentClassName="px-0 py-3 md:p-5" />
-        <StatCard title="Total customers" value={String(customers.size)} className="rounded-none border-b border-zinc-200 bg-white bg-none shadow-none sm:rounded-2xl sm:border-0 md:bg-gradient-to-br md:from-gray-100 md:to-gray-200" contentClassName="px-0 py-3 md:p-5" />
+      <div className="grid gap-3 sm:grid-cols-2 md:gap-4 lg:grid-cols-4">
+        <StatCard title="Pending orders" value={String(pendingOrders.length)} trend={pendingOrders.length > 0 ? "Needs your review" : "All caught up"} variant="blue" icon={Bell} />
+        <StatCard title="Orders this week" value={String(thisWeek.length)} trend={weekTrend} trendTone={thisWeek.length >= lastWeek.length ? "up" : "down"} variant="white" icon={ShoppingBag} />
+        <StatCard title="Revenue this month" value={formatMoney(Math.round(revenueMonth * 100) / 100, business.currency)} variant="dark" icon={Banknote} />
+        <StatCard title="Total customers" value={String(customers.size)} variant="white" icon={Users} />
       </div>
 
       <OverviewCharts daily={last14} />
 
-      <div className="grid gap-3 md:gap-4 lg:grid-cols-2">
-        <Card className="border-0 bg-white bg-none shadow-none md:border-0 md:bg-gradient-to-br md:from-gray-100 md:to-gray-200">
-          <CardHeader className="flex flex-row items-center justify-between px-0 pt-0 md:p-6">
+      <div className="grid gap-3 md:gap-4 lg:grid-cols-3">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle>Recent orders</CardTitle>
-            <Link href="/dashboard/orders" className="inline-flex items-center gap-1 text-sm text-[#0066ff] hover:underline">
+            <Link href="/dashboard/orders" className="inline-flex items-center gap-1 text-sm text-[#0c4a6e] hover:underline">
               View all <ArrowRight size={16} />
             </Link>
           </CardHeader>
-          <CardContent className="space-y-3 px-0 pb-0 md:p-6 md:pt-0">
+          <CardContent className="space-y-3">
             {recent.map((o) => (
-              <div key={o.id} className="flex items-center gap-3 rounded-xl bg-white p-3">
+              <div key={o.id} className="flex items-center gap-3 rounded-2xl bg-gray-50 p-3">
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-sm font-medium">{o.customer_name || "Anonymous customer"}</p>
                   <p className="truncate text-xs text-gray-500">{itemsSummary(o)}</p>
@@ -141,11 +142,11 @@ export default async function DashboardPage() {
           </CardContent>
         </Card>
 
-        <Card className="border-0 bg-white bg-none shadow-none md:border-0 md:bg-gradient-to-br md:from-gray-100 md:to-gray-200">
-          <CardHeader className="px-0 pt-0 md:p-6">
+        <Card>
+          <CardHeader>
             <CardTitle>Top products</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-3 px-0 pb-0 md:p-6 md:pt-0">
+          <CardContent className="space-y-3">
             {top.length === 0 ? (
               <p className="text-sm text-gray-500">No product data yet.</p>
             ) : (
@@ -160,6 +161,14 @@ export default async function DashboardPage() {
               ))
             )}
           </CardContent>
+        </Card>
+
+        <Card>
+          <Gauge
+            value={stats.conversionRate}
+            label="Chat conversion rate"
+            icon={Percent}
+          />
         </Card>
       </div>
     </div>

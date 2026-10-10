@@ -190,8 +190,39 @@ export function createTools(opts: {
       },
     }),
 
-    escalate_to_owner: tool({
+    show_product_catalog: tool({
       description:
+        "Show products as visual cards in the chat. Call when the customer wants to browse, or after greeting a new customer so they can see what's available.",
+      inputSchema: z.object({
+        query: z.string().optional().describe("Filter by product name"),
+        limit: z.number().int().min(1).max(20).optional().describe("Max products, default 10"),
+      }),
+      execute: async ({ query, limit }) => {
+        const clean = (query ?? "").replace(/[%_]/g, "").trim().slice(0, 100);
+        let q = admin()
+          .from("products")
+          .select("id, public_id, name, price, image_url, in_stock")
+          .eq("business_id", business.id)
+          .order("created_at", { ascending: true })
+          .limit(limit ?? 10);
+        if (clean) q = q.ilike("name", `%${clean}%`);
+        const { data, error } = await q;
+        if (error) throw new Error(error.message);
+        return {
+          products: (data ?? []).map((p) => ({
+            id: p.id,
+            public_id: p.public_id,
+            name: p.name,
+            price: p.price,
+            currency: business.currency,
+            image_url: p.image_url,
+            in_stock: p.in_stock,
+          })),
+        };
+      },
+    }),
+
+    escalate_to_owner: tool({      description:
         "Hand the conversation to the business owner when unsure or the customer needs human help.",
       inputSchema: z.object({
         reason: z.string().describe("Why the owner is needed"),

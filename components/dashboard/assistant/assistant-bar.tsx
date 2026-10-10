@@ -9,6 +9,7 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { ArrowUp } from "lucide-react";
 import type { Business } from "@/lib/auth";
+import { playReceiveSound, playSendSound } from "@/lib/sound/chat-sounds";
 import {
   AssistantToolPart,
   WRITE_TOOL_NAMES,
@@ -57,6 +58,8 @@ export function AssistantBar({ business }: { business: Business }) {
   const [input, setInput] = useState("");
   const [sendError, setSendError] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const sentRef = useRef(false);
+  const lastAssistantIdRef = useRef<string | null>(null);
 
   const transport = useMemo(
     () => new DefaultChatTransport({ api: "/api/dashboard/assistant" }),
@@ -101,8 +104,20 @@ export function AssistantBar({ business }: { business: Business }) {
     if (!text || busy) return;
     setSendError(null);
     setInput("");
+    sentRef.current = true;
+    playSendSound();
     sendMessage({ text });
   }
+
+  // Chime when a reply to this session's messages finishes arriving.
+  useEffect(() => {
+    if (!sentRef.current || busy) return;
+    const last = [...messages].reverse().find((m) => m.role === "assistant");
+    if (last && last.id !== lastAssistantIdRef.current) {
+      lastAssistantIdRef.current = last.id;
+      playReceiveSound();
+    }
+  }, [messages, busy]);
 
   function onChipClick(suggestion: string) {
     setInput(suggestion);
@@ -136,7 +151,7 @@ export function AssistantBar({ business }: { business: Business }) {
             {messages.map((m) => (
               <div key={m.id} className="flex flex-col gap-2">
                 {m.role === "user" ? (
-                  <div className="animate-in slide-in-from-bottom-2 self-end rounded-2xl bg-[#0066ff] px-3 py-2 text-sm text-white duration-300">
+                  <div className="animate-in slide-in-from-bottom-2 self-end rounded-2xl bg-[#006DFF] px-3 py-2 text-sm text-white duration-300">
                     {messageText(m)}
                   </div>
                 ) : (
@@ -174,7 +189,7 @@ export function AssistantBar({ business }: { business: Business }) {
         </div>
       )}
 
-      <div className="rounded-2xl bg-gray-100 px-2 py-1 shadow-[0_2px_8px_rgba(0,0,0,0.04)] transition-all duration-300">
+      <div className="rounded-2xl border border-gray-200 bg-gray-100 px-2 py-1 transition-all duration-300">
         <form onSubmit={onSubmit} className="flex min-h-[44px] items-center gap-2">
           <Image
             src="/AI.png"
@@ -196,7 +211,7 @@ export function AssistantBar({ business }: { business: Business }) {
             type="submit"
             disabled={!canSubmit}
             aria-label="Send assistant message"
-            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#0066ff] transition-colors hover:bg-[#0052cc] disabled:cursor-not-allowed disabled:bg-gray-200"
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#006DFF] transition-colors hover:bg-[#005DD9] disabled:cursor-not-allowed disabled:bg-gray-200"
           >
             <ArrowUp
               size={18}
