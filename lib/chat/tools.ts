@@ -82,18 +82,28 @@ export function createTools(opts: {
         customer_phone: z.string().optional(),
       }),
       execute: async ({ items, customer_name, customer_phone }) => {
-        const supabase = admin();
-        const ids = [...new Set(items.map((i) => i.product_id))];
-        const { data: products, error: lookupError } = await supabase
-          .from("products")
-          .select("id, name, price, stock_count")
-          .eq("business_id", business.id)
-          .in("id", ids);
-        if (lookupError) throw new Error(lookupError.message);
-        const byId = new Map((products ?? []).map((p) => [p.id, p]));
-        for (const id of ids) {
-          if (!byId.has(id)) throw new Error("A product was not found.");
-        }
+        console.log("[create_order] START", {
+          business_id: business.id,
+          customer_id: customerId,
+          conversation_id: conversationId,
+          items_count: items?.length,
+        });
+        try {
+          const supabase = admin();
+          const ids = [...new Set(items.map((i) => i.product_id))];
+          const { data: products, error: lookupError } = await supabase
+            .from("products")
+            .select("id, name, price, stock_count")
+            .eq("business_id", business.id)
+            .in("id", ids);
+          if (lookupError) throw new Error(lookupError.message);
+          const byId = new Map((products ?? []).map((p) => [p.id, p]));
+          for (const id of ids) {
+            if (!byId.has(id)) {
+              console.log("[create_order] product not found", { product_id: id });
+              throw new Error("A product was not found.");
+            }
+          }
 
         // Stock gate: reject before creating anything when the total
         // ordered quantity exceeds available stock. stock_count null =
@@ -107,6 +117,11 @@ export function createTools(opts: {
           const p = byId.get(productId)!;
           const stock = p.stock_count as number | null;
           if (stock != null && stock < qty) {
+            console.log("[create_order] insufficient stock", {
+              product_name: p.name,
+              stock_count: stock,
+              requested: qty,
+            });
             throw new Error(
               `Insufficient stock for ${p.name}. Only ${stock} available.`
             );
@@ -130,6 +145,12 @@ export function createTools(opts: {
               100
           ) / 100;
 
+        console.log("[create_order] inserting", {
+          total,
+          currency: business.currency,
+          status: "pending",
+          customer_id_resolved: customerId,
+        });
         const { data: order, error: orderError } = await supabase
           .from("orders")
           .insert({
@@ -144,6 +165,7 @@ export function createTools(opts: {
           .select("id")
           .single();
         if (orderError) throw new Error(orderError.message);
+        console.log("[create_order] SUCCESS", { order_id: order.id });
 
         // Decrement stock now that the order exists. Validated above so
         // this cannot go negative; capped defensively. Skips untracked
@@ -187,6 +209,20 @@ export function createTools(opts: {
         }).catch(() => {});
 
         return { order_id: order.id, total, currency: business.currency };
+        } catch (err) {
+          const e = err as Error & { code?: string; details?: unknown; hint?: string };
+          console.error("[create_order] FAILED", {
+            message: e.message,
+            code: e.code,
+            details: e.details,
+            hint: e.hint,
+            business_id: business.id,
+            customer_id: customerId,
+            conversation_id: conversationId,
+            items_input: JSON.stringify(items).slice(0, 500),
+          });
+          throw err;
+        }
       },
     }),
 

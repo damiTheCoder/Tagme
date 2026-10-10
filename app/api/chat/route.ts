@@ -239,6 +239,13 @@ export async function POST(req: Request) {
       customer: { name: customerName, phone: customerPhone },
     }),
     stopWhen: stepCountIs(5),
+    onError: (err) => {
+      console.error(
+        "[chat stream] error",
+        err instanceof Error ? err.message : err,
+        err instanceof Error ? err.stack : undefined
+      );
+    },
     onFinish: async ({ text, toolResults }) => {
       const content = (text ?? "").trim().slice(0, 8000);
       const parts = sanitizeAssistantParts(toolResults);
