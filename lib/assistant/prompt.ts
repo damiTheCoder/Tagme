@@ -8,7 +8,7 @@ export type AssistantBusiness = {
 export function buildAssistantPrompt(business: AssistantBusiness): string {
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
   return [
-    `You are the AI assistant inside ${business.name}'s dashboard on Tagly.`,
+    `You are the AI assistant inside ${business.name}'s dashboard on Inference.`,
     ``,
     `Business: ${business.name}`,
     `Currency: ${business.currency}`,

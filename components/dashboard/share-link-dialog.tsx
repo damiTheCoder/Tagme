@@ -37,7 +37,7 @@ export function ShareLinkDialog({ url, triggerLabel = "Share your link" }: { url
 
   // Downscale the logo so the downloaded SVG stays lean.
   async function logoDataUrl(): Promise<string> {
-    const res = await fetch("/Tagly.jpeg");
+    const res = await fetch("/Inference.jpeg");
     const blob = await res.blob();
     const bitmap = await createImageBitmap(blob);
     const S = 128;
@@ -88,7 +88,7 @@ export function ShareLinkDialog({ url, triggerLabel = "Share your link" }: { url
     const blob = new Blob([composed], { type: "image/svg+xml" });
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
-    a.download = "tagly-qr.svg";
+    a.download = "inference-qr.svg";
     a.click();
     URL.revokeObjectURL(a.href);
   }
@@ -96,7 +96,7 @@ export function ShareLinkDialog({ url, triggerLabel = "Share your link" }: { url
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button>
+        <Button className="h-9 w-9 p-0 sm:h-auto sm:w-auto sm:px-4 sm:py-2">
           <Share2 size={16} />
           <span className="hidden sm:inline">{triggerLabel}</span>
         </Button>
@@ -130,8 +130,8 @@ export function ShareLinkDialog({ url, triggerLabel = "Share your link" }: { url
                 <QRCode id="share-qr-svg" value={url} size={180} level="H" />
                 <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-lg border border-gray-200 bg-white p-1.5">
                   <Image
-                    src="/Tagly.jpeg"
-                    alt="Tagly logo"
+                    src="/Inference.jpeg"
+                    alt="Inference logo"
                     width={80}
                     height={80}
                     className="h-10 w-10 rounded-md object-cover"

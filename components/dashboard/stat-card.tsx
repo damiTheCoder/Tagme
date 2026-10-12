@@ -3,17 +3,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { IconBadge } from "./icon-badge";
 
-const PALETTE = ["#1e40af", "#2563eb", "#006DFF", "#38bdf8", "#7dd3fc", "#bae6fd"];
-const WIDTHS = [18, 18, 14, 12, 10, 6];
-
-function rotatedPalette(shift: number): { color: string; width: number }[] {
-  const n = ((shift % PALETTE.length) + PALETTE.length) % PALETTE.length;
-  return PALETTE.map((_, i) => ({
-    color: PALETTE[(i + n) % PALETTE.length],
-    width: WIDTHS[i],
-  }));
-}
-
 const VARIANTS = {
   white: {
     label: "text-sm font-medium text-gray-500 dark:text-zinc-400",
@@ -35,7 +24,6 @@ export function StatCard({
   trend,
   trendTone = "neutral",
   variant = "white",
-  accentShift = 0,
   icon,
   iconVariant,
   className,
@@ -46,7 +34,6 @@ export function StatCard({
   trend?: string;
   trendTone?: "up" | "down" | "neutral";
   variant?: keyof typeof VARIANTS;
-  accentShift?: number;
   icon?: LucideIcon;
   iconVariant?: "blue" | "purple" | "purple-solid" | "dark" | "light";
   className?: string;
@@ -66,19 +53,6 @@ export function StatCard({
           <p className={v.label}>{title}</p>
         </div>
         <p className={v.value}>{value}</p>
-        <div
-          aria-hidden
-          className="mb-2 mt-3 flex h-6 w-full items-stretch gap-[3px] rounded-full bg-transparent p-[3px] dark:bg-[#1f2937]"
-        >
-          {rotatedPalette(accentShift).map((s, i) => (
-            <span
-              key={i}
-              className="shrink-0 rounded-[5px]"
-              style={{ width: `${s.width}%`, backgroundColor: s.color }}
-            />
-          ))}
-          <span className="ml-[5px] min-w-0 flex-1 rounded-[5px] bg-[#111827]" />
-        </div>
         {trend && (
           <p
             className={cn(

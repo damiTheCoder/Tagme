@@ -4,7 +4,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Tagly",
+  title: "Inference",
   description: "AI chat ordering system for micro businesses",
 };
 

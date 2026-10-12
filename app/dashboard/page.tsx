@@ -123,16 +123,16 @@ export default async function DashboardPage() {
       />
 
       <div className="grid gap-3 sm:grid-cols-2 md:gap-4 lg:grid-cols-4">
-        <StatCard title="Pending orders" value={String(pendingOrders.length)} trend={pendingOrders.length > 0 ? "Needs your review" : "All caught up"} variant="blue" accentShift={0} icon={Bell} />
-        <StatCard title="Orders this week" value={String(thisWeek.length)} trend={weekTrend} trendTone={thisWeek.length >= lastWeek.length ? "up" : "down"} variant="white" accentShift={1} icon={ShoppingBag} />
-        <StatCard title="Revenue this month" value={formatMoney(Math.round(revenueMonth * 100) / 100, business.currency)} variant="dark" accentShift={2} icon={Banknote} />
-        <StatCard title="Total customers" value={String(customers.size)} variant="white" accentShift={3} icon={Users} />
+        <StatCard title="Pending orders" value={String(pendingOrders.length)} trend={pendingOrders.length > 0 ? "Needs your review" : "All caught up"} variant="blue" icon={Bell} />
+        <StatCard title="Orders this week" value={String(thisWeek.length)} trend={weekTrend} trendTone={thisWeek.length >= lastWeek.length ? "up" : "down"} variant="white" icon={ShoppingBag} />
+        <StatCard title="Revenue this month" value={formatMoney(Math.round(revenueMonth * 100) / 100, business.currency)} variant="dark" icon={Banknote} />
+        <StatCard title="Total customers" value={String(customers.size)} variant="white" icon={Users} />
       </div>
 
       <OverviewCharts daily={last14} />
 
       <div className="grid min-w-0 grid-cols-1 gap-3 md:gap-4 lg:grid-cols-3">
-        <Card>
+        <Card className="border border-gray-200 dark:border-zinc-800">
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle>Recent orders</CardTitle>
             <Link href="/dashboard/orders" className="inline-flex items-center gap-1 text-sm text-[#0c4a6e] dark:text-[#7dd3fc] hover:underline">
@@ -141,7 +141,7 @@ export default async function DashboardPage() {
           </CardHeader>
           <CardContent className="space-y-3">
             {recent.map((o) => (
-              <div key={o.id} className="flex min-w-0 items-center gap-3 rounded-2xl bg-gray-50 dark:bg-zinc-800 p-3">
+              <div key={o.id} className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-2 rounded-2xl bg-gray-50 dark:bg-zinc-800 p-3">
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-sm font-medium">{o.customer_name || "Anonymous customer"}</p>
                   <p className="truncate text-xs text-gray-500">{itemsSummary(o)}</p>
@@ -161,7 +161,7 @@ export default async function DashboardPage() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="border border-gray-200 dark:border-zinc-800">
           <CardHeader>
             <CardTitle>Top products</CardTitle>
           </CardHeader>
@@ -182,7 +182,7 @@ export default async function DashboardPage() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="border border-gray-200 dark:border-zinc-800">
           <Gauge
             value={stats.conversionRate}
             label="Chat conversion rate"

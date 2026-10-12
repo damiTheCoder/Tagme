@@ -1,5 +1,5 @@
 -- ============================================================
--- tagly inventory migration (Step 10)
+-- inference inventory migration (Step 10)
 -- Run this in the Supabase SQL editor AFTER schema.sql.
 -- Adds stock tracking + AI details to products.
 -- ============================================================

@@ -101,8 +101,8 @@ export function DashboardShell({
   const nav = (
     <div className="flex h-full flex-col">
       <Link href="/dashboard" className="flex items-center gap-2.5 px-2 py-1">
-        <Image src="/Tagly.jpeg" alt="Tagly logo" width={36} height={36} className="h-9 w-9 shrink-0 rounded-lg object-contain" />
-        <span className="text-lg font-semibold text-[#0c4a6e] dark:text-[#7dd3fc]">Tagly</span>
+        <Image src="/Inference.jpeg" alt="Inference logo" width={36} height={36} className="h-9 w-9 shrink-0 rounded-lg object-contain" />
+        <span className="text-lg font-semibold text-[#0c4a6e] dark:text-[#7dd3fc]">Inference</span>
       </Link>
       <nav className="mt-6 flex flex-col gap-1">
         {NAV.map((item) => {
@@ -192,8 +192,8 @@ export function DashboardShell({
               </Sheet>
               <h1 className="hidden text-lg font-semibold text-zinc-900 dark:text-zinc-100 md:block">{pageTitle(pathname)}</h1>
               <Link href="/dashboard" className="flex items-center gap-2 md:hidden">
-                <Image src="/Tagly.jpeg" alt="Tagly logo" width={28} height={28} className="h-7 w-7 shrink-0 rounded-md object-contain" />
-                <span className="text-lg font-semibold text-[#0c4a6e] dark:text-[#7dd3fc]">Tagly</span>
+                <Image src="/Inference.jpeg" alt="Inference logo" width={28} height={28} className="h-7 w-7 shrink-0 rounded-md object-contain" />
+                <span className="text-lg font-semibold text-[#0c4a6e] dark:text-[#7dd3fc]">Inference</span>
               </Link>
               <div className="ml-auto flex items-center gap-2">
                 <Tooltip>
@@ -224,7 +224,7 @@ export function DashboardShell({
                         alt=""
                         width={64}
                         height={64}
-                        className="h-8 w-8 rounded-full object-cover ring-2 ring-black"
+                        className="h-6 w-6 rounded-full object-cover ring-2 ring-black"
                       />
                     ))}
                   </div>

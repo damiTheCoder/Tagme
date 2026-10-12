@@ -22,7 +22,7 @@ export function OverviewCharts({ daily }: { daily: DayPoint[] }) {
   const tickFill = dark ? "#a1a1aa" : "#9ca3af";
   const tooltipBg = dark ? "#18181b" : "#ffffff";
   return (
-    <Card>
+    <Card className="border border-gray-200 dark:border-zinc-800">
       <CardHeader className="px-4 pt-4 md:p-6">
         <CardTitle>Orders — last 14 days</CardTitle>
       </CardHeader>

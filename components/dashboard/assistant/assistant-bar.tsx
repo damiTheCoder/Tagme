@@ -189,11 +189,11 @@ export function AssistantBar({ business }: { business: Business }) {
         </div>
       )}
 
-      <div className="rounded-2xl border border-gray-200 dark:border-zinc-800 bg-gray-100 dark:bg-zinc-800 px-2 py-1 transition-all duration-300">
+      <div className="rounded-2xl bg-gray-100 dark:bg-zinc-800 px-2 py-1 transition-all duration-300">
         <form onSubmit={onSubmit} className="flex min-h-[44px] items-center gap-2">
           <Image
-            src="/AI.png"
-            alt="Tagly assistant"
+            src="/Inference.jpeg"
+            alt="Inference assistant"
             width={44}
             height={44}
             className="ml-3 h-[22px] w-[22px] shrink-0 rounded-md"
@@ -211,7 +211,7 @@ export function AssistantBar({ business }: { business: Business }) {
             type="submit"
             disabled={!canSubmit}
             aria-label="Send assistant message"
-            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#006DFF] transition-colors hover:bg-[#005DD9] disabled:cursor-not-allowed disabled:bg-gray-200"
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-r from-[#f2a7e6] via-[#2b7fff] to-[#9ded33] transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:bg-none disabled:bg-gray-200"
           >
             <ArrowUp
               size={18}

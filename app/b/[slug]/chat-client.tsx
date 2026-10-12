@@ -50,7 +50,7 @@ export function ChatClient({
   initialProducts?: CarouselProduct[];
   initialInterest?: { name: string; publicId: string } | null;
 }) {
-  const storageKey = `tagly-chat:${businessSlug}`;
+  const storageKey = `inference-chat:${businessSlug}`;
   const tokenRef = useRef<string | null>(null);
   const lastTsRef = useRef<string | null>(null);
   const seenIdsRef = useRef<Set<string>>(new Set());

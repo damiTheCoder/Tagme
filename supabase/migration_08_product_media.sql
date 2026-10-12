@@ -1,5 +1,5 @@
 -- ============================================================
--- tagly product media migration (Step 13)
+-- inference product media migration (Step 13)
 -- Run this in the Supabase SQL editor AFTER migration_07.
 -- Adds public IDs + image URLs, backfills IDs, opens the
 -- product-images storage bucket.
