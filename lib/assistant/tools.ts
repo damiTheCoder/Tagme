@@ -317,6 +317,80 @@ export function createAssistantTools(opts: { business: AssistantBusiness }) {
       },
     }),
 
+    get_credit_score: tool({
+      description:
+        "The vendor's credit score, tier, limit, and per-signal breakdown. Use when they ask about their score or financing.",
+      inputSchema: z.object({}),
+      execute: async () => {
+        const { getCreditScore } = await import("@/app/dashboard/credit-score/actions");
+        const result = await getCreditScore();
+        if (!result.ok) throw new Error(result.error);
+        const s = result.summary;
+        return {
+          score: s.score,
+          tier: s.tier,
+          limit: s.limit,
+          currency: business.currency,
+          signals: s.signals.map((g) => ({
+            name: g.name,
+            value: g.value,
+            points: g.points,
+            maxPoints: g.maxPoints,
+          })),
+        };
+      },
+    }),
+
+    analyze_loan_repayment: tool({
+      description:
+        "Estimate whether the vendor can repay a loan from sales. Compares weekly repayment against average weekly approved revenue.",
+      inputSchema: z.object({
+        amount: z.number().positive().describe("Loan amount in the business currency"),
+        weeks: z
+          .number()
+          .int()
+          .min(1)
+          .max(104)
+          .optional()
+          .describe("Repayment period in weeks, default 12"),
+      }),
+      execute: async ({ amount, weeks }) => {
+        const termWeeks = weeks ?? 12;
+        const supabase = await createClient();
+        const since = new Date(Date.now() - 90 * 24 * 3600 * 1000).toISOString();
+        const { data, error } = await supabase
+          .from("orders")
+          .select("total, created_at")
+          .eq("business_id", business.id)
+          .in("status", ["approved", "fulfilled"])
+          .gte("created_at", since)
+          .order("created_at", { ascending: false })
+          .limit(2000);
+        if (error) throw new Error(error.message);
+        const total90 = (data ?? []).reduce((s, o) => s + (Number(o.total) || 0), 0);
+        const weeklyRevenue = Math.round((total90 / 13) * 100) / 100;
+        const weeklyPayment = Math.round((amount / termWeeks) * 100) / 100;
+        const coverage =
+          weeklyPayment === 0 ? 0 : Math.round((weeklyRevenue / weeklyPayment) * 100) / 100;
+        const verdict =
+          coverage >= 2
+            ? "comfortable"
+            : coverage >= 1
+              ? "tight but possible"
+              : "risky";
+        return {
+          amount,
+          weeks: termWeeks,
+          currency: business.currency,
+          avg_weekly_revenue: weeklyRevenue,
+          weekly_payment: weeklyPayment,
+          coverage_ratio: coverage,
+          verdict,
+          note: "Estimate from the last 90 days of approved sales. Not a lending decision.",
+        };
+      },
+    }),
+
     get_conversion_stats: tool({
       description: "What share of customer conversations turned into orders.",
       inputSchema: z.object({

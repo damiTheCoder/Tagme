@@ -1,5 +1,6 @@
 import { tool } from "ai";
 import { z } from "zod";
+import { revalidatePath } from "next/cache";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { sendOrderNotification } from "@/lib/email/notify";
 
@@ -252,8 +253,7 @@ export function createTools(opts: {
         // Fire-and-forget owner email — never blocks the AI response.
         // sendOrderNotification swallows its own errors; the trailing
         // .catch covers any unexpected rejection at the boundary.
-        sendOrderNotification({
-          businessId: business.id,
+        sendOrderNotification({          businessId: business.id,
           orderId: order.id,
           items: orderItems.map((i) => ({
             name: i.name,
@@ -265,6 +265,12 @@ export function createTools(opts: {
           customerName: customer.name ?? customer_name?.trim() ?? null,
           customerPhone: customer.phone ?? customer_phone?.trim() ?? null,
         }).catch(() => {});
+
+        try {
+          revalidatePath("/dashboard/credit-score");
+        } catch {
+          // Revalidation is best-effort here; the order already exists.
+        }
 
         return { order_id: order.id, total, currency: business.currency };
         } catch (err) {

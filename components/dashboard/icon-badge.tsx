@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils";
 
 const VARIANTS = {
   blue: "bg-[#7dd3fc20] text-[#0c4a6e] dark:text-[#7dd3fc]",
-  purple: "bg-[#a78bfa20] text-[#7c3aed]",
+  green: "bg-[#22c55e20] text-[#15803d]",
   "purple-solid": "bg-[#7c3aed] text-white",
   dark: "bg-white/10 text-white",
   light: "bg-gray-100 text-[#1a1a1a]",

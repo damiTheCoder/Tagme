@@ -17,6 +17,7 @@ import { ShareLinkDialog } from "@/components/dashboard/share-link-dialog";
 import { LazyAssistantBar as AssistantBar } from "@/components/dashboard/assistant/assistant-bar-lazy";
 import { listOrders, type Order } from "./orders/actions";
 import { getAnalytics } from "./analytics/analytics";
+import { getNetCashFlow } from "./transactions/actions";
 import { OverviewCharts } from "./overview-charts";
 
 function formatMoney(total: number, currency: string) {
@@ -38,10 +39,11 @@ export default async function DashboardPage() {
   const business = await getCurrentBusiness();
   if (!business) redirect("/onboarding");
 
-  const [allResult, pendingResult, stats] = await Promise.all([
+  const [allResult, pendingResult, stats, cashFlow] = await Promise.all([
     listOrders("all"),
     listOrders("pending"),
     getAnalytics(),
+    getNetCashFlow("30d"),
   ]);
   if (!allResult.ok) throw new Error(allResult.error);
   const orders = allResult.orders;
@@ -101,6 +103,9 @@ export default async function DashboardPage() {
   const recent = orders.slice(0, 5);
   const top = stats.topProducts.slice(0, 5);
   const topMax = Math.max(1, ...top.map((t) => t.count));
+  // Cash flow needs the transactions ledger; pre-migration this is null
+  // and the cards below simply don't render (page keeps working).
+  const cash = cashFlow.ok ? cashFlow.data : null;
 
   return (
     <div className="space-y-4 md:space-y-6">
@@ -131,7 +136,7 @@ export default async function DashboardPage() {
 
       <OverviewCharts daily={last14} />
 
-      <div className="grid min-w-0 grid-cols-1 gap-3 md:gap-4 lg:grid-cols-3">
+      <div className="grid min-w-0 grid-cols-1 gap-3 md:gap-4 lg:grid-cols-2">
         <Card className="border border-gray-200 dark:border-zinc-800">
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle>Recent orders</CardTitle>
@@ -189,6 +194,38 @@ export default async function DashboardPage() {
             icon={Percent}
           />
         </Card>
+
+        {cash && (
+          <Card className="border border-gray-200 dark:border-zinc-800">
+            <CardHeader>
+              <CardTitle>Income vs expenses (30d)</CardTitle>
+            </CardHeader>
+            <CardContent className="flex flex-col gap-3">
+              {[
+                { label: "Income", value: cash.income, bar: "bg-[#34d399]" },
+                { label: "Expenses", value: cash.expenses, bar: "bg-[#f87171]" },
+              ].map((r) => {
+                const max = Math.max(cash.income, cash.expenses, 1);
+                return (
+                  <div key={r.label}>
+                    <div className="flex justify-between text-sm">
+                      <span className="font-medium">{r.label}</span>
+                      <span className="text-gray-500">
+                        {formatMoney(r.value, cash.currency)}
+                      </span>
+                    </div>
+                    <div className="mt-1.5 h-2.5 w-full overflow-hidden rounded-full bg-gray-100 dark:bg-zinc-800">
+                      <div
+                        className={`h-full rounded-full ${r.bar}`}
+                        style={{ width: `${Math.round((r.value / max) * 100)}%` }}
+                      />
+                    </div>
+                  </div>
+                );
+              })}
+            </CardContent>
+          </Card>
+        )}
       </div>
     </div>
   );

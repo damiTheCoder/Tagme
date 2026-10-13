@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
+  Award,
   BarChart3,
   Bell,
   ExternalLink,
@@ -12,9 +13,11 @@ import {
   Moon,
   Package,
   PanelLeft,
+  Receipt,
   Settings,
   ShoppingBag,
   Sun,
+  WalletMinimal,
 } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
@@ -39,7 +42,10 @@ const NAV = [
   { href: "/dashboard", label: "Overview", icon: LayoutDashboard, exact: true },
   { href: "/dashboard/orders", label: "Orders", icon: ShoppingBag, exact: false },
   { href: "/dashboard/inventory", label: "Inventory", icon: Package, exact: false },
+  { href: "/dashboard/revenue", label: "Revenue", icon: WalletMinimal, exact: true },
+  { href: "/dashboard/expenses", label: "Expenses", icon: Receipt, exact: true },
   { href: "/dashboard/analytics", label: "Analytics", icon: BarChart3, exact: false },
+  { href: "/dashboard/credit-score", label: "Credit Score", icon: Award, exact: true },
   { href: "/dashboard/settings", label: "Settings", icon: Settings, exact: false },
 ];
 
@@ -47,7 +53,10 @@ const TITLES: { prefix: string; title: string }[] = [
   { prefix: "/dashboard/orders/", title: "Order detail" },
   { prefix: "/dashboard/orders", title: "Orders" },
   { prefix: "/dashboard/inventory", title: "Inventory" },
+  { prefix: "/dashboard/revenue", title: "Revenue" },
+  { prefix: "/dashboard/expenses", title: "Expenses" },
   { prefix: "/dashboard/analytics", title: "Analytics" },
+  { prefix: "/dashboard/credit-score", title: "Credit Score" },
   { prefix: "/dashboard/settings", title: "Settings" },
   { prefix: "/dashboard", title: "Overview" },
 ];
@@ -88,6 +97,7 @@ export function DashboardShell({
   userEmail,
   publicUrl,
   pendingCount,
+  impersonating = false,
 }: {
   children: React.ReactNode;
   businessName: string;
@@ -95,6 +105,7 @@ export function DashboardShell({
   userEmail: string;
   publicUrl: string;
   pendingCount: number;
+  impersonating?: boolean;
 }) {
   const pathname = usePathname();
 
@@ -172,6 +183,14 @@ export function DashboardShell({
         </aside>
 
         <div className="flex min-w-0 flex-1 flex-col">
+          {impersonating && (
+            <div className="z-40 bg-red-600 px-6 py-2 text-center text-sm font-medium text-white">
+              Viewing as {businessName} —{" "}
+              <Link href="/admin/exit" className="underline">
+                Exit
+              </Link>
+            </div>
+          )}
           {/* Top bar */}
           <header className="sticky top-0 z-30 bg-white dark:bg-zinc-950">
             <div className="mx-auto flex max-w-6xl items-center gap-3 px-6 py-4">

@@ -19,14 +19,14 @@ export function Gauge({
     <div className="relative flex flex-col items-center px-6 pb-2 pt-8">
       {icon && (
         <span className="absolute left-6 top-6">
-          <IconBadge icon={icon} variant="purple" />
+          <IconBadge icon={icon} variant="green" />
         </span>
       )}
       <svg viewBox="0 0 120 68" className="w-full max-w-[220px]" role="img" aria-label={`${label}: ${pct} percent`}>
         <defs>
           <linearGradient id="gauge-fill" x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0%" stopColor="#a78bfa" />
-            <stop offset="100%" stopColor="#006DFF" />
+            <stop offset="0%" stopColor="#34d399" />
+            <stop offset="100%" stopColor="#a3e635" />
           </linearGradient>
         </defs>
         <path

@@ -105,13 +105,24 @@
 @layer utilities {
   .bg-brand {
     background-color: var(--brand);
-  }
-  .bg-brand-hover:hover {
+  }  .bg-brand-hover:hover {
     background-color: var(--brand-hover);
   }
 
   .gauge-track {
     stroke: #e5e7eb;
+  }
+  /* Hide scrollbar but keep scrolling (desktop chat containers) */
+  @media (min-width: 768px) {
+    .no-scrollbar-desktop {
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+    .no-scrollbar-desktop::-webkit-scrollbar {
+      width: 0;
+      height: 0;
+      display: none;
+    }
   }
   .dark .gauge-track {
     stroke: #27272a;

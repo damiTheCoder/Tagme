@@ -53,11 +53,18 @@ function TypingDots() {
   );
 }
 
-export function AssistantBar({ business }: { business: Business }) {
+export function AssistantBar({
+  business,
+  showSuggestions = true,
+}: {
+  business: Business;
+  showSuggestions?: boolean;
+}) {
   const router = useRouter();
   const [input, setInput] = useState("");
   const [sendError, setSendError] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
   const sentRef = useRef(false);
   const lastAssistantIdRef = useRef<string | null>(null);
 
@@ -119,6 +126,12 @@ export function AssistantBar({ business }: { business: Business }) {
     }
   }, [messages, busy]);
 
+  // Keep the latest reply in view inside the scroll container.
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (el) el.scrollTop = el.scrollHeight;
+  }, [messages, busy]);
+
   function onChipClick(suggestion: string) {
     setInput(suggestion);
     inputRef.current?.focus();
@@ -146,7 +159,10 @@ export function AssistantBar({ business }: { business: Business }) {
       )}
 
       {expanded && (
-        <div className="max-h-[400px] overflow-y-auto pb-3 md:max-h-none md:overflow-visible">
+        <div
+          ref={scrollRef}
+          className="max-h-[400px] overflow-y-auto pb-3 no-scrollbar-desktop md:max-h-[420px]"
+        >
           <div className="flex flex-col gap-2">
             {messages.map((m) => (
               <div key={m.id} className="flex flex-col gap-2">
@@ -222,8 +238,9 @@ export function AssistantBar({ business }: { business: Business }) {
         </form>
       </div>
 
-      <div className="mt-3 flex flex-wrap gap-2">
-        {SUGGESTIONS.map((s) => (
+      {showSuggestions && (
+        <div className="mt-3 flex flex-wrap gap-2">
+          {SUGGESTIONS.map((s) => (
           <button
             key={s}
             type="button"
@@ -234,6 +251,7 @@ export function AssistantBar({ business }: { business: Business }) {
           </button>
         ))}
       </div>
+      )}
     </div>
   );
 }

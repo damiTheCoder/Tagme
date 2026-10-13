@@ -27,18 +27,26 @@ export async function GET(req: Request) {
   const supabase = createAdminClient();
   const { data: conv } = await supabase
     .from("conversations")
-    .select("id, businesses!inner(slug)")
+    .select("id, businesses!inner(slug, suspended_at, deleted_at)")
     .eq("id", conversationId)
     .maybeSingle();
 
-  const convBusiness = conv?.businesses as { slug: string } | { slug: string }[] | null;
-  const convSlug = Array.isArray(convBusiness)
-    ? convBusiness[0]?.slug
-    : convBusiness?.slug;
+  const convBusiness = conv?.businesses as
+    | { slug: string; suspended_at: string | null; deleted_at: string | null }
+    | { slug: string; suspended_at: string | null; deleted_at: string | null }[]
+    | null;
+  const convBiz = Array.isArray(convBusiness) ? convBusiness[0] : convBusiness;
+  const convSlug = convBiz?.slug;
   if (!conv || convSlug !== slug.trim()) {
     return NextResponse.json(
       { ok: false, error: "Conversation not found." },
       { status: 404 }
+    );
+  }
+  if (convBiz?.suspended_at || convBiz?.deleted_at) {
+    return NextResponse.json(
+      { ok: false, error: "This business is temporarily unavailable." },
+      { status: 403 }
     );
   }
 

@@ -71,7 +71,7 @@ export async function POST(req: Request) {
   const supabase = createAdminClient();
   const { data: business } = await supabase
     .from("businesses")
-    .select("id, name, slug")
+    .select("id, name, slug, suspended_at, deleted_at")
     .eq("slug", slug.trim())
     .maybeSingle();
 
@@ -79,6 +79,13 @@ export async function POST(req: Request) {
     return NextResponse.json(
       { ok: false, error: "Business not found." },
       { status: 404 }
+    );
+  }
+
+  if (business.suspended_at || business.deleted_at) {
+    return NextResponse.json(
+      { ok: false, error: "This business is temporarily unavailable." },
+      { status: 403 }
     );
   }
 

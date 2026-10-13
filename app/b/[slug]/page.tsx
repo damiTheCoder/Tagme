@@ -11,7 +11,7 @@ export default async function PublicChatPage({
   const supabase = createAdminClient();
   const { data: business } = await supabase
     .from("businesses")
-    .select("id, name, slug, currency")
+    .select("id, name, slug, currency, suspended_at, deleted_at")
     .eq("slug", slug)
     .maybeSingle();
 
@@ -23,6 +23,19 @@ export default async function PublicChatPage({
           <p className="mt-2 text-sm text-muted-foreground">
             The shop you&apos;re looking for doesn&apos;t exist or the link is
             incorrect.
+          </p>
+        </div>
+      </main>
+    );
+  }
+
+  if (business.suspended_at || business.deleted_at) {
+    return (
+      <main className="flex min-h-screen flex-col items-center justify-center bg-neutral-100 p-8 dark:bg-zinc-950">
+        <div className="w-full max-w-sm rounded-2xl bg-white p-8 text-center shadow dark:border dark:border-zinc-800 dark:bg-zinc-900 dark:shadow-none">
+          <h1 className="text-xl font-bold">Temporarily unavailable</h1>
+          <p className="mt-2 text-sm text-muted-foreground">
+            This business is temporarily unavailable. Please check back later.
           </p>
         </div>
       </main>
