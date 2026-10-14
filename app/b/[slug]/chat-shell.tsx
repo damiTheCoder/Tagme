@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { motion, useAnimation, useDragControls, type PanInfo } from "framer-motion";
 import { ChatClient } from "./chat-client";
@@ -11,18 +12,21 @@ export function ChatShell({
   businessSlug,
   initialProducts = [],
   initialInterest = null,
+  coverImageUrl = null,
 }: {
   businessName: string;
   businessSlug: string;
   initialProducts?: CarouselProduct[];
   initialInterest?: { name: string; publicId: string } | null;
+  /** Vendor graphics. Falls back to /ads.jpeg until the vendor uploads one. */
+  coverImageUrl?: string | null;
 }) {
-  const initial = (businessName.trim().charAt(0) || "?").toUpperCase();
   const router = useRouter();
   const controls = useAnimation();
   const dragControls = useDragControls();
   const [dismissing, setDismissing] = useState(false);
   const [time, setTime] = useState("");
+  const [inChat, setInChat] = useState(false);
 
   useEffect(() => {
     const update = () =>
@@ -56,13 +60,10 @@ export function ChatShell({
 
   return (
     <main
-      className="fixed inset-0 z-50 bg-white bg-cover bg-center px-3 pt-4 dark:bg-zinc-950 sm:flex sm:items-end sm:justify-center sm:px-4 sm:pb-0 sm:pt-4"
-      style={{ backgroundImage: "url('/page%20modal.jpeg')" }}
+      className="fixed inset-0 z-50 bg-white bg-cover bg-center px-3 pt-4 dark:bg-zinc-950 sm:flex sm:items-end sm:justify-center sm:p-0 sm:pt-6"
+      style={{ backgroundImage: "url('/page%20modal.jpeg?v=2')" }}
     >
-      <div
-        aria-hidden
-        className="absolute inset-0 hidden bg-neutral-950/60 backdrop-blur-[2px] sm:block"
-      />
+      {/* Phone frame */}
       <motion.div
         initial={{ y: "100%", opacity: 0 }}
         animate={controls}
@@ -72,8 +73,29 @@ export function ChatShell({
         dragConstraints={{ top: 0 }}
         dragElastic={0.15}
         onDragEnd={onDragEnd}
-        className="modal-gradient-border-mobile relative flex h-full w-full flex-col overflow-hidden rounded-t-3xl bg-white dark:bg-zinc-950 sm:h-[90dvh] sm:max-w-[420px] sm:rounded-[2.5rem] sm:border-[6px] sm:border-black sm:shadow-2xl"
+        className="relative h-full w-full sm:h-[calc(100dvh-1.5rem)] sm:w-auto"
       >
+        {/* Side buttons: silent switch + volume (left), power (right) */}
+        <span
+          aria-hidden
+          className="absolute -left-[4px] top-24 h-8 w-[5px] rounded-l-md bg-gradient-to-b from-[#3a3a3c] to-black"
+        />
+        <span
+          aria-hidden
+          className="absolute -left-[5px] top-40 h-14 w-[6px] rounded-l-md bg-gradient-to-b from-[#3a3a3c] to-black"
+        />
+        <span
+          aria-hidden
+          className="absolute -left-[5px] top-[14.5rem] h-14 w-[6px] rounded-l-md bg-gradient-to-b from-[#3a3a3c] to-black"
+        />
+        <span
+          aria-hidden
+          className="absolute -right-[5px] top-48 h-20 w-[6px] rounded-r-md bg-gradient-to-b from-[#3a3a3c] to-black"
+        />
+        {/* Titanium frame */}
+        <div className="flex h-full flex-col rounded-t-[3rem] bg-gradient-to-b from-[#3a3a3c] via-black to-[#3a3a3c] px-[8px] pt-[8px] shadow-2xl sm:mx-auto sm:w-[420px] sm:rounded-t-[3.5rem] sm:rounded-b-none">
+          {/* Screen */}
+          <div className="flex h-full min-h-0 flex-col overflow-hidden rounded-t-[calc(3rem-8px)] bg-white dark:bg-zinc-950 sm:rounded-t-[calc(3.5rem-8px)] sm:rounded-b-none">
         {/* iPhone-style status bar */}
         <div className="flex shrink-0 items-center px-6 pt-6">
           <span className="w-16 text-sm font-semibold text-black dark:text-white">{time || "9:41"}</span>
@@ -119,24 +141,34 @@ export function ChatShell({
         >
           <span className="h-1 w-10 rounded-full bg-neutral-300" aria-hidden />
         </div>
-        <header className="flex items-center gap-3 px-4 py-3">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-neutral-900 text-lg font-bold text-white dark:bg-zinc-100 dark:text-zinc-900">
-            {initial}
+        {!inChat && (
+          <div className="relative mx-4 mt-1 h-56 shrink-0 overflow-hidden rounded-3xl">
+            <Image
+              src={coverImageUrl ?? "/ads.jpeg"}
+              alt={`${businessName} cover`}
+              fill
+              priority
+              className="object-cover"
+            />
+            <div
+              aria-hidden
+              className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-b from-transparent to-white dark:to-zinc-950"
+            />
+            <div
+              aria-hidden
+              className="absolute inset-x-0 bottom-0 h-12 backdrop-blur-[2px] [mask-image:linear-gradient(to_top,black,transparent)]"
+            />
           </div>
-          <div className="min-w-0">
-            <p className="truncate font-semibold">{businessName}</p>
-            <p className="text-xs text-muted-foreground">
-              <span className="mr-1 inline-block h-2 w-2 rounded-full bg-green-500" />
-              Online — replies instantly
-            </p>
-          </div>
-        </header>
+        )}
         <ChatClient
           businessSlug={businessSlug}
           businessName={businessName}
           initialProducts={initialProducts}
           initialInterest={initialInterest}
+          onPhaseChange={(phase) => setInChat(phase === "chat")}
         />
+          </div>
+        </div>
       </motion.div>
     </main>
   );

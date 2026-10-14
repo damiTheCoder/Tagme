@@ -44,17 +44,23 @@ export function ChatClient({
   businessName,
   initialProducts = [],
   initialInterest = null,
+  onPhaseChange,
 }: {
   businessSlug: string;
   businessName: string;
   initialProducts?: CarouselProduct[];
   initialInterest?: { name: string; publicId: string } | null;
+  onPhaseChange?: (phase: "loading" | "identify" | "chat") => void;
 }) {
   const storageKey = `inference-chat:${businessSlug}`;
   const tokenRef = useRef<string | null>(null);
   const lastTsRef = useRef<string | null>(null);
   const seenIdsRef = useRef<Set<string>>(new Set());
   const [phase, setPhase] = useState<"loading" | "identify" | "chat">("loading");
+
+  useEffect(() => {
+    onPhaseChange?.(phase);
+  }, [phase, onPhaseChange]);
   const [sendError, setSendError] = useState<string | null>(null);
   // Deep-link entries auto-send product interest once chat starts.
   const interestSentRef = useRef(false);

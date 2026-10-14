@@ -4,7 +4,6 @@ import { useMemo, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import {
-  AlertTriangle,
   Boxes,
   Check,
   ClipboardPaste,
@@ -16,14 +15,13 @@ import {
   Pencil,
   Plus,
   Trash2,
-  XCircle,
 } from "lucide-react";
 import { toast } from "sonner";
 import { formatCurrency } from "@/lib/format";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
-import { StatCard } from "@/components/dashboard/stat-card";
+import { SummaryStrip } from "@/components/dashboard/summary-strip";
 import {
   Table,
   TableBody,
@@ -184,27 +182,13 @@ export function InventoryView({
         }
       />
 
-      <div className="grid gap-4 sm:grid-cols-3">
-        <StatCard title="Total products" value={String(counts.total)} icon={Boxes} variant="white" />
-        <StatCard
-          title="Low stock"
-          value={String(counts.low)}
-          trend={counts.low > 0 ? "Needs restocking" : "All healthy"}
-          trendTone={counts.low > 0 ? "down" : "neutral"}
-          icon={AlertTriangle}
-          variant="blue"
-         
-        />
-        <StatCard
-          title="Out of stock"
-          value={String(counts.out)}
-          trend={counts.out > 0 ? "Selling opportunity lost" : "Nothing sold out"}
-          trendTone={counts.out > 0 ? "down" : "neutral"}
-          icon={XCircle}
-          variant="white"
-         
-        />
-      </div>
+      <SummaryStrip
+        items={[
+          { label: "Total products", value: String(counts.total) },
+          { label: "Low stock", value: String(counts.low) },
+          { label: "Out of stock", value: String(counts.out) },
+        ]}
+      />
 
       {products.length === 0 ? (
         <EmptyState

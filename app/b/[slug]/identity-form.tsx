@@ -55,7 +55,7 @@ export function IdentityForm({
             value={name}
             onChange={(e) => setName(e.target.value)}
             maxLength={80}
-            className="h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none"
+            className="h-10 w-full rounded-md border-0 bg-gray-100 px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none dark:bg-zinc-800"
           />
           <input
             required
@@ -63,13 +63,13 @@ export function IdentityForm({
             placeholder="+234 801 234 5678"
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
-            className="h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none"
+            className="h-10 w-full rounded-md border-0 bg-gray-100 px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none dark:bg-zinc-800"
           />
           {error && <p className="text-sm text-red-600">{error}</p>}
           <button
             type="submit"
             disabled={submitting || !name.trim() || !phone.trim()}
-            className="h-10 w-full rounded-md bg-black text-sm font-medium text-white hover:bg-gray-800 disabled:opacity-40 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200"
+            className="h-10 w-full rounded-md bg-gradient-to-r from-[#7c3aed] via-[#c026d3] to-[#f59e0b] text-sm font-medium text-white hover:opacity-90 disabled:opacity-40"
           >
             {submitting ? "Setting up…" : "Start chatting"}
           </button>

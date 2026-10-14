@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { Percent, Repeat, ShoppingBag, TrendingUp } from "lucide-react";
 import {
   Area,
   AreaChart,
@@ -16,7 +15,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { StatCard } from "@/components/dashboard/stat-card";
+import { SummaryStrip } from "@/components/dashboard/summary-strip";
 import { PageHeader } from "@/components/dashboard/page-header";
 import { formatCurrency, formatNumber } from "@/lib/format";
 import { useTheme } from "next-themes";
@@ -70,12 +69,14 @@ export function AnalyticsView({
         }
       />
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard title="Total orders" value={String(totalOrders)} icon={ShoppingBag} variant="white" />
-        <StatCard title="Total revenue" value={formatMoney(totalRevenue, currency)} icon={TrendingUp} variant="dark" />
-        <StatCard title="Repeat customers" value={String(repeatCustomers)} icon={Repeat} variant="white" />
-        <StatCard title="Conversion rate" value={`${conversionRate}%`} icon={Percent} variant="blue" />
-      </div>
+      <SummaryStrip
+        items={[
+          { label: "Total orders", value: String(totalOrders) },
+          { label: "Total revenue", value: formatMoney(totalRevenue, currency) },
+          { label: "Repeat customers", value: String(repeatCustomers) },
+          { label: "Conversion rate", value: `${conversionRate}%` },
+        ]}
+      />
 
       <Card>
         <CardHeader>
