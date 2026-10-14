@@ -64,6 +64,33 @@ const FEATURES = [
   },
 ];
 
+const SYNC_FEATURES = [
+  {
+    title: "Orders from every chat in one place",
+    text: "Instagram, TikTok and WhatsApp conversations land in a single dashboard.",
+  },
+  {
+    title: "Approve in one tap",
+    text: "Review each order before payment, or switch on automatic approval.",
+  },
+  {
+    title: "Stock that updates itself",
+    text: "Every sale adjusts your inventory, so you never oversell.",
+  },
+  {
+    title: "Payments inside the chat",
+    text: "Customers pay with OPay without leaving the conversation.",
+  },
+  {
+    title: "Records that build credit",
+    text: "Each settled sale feeds a verified record lenders can trust.",
+  },
+  {
+    title: "History on every order",
+    text: "Full chat history attached, so disputes are easy to settle.",
+  },
+];
+
 const FINANCING_SOON = [
   {
     title: "Your business profile",
@@ -160,6 +187,25 @@ const FAQS = [
   },
 ];
 
+function DualCta({ primaryHref = "/signup" }: { primaryHref?: string }) {
+  return (
+    <div>
+      <a
+        href={primaryHref}
+        className="inline-flex rounded-full bg-[#006DFF] px-8 py-3.5 text-base font-medium text-white transition-colors hover:bg-[#005DD9]"
+      >
+        Start selling
+      </a>
+      <p className="mt-3 text-sm text-gray-500">
+        No Inference link yet?{" "}
+        <a href="/signup" className="font-medium text-[#006DFF] hover:underline">
+          Get one free
+        </a>
+      </p>
+    </div>
+  );
+}
+
 export default function LandingPage() {
   return (
     <main className="min-h-screen bg-white dark:bg-zinc-950">
@@ -208,135 +254,143 @@ export default function LandingPage() {
       </header>
 
       {/* 1. Hero */}
-      <section className="mx-auto max-w-6xl px-6 py-20 text-center sm:py-28">
-        <h1 className="mx-auto max-w-3xl text-4xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100 sm:text-6xl">
-          Sell in your DMs. Build a credit record while you do it.
+      <section className="mx-auto max-w-6xl px-6 pb-20 pt-14 text-center sm:pt-20">
+        <p className="inline-block rounded-full border border-[#7c3aed]/40 bg-[#7c3aed]/10 px-4 py-1.5 text-sm font-semibold uppercase tracking-widest text-[#7c3aed]">
+          AI that understands your business
+        </p>
+        <h1 className="mx-auto mt-4 max-w-3xl text-5xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100 sm:text-6xl">
+          Never miss another DM sale.
         </h1>
         <p className="mx-auto mt-6 max-w-2xl text-lg text-gray-500 sm:text-xl">
-          Inference gives your business one link that opens an AI sales assistant. It answers
-          customers, takes orders and payments, and turns every sale into a record that can help
-          you access financing.
+          One link opens an AI assistant that answers customers, takes orders and
+          payments — and turns every sale into a record that can unlock financing.
         </p>
-        <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-          <a
-            href="/signup"
-            className="rounded-full bg-[#006DFF] px-6 py-3 text-base font-medium text-white transition-colors hover:bg-[#005DD9]"
-          >
-            Get early access
-          </a>
-          <a
-            href="#how-it-works"
-            className="rounded-full border border-gray-300 px-6 py-3 text-base font-medium text-zinc-900 transition-colors hover:bg-gray-50 dark:border-zinc-700 dark:text-zinc-100 dark:hover:bg-zinc-900"
-          >
-            See how it works
-          </a>
+        <div className="mt-8">
+          <DualCta />
         </div>
         <p className="mx-auto mt-6 max-w-xl text-sm text-gray-500">
           No app to download. Works from your Instagram, TikTok or WhatsApp bio. Customers chat
           in English or Pidgin.
         </p>
-        {/* Visual: chat + dashboard mock */}
-        <div className="mx-auto mt-12 grid max-w-4xl gap-4 md:grid-cols-2">
-          <div className="rounded-3xl border border-gray-200 bg-white p-5 text-left shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
-            <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">Customer chat</p>
-            <div className="mt-3 flex flex-col gap-2 text-sm">
-              <p className="max-w-[85%] self-start rounded-2xl bg-gray-100 px-3 py-2 dark:bg-zinc-800 dark:text-zinc-100">
-                Hello! How much is the chocolate cake? 🍰
-              </p>
-              <p className="max-w-[85%] self-end rounded-2xl bg-[#006DFF] px-3 py-2 text-white">
-                ₦15,000 — and it&apos;s in stock today!
-              </p>
-              <p className="max-w-[85%] self-start rounded-2xl bg-gray-100 px-3 py-2 dark:bg-zinc-800 dark:text-zinc-100">
-                Your order is confirmed. Pay with OPay below 👇
-              </p>
-            </div>
-          </div>
-          <div className="rounded-3xl border border-gray-200 bg-white p-5 text-left shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
-            <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">Merchant dashboard</p>
-            <div className="mt-3 grid grid-cols-2 gap-2 text-center">
-              <div className="rounded-2xl bg-gray-100 p-3 dark:bg-zinc-800">
-                <p className="text-xl font-semibold text-zinc-900 dark:text-zinc-100">128</p>
-                <p className="text-xs text-gray-500">Orders</p>
-              </div>
-              <div className="rounded-2xl bg-gray-100 p-3 dark:bg-zinc-800">
-                <p className="text-xl font-semibold text-zinc-900 dark:text-zinc-100">₦1.9M</p>
-                <p className="text-xs text-gray-500">Sales</p>
-              </div>
-            </div>
-            <p className="mt-3 rounded-2xl bg-green-100 px-3 py-2 text-center text-sm font-medium text-green-700">
-              New order approved ✓
-            </p>
-          </div>
+        {/* Visual */}
+        <div className="mx-auto mt-12 max-w-[280px]">
+          <Image
+            src="/h2.png"
+            alt="Customer chatting with an Inference AI assistant while the merchant dashboard tracks the sale"
+            width={1500}
+            height={600}
+            className="h-auto w-full rounded-3xl"
+            priority
+          />
         </div>
       </section>
 
-      {/* 2. Problem */}
-      <section className="mx-auto max-w-6xl px-6 pb-16">
-        <h2 className="mx-auto max-w-3xl text-center text-3xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100 sm:text-4xl">
-          You make sales every day. Banks can&apos;t see any of them.
-        </h2>
-        <p className="mx-auto mt-4 max-w-2xl text-center text-base text-gray-500 sm:text-lg">
-          Your customers find you on Instagram, TikTok and WhatsApp. Then the sale gets stuck:
-          they ask for the price, wait for a reply, negotiate, and pay by bank transfer. When
-          you&apos;re busy, they leave.
-        </p>
-        <p className="mx-auto mt-2 max-w-2xl text-center text-base text-gray-500 sm:text-lg">
-          Even when the sale goes through, it leaves no record. No record means no credit
-          history, and no credit history makes it hard to get a loan for the stock or equipment
-          that would help you grow.
-        </p>
-        <div className="mt-8 grid gap-4 md:grid-cols-3">
-          {PROBLEM_CARDS.map((c) => (
-            <div key={c.title} className="rounded-3xl border border-gray-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-900">
-              <p className="font-medium text-zinc-900 dark:text-zinc-100">{c.title}</p>
-              <p className="mt-1 text-sm text-gray-500">{c.text}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* 3. Solution */}
-      <section id="how-it-works" className="mx-auto max-w-6xl scroll-mt-20 px-6 pb-16">
-        <h2 className="mx-auto max-w-3xl text-center text-3xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100 sm:text-4xl">
-          One link. An AI that sells for you. A record that works for you.
-        </h2>
-        <div className="mt-8 grid gap-4 md:grid-cols-3">
-          {STEPS.map((s) => (
-            <div key={s.n} className="rounded-3xl border border-gray-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-900">
-              <p className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-[#006DFF] text-base font-semibold text-white">
-                {s.n}
-              </p>
-              <p className="mt-3 text-xl font-medium tracking-tight text-zinc-900 dark:text-zinc-100">
-                {s.title}
-              </p>
-              <p className="mt-2 text-sm text-gray-500">{s.text}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* 4. Features */}
-      <section id="features" className="mx-auto max-w-6xl scroll-mt-20 px-6 pb-16">
-        <h2 className="text-center text-3xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100 sm:text-4xl">
-          Everything a small business needs to sell with confidence
-        </h2>
-        <div className="mt-8 grid gap-4 sm:grid-cols-2 md:grid-cols-3">
-          {FEATURES.map((f) => (
-            <div key={f.title} className="rounded-3xl border border-gray-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-900">
-              <p className="font-medium text-zinc-900 dark:text-zinc-100">{f.title}</p>
-              <p className="mt-1 text-sm text-gray-500">{f.text}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* 5. Financing */}
-      <section id="financing" className="mx-auto max-w-6xl scroll-mt-20 px-6 pb-16">
-        <div className="rounded-3xl bg-[#1a1a1a] px-6 py-16 text-center sm:px-12 dark:bg-zinc-900 dark:border dark:border-zinc-800">
-          <h2 className="mx-auto max-w-2xl text-3xl font-semibold tracking-tight text-white sm:text-4xl">
-            Your sales history can open doors to financing
+      {/* 2. Feature band */}
+      <section
+        className="bg-cover bg-center"
+        style={{ backgroundImage: "url('/Page%20modal.jpeg')" }}
+      >
+        <div className="bg-[#7c3aed]/70 dark:bg-[#5b21b6]/70">
+        <div className="relative mx-auto max-w-6xl px-6 py-20 text-center sm:py-24">
+          <h2 className="mx-auto max-w-3xl text-4xl font-bold tracking-tight text-white sm:text-5xl">
+            Replies, included.
           </h2>
-          <p className="mx-auto mt-4 max-w-2xl text-base text-white/70 sm:text-lg">
+          <p className="mx-auto mt-4 max-w-2xl text-lg text-white/85">
+            Every Inference link comes with an AI assistant that answers instantly,
+            quotes your real prices, and never sleeps. No extra tools, no extra fees.
+          </p>
+          <a href="#how-it-works" className="mt-6 inline-block font-medium text-white underline underline-offset-4 hover:text-white/80">
+            See how it works →
+          </a>
+        </div>
+        </div>
+      </section>
+
+      {/* 3. Workflow rows */}
+      <section id="how-it-works" className="mx-auto max-w-6xl scroll-mt-20 px-6 py-20 sm:py-24">
+        <h2 className="mx-auto max-w-3xl text-center text-4xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100 sm:text-5xl">
+          Your full sales workflow, in one link
+        </h2>
+        <div className="mt-14 flex flex-col gap-16">
+          {STEPS.map((s, i) => (
+            <div
+              key={s.n}
+              className={`grid items-center gap-8 md:grid-cols-2 ${i % 2 === 1 ? "" : ""}`}
+            >
+              <div className={i % 2 === 1 ? "md:order-2" : ""}>
+                <p className="text-sm font-semibold uppercase tracking-widest text-[#006DFF]">
+                  Step {s.n}
+                </p>
+                <h3 className="mt-2 text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100">
+                  {s.title}
+                </h3>
+                <p className="mt-3 text-lg text-gray-500">{s.text}</p>
+              </div>
+              <div
+                className={`rounded-3xl bg-[#f6f6f7] p-8 dark:bg-zinc-900 ${i % 2 === 1 ? "md:order-1" : ""}`}
+              >
+                <p className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-[#006DFF] text-xl font-bold text-white">
+                  {s.n}
+                </p>
+                <p className="mt-4 text-xl font-medium text-zinc-900 dark:text-zinc-100">
+                  {s.title}
+                </p>
+                <p className="mt-2 text-gray-500">{s.text}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* 4. Problem */}
+      <section className="bg-[#f6f6f7] dark:bg-zinc-900/50">
+        <div className="mx-auto max-w-6xl px-6 py-20 sm:py-24">
+          <h2 className="mx-auto max-w-3xl text-center text-4xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100 sm:text-5xl">
+            You make sales every day. Banks can&apos;t see any of them.
+          </h2>
+          <p className="mx-auto mt-4 max-w-2xl text-center text-lg text-gray-500">
+            Your customers find you on Instagram, TikTok and WhatsApp. Then the sale gets stuck:
+            they ask for the price, wait for a reply, negotiate, and pay by bank transfer. When
+            you&apos;re busy, they leave.
+          </p>
+          <div className="mt-10 grid gap-4 md:grid-cols-3">
+            {PROBLEM_CARDS.map((c) => (
+              <div key={c.title} className="rounded-3xl border border-gray-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-950">
+                <p className="font-medium text-zinc-900 dark:text-zinc-100">{c.title}</p>
+                <p className="mt-1 text-sm text-gray-500">{c.text}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* 5. Everything in sync */}
+      <section id="features" className="mx-auto max-w-6xl scroll-mt-20 px-6 py-20 sm:py-24">
+        <h2 className="mx-auto max-w-3xl text-center text-4xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100 sm:text-5xl">
+          Everything in sync
+        </h2>
+        <p className="mx-auto mt-4 max-w-2xl text-center text-lg text-gray-500">
+          One system for chats, orders, stock, payments and records.
+        </p>
+        <div className="mt-10 grid gap-x-8 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
+          {SYNC_FEATURES.map((f) => (
+            <div key={f.title}>
+              <p className="text-xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100">
+                {f.title}
+              </p>
+              <p className="mt-2 text-gray-500">{f.text}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* 6. Financing */}
+      <section id="financing" className="mx-auto max-w-6xl scroll-mt-20 px-6 pb-20">
+        <div className="rounded-3xl bg-[#1a1a1a] px-6 py-16 text-center sm:px-12 dark:bg-zinc-900 dark:border dark:border-zinc-800">
+          <h2 className="mx-auto max-w-2xl text-4xl font-bold tracking-tight text-white sm:text-5xl">
+            Growth, recorded
+          </h2>
+          <p className="mx-auto mt-4 max-w-2xl text-lg text-white/70">
             Most small businesses are turned down because they can&apos;t prove their income.
             With Inference, every order and payment builds a verified record of how your business
             really performs.
@@ -362,12 +416,31 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* 6. Who it's for */}
-      <section id="who" className="mx-auto max-w-6xl scroll-mt-20 px-6 pb-16">
-        <h2 className="text-center text-3xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100 sm:text-4xl">
+      {/* 7. Social proof */}
+      <section className="bg-[#f6f6f7] dark:bg-zinc-900/50">
+        <div className="mx-auto max-w-3xl px-6 py-20 text-center sm:py-24">
+          <p className="text-5xl font-bold text-[#006DFF]">“</p>
+          <p className="text-2xl font-medium tracking-tight text-zinc-900 dark:text-zinc-100 sm:text-3xl">
+            We&apos;re onboarding our first 20 merchants in Lagos. Join them.
+          </p>
+          <p className="mt-4 text-sm font-medium uppercase tracking-widest text-gray-500">
+            Early access · Lagos, Nigeria
+          </p>
+          <a
+            href="/signup"
+            className="mt-8 inline-flex rounded-full bg-[#006DFF] px-8 py-3.5 text-base font-medium text-white transition-colors hover:bg-[#005DD9]"
+          >
+            Get early access
+          </a>
+        </div>
+      </section>
+
+      {/* 8. Who it's for */}
+      <section id="who" className="mx-auto max-w-6xl scroll-mt-20 px-6 py-20 sm:py-24">
+        <h2 className="mx-auto max-w-3xl text-center text-4xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100 sm:text-5xl">
           Built for businesses that sell on social media
         </h2>
-        <div className="mt-8 grid gap-4 sm:grid-cols-2 md:grid-cols-3">
+        <div className="mt-10 grid gap-4 sm:grid-cols-2 md:grid-cols-3">
           {WHO.map((b) => (
             <div key={b.title} className="rounded-3xl border border-gray-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-900">
               <p className="font-medium text-zinc-900 dark:text-zinc-100">{b.title}</p>
@@ -377,27 +450,29 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* 7. Safety */}
-      <section className="mx-auto max-w-6xl px-6 pb-16">
-        <h2 className="text-center text-3xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100 sm:text-4xl">
-          An AI you can trust with your customers
-        </h2>
-        <div className="mx-auto mt-8 grid max-w-4xl gap-4 sm:grid-cols-2">
-          {SAFETY.map((s) => (
-            <div key={s.title} className="rounded-3xl border border-gray-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-900">
-              <p className="font-medium text-zinc-900 dark:text-zinc-100">{s.title}</p>
-              <p className="mt-1 text-sm text-gray-500">{s.text}</p>
-            </div>
-          ))}
+      {/* 9. Safety */}
+      <section className="bg-[#f6f6f7] dark:bg-zinc-900/50">
+        <div className="mx-auto max-w-6xl px-6 py-20 sm:py-24">
+          <h2 className="mx-auto max-w-3xl text-center text-4xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100 sm:text-5xl">
+            An AI you can trust with your customers
+          </h2>
+          <div className="mx-auto mt-10 grid max-w-4xl gap-4 sm:grid-cols-2">
+            {SAFETY.map((s) => (
+              <div key={s.title} className="rounded-3xl border border-gray-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-950">
+                <p className="font-medium text-zinc-900 dark:text-zinc-100">{s.title}</p>
+                <p className="mt-1 text-sm text-gray-500">{s.text}</p>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
-      {/* 8. Pricing */}
-      <section id="pricing" className="mx-auto max-w-6xl scroll-mt-20 px-6 pb-16">
-        <h2 className="text-center text-3xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100 sm:text-4xl">
+      {/* 10. Pricing */}
+      <section id="pricing" className="mx-auto max-w-6xl scroll-mt-20 px-6 py-20 sm:py-24">
+        <h2 className="mx-auto max-w-3xl text-center text-4xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100 sm:text-5xl">
           Simple pricing. Start free.
         </h2>
-        <div className="mx-auto mt-8 grid max-w-3xl gap-4 md:grid-cols-2">
+        <div className="mx-auto mt-10 grid max-w-3xl gap-4 md:grid-cols-2">
           <div className="rounded-3xl border border-gray-200 bg-white p-8 dark:border-zinc-800 dark:bg-zinc-900">
             <p className="text-lg font-medium text-zinc-900 dark:text-zinc-100">Free</p>
             <p className="mt-1 text-sm text-gray-500">For trying things out</p>
@@ -437,25 +512,9 @@ export default function LandingPage() {
         </p>
       </section>
 
-      {/* 9. Social proof (fallback until pilots land) */}
-      <section className="mx-auto max-w-6xl px-6 pb-16 text-center">
-        <h2 className="text-3xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100 sm:text-4xl">
-          What early merchants say
-        </h2>
-        <p className="mx-auto mt-4 max-w-xl text-lg text-gray-500">
-          We&apos;re onboarding our first 20 merchants in Lagos. Join them.
-        </p>
-        <a
-          href="/signup"
-          className="mt-6 inline-flex rounded-full bg-[#006DFF] px-6 py-3 text-base font-medium text-white transition-colors hover:bg-[#005DD9]"
-        >
-          Get early access
-        </a>
-      </section>
-
-      {/* 10. FAQ */}
-      <section id="faq" className="mx-auto max-w-3xl scroll-mt-20 px-6 pb-16">
-        <h2 className="text-center text-3xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100 sm:text-4xl">
+      {/* 11. FAQ */}
+      <section id="faq" className="mx-auto max-w-3xl scroll-mt-20 px-6 pb-20">
+        <h2 className="text-center text-4xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100 sm:text-5xl">
           Questions, answered
         </h2>
         <div className="mt-8 flex flex-col gap-3">
@@ -473,20 +532,19 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* 11. Final CTA */}
-      <section className="mx-auto max-w-6xl px-6 pb-20 text-center">
-        <h2 className="mx-auto max-w-2xl text-3xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100 sm:text-4xl">
-          Turn every sale into a step toward growth.
-        </h2>
-        <p className="mx-auto mt-2 max-w-xl text-lg text-gray-500">
-          Set up your Inference link in minutes. Start free.
-        </p>
-        <a
-          href="/signup"
-          className="mt-6 inline-flex rounded-full bg-[#006DFF] px-6 py-3 text-base font-medium text-white transition-colors hover:bg-[#005DD9]"
-        >
-          Get early access
-        </a>
+      {/* 12. Final CTA */}
+      <section className="bg-[#f6f6f7] dark:bg-zinc-900/50">
+        <div className="mx-auto max-w-3xl px-6 py-20 text-center sm:py-24">
+          <h2 className="text-4xl font-bold tracking-tight text-zinc-900 dark:text-zinc-100 sm:text-5xl">
+            Out-sell your competition.
+          </h2>
+          <p className="mx-auto mt-4 max-w-xl text-lg text-gray-500">
+            Set up your Inference link in minutes. Start free.
+          </p>
+          <div className="mt-8">
+            <DualCta />
+          </div>
+        </div>
       </section>
 
       <footer className="border-t border-gray-200 dark:border-zinc-800">
