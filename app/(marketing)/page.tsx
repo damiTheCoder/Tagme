@@ -91,6 +91,12 @@ const SYNC_FEATURES = [
   },
 ];
 
+const STEP_VISUALS: Record<string, { src: string; alt: string; maxWidth?: string }> = {
+  "1": { src: "/B1.jpeg", alt: "Share your Inference link" },
+  "2": { src: "/B3.jpeg", alt: "The AI handles your customers" },
+  "3": { src: "/B2.png?v=2", alt: "Every sale is recorded", maxWidth: "max-w-[500px] mx-auto" },
+};
+
 const FINANCING_SOON = [
   {
     title: "Your business profile",
@@ -192,7 +198,7 @@ function DualCta({ primaryHref = "/signup" }: { primaryHref?: string }) {
     <div>
       <a
         href={primaryHref}
-        className="inline-flex rounded-full bg-[#006DFF] px-8 py-3.5 text-base font-medium text-white transition-colors hover:bg-[#005DD9]"
+        className="inline-flex rounded-full border-0 bg-black px-8 py-3.5 text-base font-medium text-white transition-colors hover:bg-zinc-800"
       >
         Start selling
       </a>
@@ -245,7 +251,7 @@ export default function LandingPage() {
             </a>
             <a
               href="/signup"
-              className="rounded-lg bg-[#006DFF] px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-[#005DD9]"
+              className="rounded-lg border-0 bg-black px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-zinc-800"
             >
               Get early access
             </a>
@@ -273,36 +279,15 @@ export default function LandingPage() {
           in English or Pidgin.
         </p>
         {/* Visual */}
-        <div className="mx-auto mt-12 max-w-[280px]">
+        <div className="mx-auto mt-12 max-w-md">
           <Image
-            src="/h2.png"
+            src="/h2.png?v=2"
             alt="Customer chatting with an Inference AI assistant while the merchant dashboard tracks the sale"
             width={1500}
             height={600}
             className="h-auto w-full rounded-3xl"
             priority
           />
-        </div>
-      </section>
-
-      {/* 2. Feature band */}
-      <section
-        className="bg-cover bg-center"
-        style={{ backgroundImage: "url('/Page%20modal.jpeg')" }}
-      >
-        <div className="bg-[#7c3aed]/70 dark:bg-[#5b21b6]/70">
-        <div className="relative mx-auto max-w-6xl px-6 py-20 text-center sm:py-24">
-          <h2 className="mx-auto max-w-3xl text-4xl font-bold tracking-tight text-white sm:text-5xl">
-            Replies, included.
-          </h2>
-          <p className="mx-auto mt-4 max-w-2xl text-lg text-white/85">
-            Every Inference link comes with an AI assistant that answers instantly,
-            quotes your real prices, and never sleeps. No extra tools, no extra fees.
-          </p>
-          <a href="#how-it-works" className="mt-6 inline-block font-medium text-white underline underline-offset-4 hover:text-white/80">
-            See how it works →
-          </a>
-        </div>
         </div>
       </section>
 
@@ -327,15 +312,27 @@ export default function LandingPage() {
                 <p className="mt-3 text-lg text-gray-500">{s.text}</p>
               </div>
               <div
-                className={`rounded-3xl bg-[#f6f6f7] p-8 dark:bg-zinc-900 ${i % 2 === 1 ? "md:order-1" : ""}`}
+                className={`overflow-hidden rounded-3xl ${i % 2 === 1 ? "md:order-1" : ""}`}
               >
-                <p className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-[#006DFF] text-xl font-bold text-white">
-                  {s.n}
-                </p>
-                <p className="mt-4 text-xl font-medium text-zinc-900 dark:text-zinc-100">
-                  {s.title}
-                </p>
-                <p className="mt-2 text-gray-500">{s.text}</p>
+                {STEP_VISUALS[s.n] ? (
+                  <Image
+                    src={STEP_VISUALS[s.n].src}
+                    alt={STEP_VISUALS[s.n].alt}
+                    width={1200}
+                    height={900}
+                    className={`h-auto w-full rounded-3xl ${STEP_VISUALS[s.n].maxWidth ?? "mx-auto max-w-md"}`}
+                  />
+                ) : (
+                  <div className="bg-[#f6f6f7] p-8 dark:bg-zinc-900">
+                    <p className="inline-flex h-12 w-12 items-center justify-center rounded-full bg-[#006DFF] text-xl font-bold text-white">
+                      {s.n}
+                    </p>
+                    <p className="mt-4 text-xl font-medium text-zinc-900 dark:text-zinc-100">
+                      {s.title}
+                    </p>
+                    <p className="mt-2 text-gray-500">{s.text}</p>
+                  </div>
+                )}
               </div>
             </div>
           ))}
@@ -500,7 +497,7 @@ export default function LandingPage() {
             </ul>
             <a
               href="/signup"
-              className="mt-6 inline-flex w-full justify-center rounded-full bg-[#006DFF] px-6 py-3 text-base font-medium text-white transition-colors hover:bg-[#005DD9]"
+              className="mt-6 inline-flex w-full justify-center rounded-full border-0 bg-black px-6 py-3 text-base font-medium text-white transition-colors hover:bg-zinc-800"
             >
               Get Pro
             </a>
