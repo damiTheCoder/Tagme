@@ -12,6 +12,9 @@ export type Business = {
   currency: string;
   suspended_at?: string | null;
   deleted_at?: string | null;
+  subscription_status?: string | null;
+  subscription_ends_at?: string | null;
+  orders_this_month?: number | null;
 };
 
 // Per-request memo: layout + page + actions share one auth/business

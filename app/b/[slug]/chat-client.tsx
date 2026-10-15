@@ -298,6 +298,7 @@ export function ChatClient({
         busy={busy}
         onSelectProduct={handleSelectProduct}
         initialProducts={initialProducts}
+        businessName={businessName}
       />
       {(sendError || error) && (
         <p className="px-4 pt-2 text-xs text-red-600">
