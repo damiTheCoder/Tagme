@@ -126,7 +126,7 @@ export function DashboardShell({
   const nav = (
     <div className="flex h-full flex-col">
       <Link href="/dashboard" className="flex items-center gap-2.5 px-2 py-1">
-        <Image src="/TagMe.jpeg" alt="Tagly logo" width={36} height={36} className="h-9 w-9 shrink-0 rounded-lg object-contain" />
+        <Image src="/TagMe.jpeg" alt="Tagly logo" width={36} height={36} className="h-9 w-9 shrink-0 rounded-xl object-contain" />
         <span className="text-lg font-semibold text-[#0c4a6e] dark:text-[#7dd3fc]">Tagly</span>
       </Link>
       <nav className="mt-6 flex flex-col gap-1">
