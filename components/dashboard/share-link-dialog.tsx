@@ -96,7 +96,7 @@ export function ShareLinkDialog({ url, triggerLabel = "Share your link" }: { url
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className="h-9 w-9 p-0 rounded-xl sm:h-auto sm:w-auto sm:px-4 sm:py-2">
+        <Button className="h-10 w-10 p-0 rounded-xl sm:h-10 sm:w-auto sm:px-4 sm:py-2 sm:rounded-xl">
           <Share2 size={16} />
           <span className="hidden sm:inline">{triggerLabel}</span>
         </Button>
@@ -128,7 +128,7 @@ export function ShareLinkDialog({ url, triggerLabel = "Share your link" }: { url
             <div className="flex flex-col items-center gap-3 rounded-xl bg-gray-100 p-6 dark:bg-zinc-800">
               <div className="relative">
                 <QRCode id="share-qr-svg" value={url} size={180} level="H" />
-                <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-lg border border-gray-200 bg-white p-1.5">
+                <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-xl border border-gray-200 bg-white p-1.5 overflow-hidden">
                   <Image
                     src="/TagMe.jpeg"
                     alt="Tagly logo"

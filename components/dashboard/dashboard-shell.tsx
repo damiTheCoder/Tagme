@@ -49,7 +49,7 @@ type NavItem = {
 };
 
 const NAV: NavItem[] = [
-  { href: "/dashboard", label: "Assistant", icon: Sparkles, image: "/AI.png", exact: true },
+  { href: "/dashboard", label: "Assistant", icon: Sparkles, image: "/AI.png?v=2", exact: true },
   { href: "/dashboard/overview", label: "Overview", icon: LayoutDashboard, exact: true },
   { href: "/dashboard/orders", label: "Orders", icon: ShoppingBag, exact: false },
   { href: "/dashboard/inventory", label: "Inventory", icon: Package, exact: false },
@@ -149,7 +149,7 @@ export function DashboardShell({
                   width={20}
                   height={20}
                   className={cn(
-                    "h-5 w-5 shrink-0 rounded-[5px] object-cover transition-opacity",
+                    "h-5 w-5 shrink-0 rounded-md object-contain transition-opacity",
                     active ? "opacity-100" : "opacity-60 group-hover:opacity-100"
                   )}
                 />
@@ -246,7 +246,7 @@ export function DashboardShell({
                   <TooltipTrigger asChild>
                     <Link
                       href="/dashboard/orders?filter=pending"
-                      className="relative inline-flex h-10 w-10 items-center justify-center rounded-lg text-gray-600 hover:bg-gray-100 hover:text-gray-900 dark:text-zinc-400 dark:hover:bg-zinc-900 dark:hover:text-zinc-100"
+                      className="relative inline-flex h-10 w-10 items-center justify-center rounded-xl text-gray-600 hover:bg-gray-100 hover:text-gray-900 dark:text-zinc-400 dark:hover:bg-zinc-900 dark:hover:text-zinc-100"
                       aria-label="Pending orders"
                     >
                       <Bell size={20} />
@@ -266,8 +266,8 @@ export function DashboardShell({
             </div>
           </header>
 
-          <main className="mx-auto w-full max-w-6xl flex-1 p-6">
-            <div className="space-y-6 overflow-x-clip py-2">{children}</div>
+          <main className="mx-auto flex w-full max-w-6xl flex-1 flex-col p-6">
+            <div className={cn("overflow-x-clip py-2", pathname === "/dashboard" ? "flex flex-1 flex-col min-h-0" : "space-y-6")}>{children}</div>
           </main>
         </div>
       </div>

@@ -56,9 +56,11 @@ function TypingDots() {
 export function AssistantBar({
   business,
   showSuggestions = true,
+  fullPage = false,
 }: {
   business: Business;
   showSuggestions?: boolean;
+  fullPage?: boolean;
 }) {
   const router = useRouter();
   const [input, setInput] = useState("");
@@ -171,6 +173,9 @@ export function AssistantBar({
     sentRef.current = true;
     playSendSound();
     sendMessage({ text });
+    setTimeout(() => {
+      inputRef.current?.focus();
+    }, 50);
   }
 
   // Chime when a reply to this session's messages finishes arriving.
@@ -195,6 +200,150 @@ export function AssistantBar({
     setSendError(null);
   }
 
+  const renderMessages = () => (
+    <div className="flex flex-col gap-2">
+      {messages.map((m) => (
+        <div key={m.id} className="flex flex-col gap-2">
+          {m.role === "user" ? (
+            <div className="animate-in slide-in-from-bottom-2 self-end rounded-2xl bg-[#0866FF] px-3.5 py-2 text-sm text-white duration-300">
+              {messageText(m)}
+            </div>
+          ) : (
+            <>
+              {messageText(m).trim() && (
+                <div className="animate-in slide-in-from-bottom-2 self-start rounded-2xl bg-gray-100 dark:bg-zinc-800 px-3.5 py-2 text-sm text-[#1a1a1a] dark:text-zinc-100 duration-300">
+                  <div className="prose prose-sm max-w-none [&_p]:my-1 [&_ul]:my-1 [&_ol]:my-1">
+                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                      {messageText(m)}
+                    </ReactMarkdown>
+                  </div>
+                </div>
+              )}
+              {toolParts(m).map((part, i) => {
+                const name = toolNameOf(part);
+                if (!name) return null;
+                return (
+                  <div
+                    key={`${m.id}-tool-${i}`}
+                    className="animate-in slide-in-from-bottom-2 self-start duration-300 md:max-w-[85%]"
+                  >
+                    <AssistantToolPart part={part} />
+                  </div>
+                );
+              })}
+            </>
+          )}
+        </div>
+      ))}
+      {busy && <TypingDots />}
+      {sendError && (
+        <p className="self-start text-sm text-red-600">{sendError}</p>
+      )}
+    </div>
+  );
+
+  const renderInputBar = (placeholder: string) => (
+    <div className="rounded-2xl bg-gray-100 dark:bg-zinc-800 px-2 py-1 shadow-[0_2px_12px_rgba(0,0,0,0.04)] transition-all duration-300">
+      <form onSubmit={onSubmit} className="flex min-h-[44px] items-center gap-2">
+        <Image
+          src="/AI.png?v=2"
+          alt="Tagly assistant"
+          width={44}
+          height={44}
+          className="ml-3 h-[22px] w-[22px] shrink-0 rounded-lg object-contain"
+          aria-hidden
+        />
+        <input
+          ref={inputRef}
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          placeholder={placeholder}
+          aria-label={`Ask the ${business.name} assistant`}
+          className="flex-1 border-0 bg-transparent text-base text-zinc-900 dark:text-zinc-100 placeholder:text-gray-400 focus:outline-none"
+        />
+        <button
+          type="submit"
+          disabled={!canSubmit}
+          aria-label="Send assistant message"
+          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-r from-[#0866FF] via-[#4C8DFF] to-[#00C6FF] transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:bg-none disabled:bg-gray-200"
+        >
+          <ArrowUp
+            size={18}
+            className={canSubmit ? "text-white" : "text-gray-400"}
+            aria-hidden
+          />
+        </button>
+      </form>
+    </div>
+  );
+
+  if (fullPage) {
+    return (
+      <div className="flex flex-1 flex-col h-full min-h-[calc(100dvh-10rem)] max-w-3xl mx-auto w-full">
+        {!expanded ? (
+          <div className="my-auto flex flex-col items-center gap-6 py-8 text-center transition-all duration-300">
+            <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-blue-50 dark:bg-zinc-900 shadow-sm ring-1 ring-black/5 dark:ring-white/10">
+              <Image
+                src="/AI.png?v=2"
+                alt="Tagly assistant"
+                width={48}
+                height={48}
+                className="h-12 w-12 rounded-xl object-contain"
+              />
+            </div>
+            <div>
+              <h1 className="text-3xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">
+                Hi, {business.name}
+              </h1>
+              <p className="mx-auto mt-2 max-w-md text-sm text-gray-500">
+                Ask about your sales, orders, customers or stock — I&apos;ll pull the numbers from your shop.
+              </p>
+            </div>
+            <div className="w-full max-w-2xl mt-2">
+              {renderInputBar(typedPlaceholder || "Ask me anything about your shop…")}
+            </div>
+          </div>
+        ) : (
+          <div className="flex flex-1 flex-col min-h-0">
+            <div className="mb-3 flex items-center justify-between border-b border-gray-100 dark:border-zinc-800 pb-3">
+              <div className="flex items-center gap-2.5">
+                <Image
+                  src="/AI.png?v=2"
+                  alt="Tagly assistant"
+                  width={24}
+                  height={24}
+                  className="h-6 w-6 rounded-lg object-contain"
+                />
+                <span className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
+                  Assistant
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={onClear}
+                className="text-xs text-gray-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100 hover:underline"
+                aria-label="Clear assistant conversation"
+              >
+                Clear chat
+              </button>
+            </div>
+
+            <div
+              ref={scrollRef}
+              className="flex-1 min-h-0 overflow-y-auto pb-4 no-scrollbar-desktop"
+            >
+              {renderMessages()}
+            </div>
+
+            <div className="mt-auto pt-2">
+              {renderInputBar("Follow up…")}
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  }
+
   return (
     <div>
       {expanded && (
@@ -215,80 +364,11 @@ export function AssistantBar({
           ref={scrollRef}
           className="max-h-[400px] overflow-y-auto pb-3 no-scrollbar-desktop md:max-h-[420px]"
         >
-          <div className="flex flex-col gap-2">
-            {messages.map((m) => (
-              <div key={m.id} className="flex flex-col gap-2">
-                {m.role === "user" ? (
-                  <div className="animate-in slide-in-from-bottom-2 self-end rounded-2xl bg-[#0866FF] px-3 py-2 text-sm text-white duration-300">
-                    {messageText(m)}
-                  </div>
-                ) : (
-                  <>
-                    {messageText(m).trim() && (
-                      <div className="animate-in slide-in-from-bottom-2 self-start rounded-2xl bg-gray-100 dark:bg-zinc-800 px-3 py-2 text-sm text-[#1a1a1a] dark:text-zinc-100 duration-300">
-                        <div className="prose prose-sm max-w-none [&_p]:my-1 [&_ul]:my-1 [&_ol]:my-1">
-                          <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                            {messageText(m)}
-                          </ReactMarkdown>
-                        </div>
-                      </div>
-                    )}
-                    {toolParts(m).map((part, i) => {
-                      const name = toolNameOf(part);
-                      if (!name) return null;
-                      return (
-                        <div
-                          key={`${m.id}-tool-${i}`}
-                          className="animate-in slide-in-from-bottom-2 self-start duration-300 md:max-w-[85%]"
-                        >
-                          <AssistantToolPart part={part} />
-                        </div>
-                      );
-                    })}
-                  </>
-                )}
-              </div>
-            ))}
-            {busy && <TypingDots />}
-            {sendError && (
-              <p className="self-start text-sm text-red-600">{sendError}</p>
-            )}
-          </div>
+          {renderMessages()}
         </div>
       )}
 
-      <div className="rounded-2xl bg-gray-100 dark:bg-zinc-800 px-2 py-1 transition-all duration-300">
-        <form onSubmit={onSubmit} className="flex min-h-[44px] items-center gap-2">
-          <Image
-            src="/TagMe.jpeg"
-            alt="Tagly assistant"
-            width={44}
-            height={44}
-            className="ml-3 h-[22px] w-[22px] shrink-0 rounded-xl"
-            aria-hidden
-          />
-          <input
-            ref={inputRef}
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder={expanded ? "Follow up…" : typedPlaceholder || "Ask me anything about your shop…"}
-            aria-label={`Ask the ${business.name} assistant`}
-            className="flex-1 border-0 bg-transparent text-base text-zinc-900 dark:text-zinc-100 placeholder:text-gray-400 focus:outline-none"
-          />
-          <button
-            type="submit"
-            disabled={!canSubmit}
-            aria-label="Send assistant message"
-            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-r from-[#0866FF] via-[#4C8DFF] to-[#00C6FF] transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:bg-none disabled:bg-gray-200"
-          >
-            <ArrowUp
-              size={18}
-              className={canSubmit ? "text-white" : "text-gray-400"}
-              aria-hidden
-            />
-          </button>
-        </form>
-      </div>
+      {renderInputBar(expanded ? "Follow up…" : typedPlaceholder || "Ask me anything about your shop…")}
     </div>
   );
 }
