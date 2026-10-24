@@ -264,7 +264,7 @@ export function AssistantBar({
             alt="Tagly assistant"
             width={44}
             height={44}
-            className="ml-3 h-[22px] w-[22px] shrink-0 rounded-md"
+            className="ml-3 h-[22px] w-[22px] shrink-0 rounded-xl"
             aria-hidden
           />
           <input

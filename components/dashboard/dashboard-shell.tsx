@@ -238,7 +238,7 @@ export function DashboardShell({
               </Sheet>
               <h1 className="hidden text-lg font-semibold text-zinc-900 dark:text-zinc-100 md:block">{pageTitle(pathname)}</h1>
               <Link href="/dashboard" className="flex items-center gap-2 md:hidden">
-                <Image src="/TagMe.jpeg" alt="Tagly logo" width={28} height={28} className="h-7 w-7 shrink-0 rounded-md object-contain" />
+                <Image src="/TagMe.jpeg" alt="Tagly logo" width={28} height={28} className="h-7 w-7 shrink-0 rounded-xl object-contain" />
                 <span className="text-lg font-semibold text-[#0c4a6e] dark:text-[#7dd3fc]">Tagly</span>
               </Link>
               <div className="ml-auto flex items-center gap-2">

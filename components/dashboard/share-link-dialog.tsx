@@ -134,7 +134,7 @@ export function ShareLinkDialog({ url, triggerLabel = "Share your link" }: { url
                     alt="Tagly logo"
                     width={80}
                     height={80}
-                    className="h-10 w-10 rounded-md object-cover"
+                    className="h-10 w-10 rounded-xl object-cover"
                   />
                 </div>
               </div>
