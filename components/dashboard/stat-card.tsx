@@ -35,7 +35,7 @@ export function StatCard({
   trendTone?: "up" | "down" | "neutral";
   variant?: keyof typeof VARIANTS;
   icon?: LucideIcon;
-  iconVariant?: "blue" | "purple" | "purple-solid" | "dark" | "light";
+  iconVariant?: "blue" | "green" | "purple-solid" | "dark" | "light";
   className?: string;
   contentClassName?: string;
 }) {

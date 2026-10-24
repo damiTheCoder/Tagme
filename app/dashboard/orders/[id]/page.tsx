@@ -85,7 +85,7 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
                     <div
                       key={m.id}
                       className={`max-w-[80%] rounded-2xl px-3 py-2 text-sm ${
-                        m.role === "user" ? "self-end bg-[#006DFF] text-white" : "self-start bg-white text-zinc-900 dark:bg-zinc-800 dark:text-zinc-100"
+                        m.role === "user" ? "self-end bg-[#0866FF] text-white" : "self-start bg-white text-zinc-900 dark:bg-zinc-800 dark:text-zinc-100"
                       }`}
                     >
                       <p className="whitespace-pre-wrap break-words">{m.content}</p>

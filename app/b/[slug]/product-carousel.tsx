@@ -46,7 +46,7 @@ export function ProductCarousel({
             )}
             <div className="flex flex-col gap-1 p-3">
               <p className="truncate text-sm font-medium text-neutral-900 dark:text-zinc-100">{p.name}</p>
-              <p className="text-sm font-bold text-[#0066ff]">
+              <p className="text-sm font-bold text-[#0866FF]">
                 {formatCurrency(Number(p.price), p.currency)}
               </p>
               <div className="flex items-center justify-between">
@@ -63,7 +63,7 @@ export function ProductCarousel({
                 type="button"
                 disabled={soldOut}
                 onClick={() => onSelect(p)}
-                className="mt-1 w-full rounded-xl bg-[#0066ff] px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-[#0052cc] disabled:cursor-not-allowed disabled:bg-neutral-200 disabled:text-neutral-500"
+                className="mt-1 w-full rounded-xl bg-[#0866FF] px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-[#0052CC] disabled:cursor-not-allowed disabled:bg-neutral-200 disabled:text-neutral-500"
               >
                 {soldOut ? "Sold out" : "Select product"}
               </button>

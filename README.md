@@ -1,4 +1,4 @@
-# inference
+# Tagly
 
 AI chat ordering system for micro businesses
 

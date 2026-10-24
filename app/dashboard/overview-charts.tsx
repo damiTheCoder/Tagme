@@ -32,8 +32,8 @@ export function OverviewCharts({ daily }: { daily: DayPoint[] }) {
             <AreaChart data={daily} margin={{ top: 8, right: 8, bottom: 8, left: 0 }}>
               <defs>
                 <linearGradient id="overviewFill" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#006DFF" stopOpacity={0.25} />
-                  <stop offset="100%" stopColor="#006DFF" stopOpacity={0} />
+                  <stop offset="0%" stopColor="#0866FF" stopOpacity={0.25} />
+                  <stop offset="100%" stopColor="#0866FF" stopOpacity={0} />
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke={grid} />
@@ -67,7 +67,7 @@ export function OverviewCharts({ daily }: { daily: DayPoint[] }) {
               <Area
                 type="monotone"
                 dataKey="orders"
-                stroke="#006DFF"
+                stroke="#0866FF"
                 strokeWidth={2}
                 fill="url(#overviewFill)"
                 dot={false}

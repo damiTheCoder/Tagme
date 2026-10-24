@@ -1,6 +1,6 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { getCurrentUser, getCurrentBusiness } from "@/lib/auth";
+import { getCurrentUser, getCurrentBusiness, getImpersonatedBusiness } from "@/lib/auth";
 import { getPendingOrderCount } from "./orders/actions";
 import { DashboardShell } from "@/components/dashboard/dashboard-shell";
 
@@ -8,11 +8,13 @@ export default async function DashboardLayout({ children }: { children: React.Re
   const user = await getCurrentUser();
   if (!user) redirect("/login");
 
-  const [business, pendingResult] = await Promise.all([
+  const [business, pendingResult, impersonated] = await Promise.all([
     getCurrentBusiness(),
     getPendingOrderCount(),
+    getImpersonatedBusiness(),
   ]);
   if (!business) redirect("/onboarding");
+  if (business.deleted_at) redirect("/removed");
   const pendingCount = pendingResult.ok ? pendingResult.count : 0;
 
   const headerList = await headers();
@@ -27,6 +29,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
       userEmail={user.email ?? ""}
       publicUrl={publicUrl}
       pendingCount={pendingCount}
+      impersonating={impersonated != null}
     >
       {children}
     </DashboardShell>

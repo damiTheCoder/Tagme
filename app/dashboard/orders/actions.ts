@@ -208,6 +208,7 @@ export async function approveOrder(id: string): Promise<OrderActionResult> {
 
     revalidatePath("/dashboard/orders");
     revalidatePath(`/dashboard/orders/${id}`);
+    revalidatePath("/dashboard/credit-score");
     return { ok: true };
   } catch (e) {
     return {
@@ -263,6 +264,7 @@ export async function declineOrder(
 
     revalidatePath("/dashboard/orders");
     revalidatePath(`/dashboard/orders/${id}`);
+    revalidatePath("/dashboard/credit-score");
     return { ok: true };
   } catch (e) {
     return {

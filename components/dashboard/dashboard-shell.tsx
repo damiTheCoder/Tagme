@@ -4,17 +4,22 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
+  Award,
   BarChart3,
   Bell,
+  CreditCard,
   ExternalLink,
   LayoutDashboard,
   LogOut,
   Moon,
   Package,
   PanelLeft,
+  Receipt,
   Settings,
   ShoppingBag,
+  Sparkles,
   Sun,
+  WalletMinimal,
 } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
@@ -35,11 +40,24 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { cn } from "@/lib/utils";
 import { ShareLinkDialog } from "./share-link-dialog";
 
-const NAV = [
-  { href: "/dashboard", label: "Overview", icon: LayoutDashboard, exact: true },
+type NavItem = {
+  href: string;
+  label: string;
+  icon: typeof LayoutDashboard;
+  exact: boolean;
+  image?: string;
+};
+
+const NAV: NavItem[] = [
+  { href: "/dashboard", label: "Assistant", icon: Sparkles, image: "/AI.png", exact: true },
+  { href: "/dashboard/overview", label: "Overview", icon: LayoutDashboard, exact: true },
   { href: "/dashboard/orders", label: "Orders", icon: ShoppingBag, exact: false },
   { href: "/dashboard/inventory", label: "Inventory", icon: Package, exact: false },
+  { href: "/dashboard/revenue", label: "Revenue", icon: WalletMinimal, exact: true },
+  { href: "/dashboard/expenses", label: "Expenses", icon: Receipt, exact: true },
   { href: "/dashboard/analytics", label: "Analytics", icon: BarChart3, exact: false },
+  { href: "/dashboard/credit-score", label: "Credit Score", icon: Award, exact: true },
+  { href: "/dashboard/billing", label: "Billing", icon: CreditCard, exact: true },
   { href: "/dashboard/settings", label: "Settings", icon: Settings, exact: false },
 ];
 
@@ -47,9 +65,14 @@ const TITLES: { prefix: string; title: string }[] = [
   { prefix: "/dashboard/orders/", title: "Order detail" },
   { prefix: "/dashboard/orders", title: "Orders" },
   { prefix: "/dashboard/inventory", title: "Inventory" },
+  { prefix: "/dashboard/revenue", title: "Revenue" },
+  { prefix: "/dashboard/expenses", title: "Expenses" },
   { prefix: "/dashboard/analytics", title: "Analytics" },
+  { prefix: "/dashboard/credit-score", title: "Credit Score" },
+  { prefix: "/dashboard/billing", title: "Billing" },
   { prefix: "/dashboard/settings", title: "Settings" },
-  { prefix: "/dashboard", title: "Overview" },
+  { prefix: "/dashboard/overview", title: "Overview" },
+  { prefix: "/dashboard", title: "Assistant" },
 ];
 
 function pageTitle(pathname: string) {
@@ -88,6 +111,7 @@ export function DashboardShell({
   userEmail,
   publicUrl,
   pendingCount,
+  impersonating = false,
 }: {
   children: React.ReactNode;
   businessName: string;
@@ -95,14 +119,15 @@ export function DashboardShell({
   userEmail: string;
   publicUrl: string;
   pendingCount: number;
+  impersonating?: boolean;
 }) {
   const pathname = usePathname();
 
   const nav = (
     <div className="flex h-full flex-col">
       <Link href="/dashboard" className="flex items-center gap-2.5 px-2 py-1">
-        <Image src="/Inference.jpeg" alt="Inference logo" width={36} height={36} className="h-9 w-9 shrink-0 rounded-lg object-contain" />
-        <span className="text-lg font-semibold text-[#0c4a6e] dark:text-[#7dd3fc]">Inference</span>
+        <Image src="/TagMe.jpeg" alt="Tagly logo" width={36} height={36} className="h-9 w-9 shrink-0 rounded-lg object-contain" />
+        <span className="text-lg font-semibold text-[#0c4a6e] dark:text-[#7dd3fc]">Tagly</span>
       </Link>
       <nav className="mt-6 flex flex-col gap-1">
         {NAV.map((item) => {
@@ -113,14 +138,27 @@ export function DashboardShell({
               key={item.href}
               href={item.href}
               className={cn(
-                "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
+                "group flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
                 active ? "bg-[#7dd3fc20] text-[#0c4a6e] dark:bg-[#7dd3fc15] dark:text-[#7dd3fc]" : "text-gray-600 hover:bg-gray-100 dark:text-zinc-400 dark:hover:bg-zinc-900"
               )}
             >
-              <Icon size={20} className={active ? "text-[#0c4a6e] dark:text-[#7dd3fc]" : "text-gray-400 dark:text-zinc-500"} />
+              {item.image ? (
+                <Image
+                  src={item.image}
+                  alt=""
+                  width={20}
+                  height={20}
+                  className={cn(
+                    "h-5 w-5 shrink-0 rounded-[5px] object-cover transition-opacity",
+                    active ? "opacity-100" : "opacity-60 group-hover:opacity-100"
+                  )}
+                />
+              ) : (
+                <Icon size={20} className={active ? "text-[#0c4a6e] dark:text-[#7dd3fc]" : "text-gray-400 dark:text-zinc-500"} />
+              )}
               <span className="flex-1">{item.label}</span>
               {item.href === "/dashboard/orders" && pendingCount > 0 && (
-                <Badge className="bg-[#006DFF] text-white hover:bg-[#005DD9]">{pendingCount}</Badge>
+                <Badge className="bg-[#0866FF] text-white hover:bg-[#0052CC]">{pendingCount}</Badge>
               )}
             </Link>
           );
@@ -172,6 +210,14 @@ export function DashboardShell({
         </aside>
 
         <div className="flex min-w-0 flex-1 flex-col">
+          {impersonating && (
+            <div className="z-40 bg-red-600 px-6 py-2 text-center text-sm font-medium text-white">
+              Viewing as {businessName} —{" "}
+              <Link href="/admin/exit" className="underline">
+                Exit
+              </Link>
+            </div>
+          )}
           {/* Top bar */}
           <header className="sticky top-0 z-30 bg-white dark:bg-zinc-950">
             <div className="mx-auto flex max-w-6xl items-center gap-3 px-6 py-4">
@@ -192,8 +238,8 @@ export function DashboardShell({
               </Sheet>
               <h1 className="hidden text-lg font-semibold text-zinc-900 dark:text-zinc-100 md:block">{pageTitle(pathname)}</h1>
               <Link href="/dashboard" className="flex items-center gap-2 md:hidden">
-                <Image src="/Inference.jpeg" alt="Inference logo" width={28} height={28} className="h-7 w-7 shrink-0 rounded-md object-contain" />
-                <span className="text-lg font-semibold text-[#0c4a6e] dark:text-[#7dd3fc]">Inference</span>
+                <Image src="/TagMe.jpeg" alt="Tagly logo" width={28} height={28} className="h-7 w-7 shrink-0 rounded-md object-contain" />
+                <span className="text-lg font-semibold text-[#0c4a6e] dark:text-[#7dd3fc]">Tagly</span>
               </Link>
               <div className="ml-auto flex items-center gap-2">
                 <Tooltip>
@@ -205,7 +251,7 @@ export function DashboardShell({
                     >
                       <Bell size={20} />
                       {pendingCount > 0 && (
-                        <span className="absolute -right-1.5 -top-1.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-[#006DFF] px-1 text-[11px] font-semibold text-white">
+                        <span className="absolute -right-1.5 -top-1.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-[#0866FF] px-1 text-[11px] font-semibold text-white">
                           {pendingCount}
                         </span>
                       )}
@@ -215,20 +261,6 @@ export function DashboardShell({
                     {pendingCount > 0 ? `${pendingCount} pending orders` : "No pending orders"}
                   </TooltipContent>
                 </Tooltip>
-                <div className="flex items-center" aria-hidden>
-                  <div className="flex -space-x-2">
-                    {["/k1.jpeg", "/k2.jpeg", "/k3.jpeg"].map((src) => (
-                      <Image
-                        key={src}
-                        src={src}
-                        alt=""
-                        width={64}
-                        height={64}
-                        className="h-6 w-6 rounded-full object-cover ring-2 ring-black"
-                      />
-                    ))}
-                  </div>
-                </div>
                 <ShareLinkDialog url={publicUrl} />
               </div>
             </div>

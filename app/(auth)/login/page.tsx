@@ -1,13 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { AuthCard, AuthInput, AuthFooterLink } from "../auth-card";
 
 export default function LoginPage() {
-  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -40,8 +38,10 @@ export default function LoginPage() {
       if (business) destination = "/dashboard";
     }
     setLoading(false);
-    router.push(destination);
-    router.refresh();
+    // Full navigation (not router.push): guarantees the browser re-reads
+    // the freshly written session cookies instead of racing the client
+    // router cache, which can bounce a just-signed-in user back to /login.
+    window.location.href = destination;
   }
 
   return (

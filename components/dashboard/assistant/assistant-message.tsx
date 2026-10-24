@@ -167,7 +167,7 @@ function ReadResult({ name, part }: { name: string; part: ToolPart }) {
                 <CartesianGrid strokeDasharray="3 3" stroke={grid} />
                 <XAxis dataKey="date" tickFormatter={(d: string) => d.slice(5).replace("-", "/")} tick={{ fontSize: 10, fill: tickFill }} tickLine={false} axisLine={false} interval={Math.max(0, Math.floor(daily.length / 6))} />
                 <Tooltip labelFormatter={(d) => String(d)} contentStyle={{ backgroundColor: tooltipBg, borderRadius: 12, border: "none", fontSize: 12 }} />
-                <Line type="monotone" dataKey="revenue" stroke="#006DFF" strokeWidth={2} dot={false} />
+                <Line type="monotone" dataKey="revenue" stroke="#0866FF" strokeWidth={2} dot={false} />
               </LineChart>
             </ResponsiveContainer>
           </div>
@@ -251,7 +251,7 @@ function ReadResult({ name, part }: { name: string; part: ToolPart }) {
               <XAxis type="number" tick={{ fontSize: 10, fill: tickFill }} tickLine={false} axisLine={false} />
               <YAxis type="category" dataKey="name" width={90} tick={{ fontSize: 10, fill: tickFill }} tickLine={false} axisLine={false} />
               <Tooltip contentStyle={{ backgroundColor: tooltipBg, borderRadius: 12, border: "none", fontSize: 12 }} />
-              <Bar dataKey="count" fill="#006DFF" radius={[0, 8, 8, 0]} />
+              <Bar dataKey="count" fill="#0866FF" radius={[0, 8, 8, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>
@@ -351,7 +351,7 @@ function ReadResult({ name, part }: { name: string; part: ToolPart }) {
               <CartesianGrid strokeDasharray="3 3" stroke={grid} />
               <XAxis dataKey="date" tickFormatter={(d: string) => d.slice(5).replace("-", "/")} tick={{ fontSize: 10, fill: tickFill }} tickLine={false} axisLine={false} interval={Math.max(0, Math.floor(daily.length / 6))} />
               <Tooltip labelFormatter={(d) => String(d)} contentStyle={{ backgroundColor: tooltipBg, borderRadius: 12, border: "none", fontSize: 12 }} />
-              <Line type="monotone" dataKey="revenue" stroke="#006DFF" strokeWidth={2} dot={false} />
+              <Line type="monotone" dataKey="revenue" stroke="#0866FF" strokeWidth={2} dot={false} />
             </LineChart>
           </ResponsiveContainer>
         </div>
@@ -434,6 +434,61 @@ function ReadResult({ name, part }: { name: string; part: ToolPart }) {
               </span>
             </div>
           ))}
+        </div>
+      );
+    }
+
+    case "get_credit_score": {
+      const score = Number(out.score ?? 0);
+      return (
+        <div className="flex flex-col gap-2 rounded-2xl bg-gray-50 p-3 text-sm dark:bg-zinc-800">
+          <div className="flex items-baseline gap-2">
+            <span className="text-2xl font-semibold text-[#1a1a1a] dark:text-zinc-100">
+              {score}
+            </span>
+            <span className="text-gray-500">/ 100 · {String(out.tier ?? "")}</span>
+          </div>
+          {((out.signals ?? []) as { name: string; points: number; maxPoints: number }[])
+            .slice(0, 7)
+            .map((g) => (
+              <div key={g.name} className="flex items-center gap-2 text-xs">
+                <span className="w-32 shrink-0 truncate text-gray-500">{g.name}</span>
+                <span className="tabular-nums text-gray-500">
+                  {g.points}/{g.maxPoints}
+                </span>
+              </div>
+            ))}
+        </div>
+      );
+    }
+
+    case "analyze_loan_repayment": {
+      const verdict = String(out.verdict ?? "");
+      const good = verdict === "comfortable";
+      const tight = verdict === "tight but possible";
+      return (
+        <div
+          className={`flex flex-col gap-1 rounded-2xl border p-3 text-sm ${
+            good
+              ? "border-green-200 bg-green-50 text-[#1a1a1a]"
+              : tight
+                ? "border-amber-200 bg-amber-50 text-[#1a1a1a]"
+                : "border-red-200 bg-red-50 text-[#1a1a1a]"
+          }`}
+        >
+          <p className="font-medium">
+            {good
+              ? "Looks comfortable"
+              : tight
+                ? "Tight but possible"
+                : "Risky on current sales"}
+          </p>
+          <p className="text-xs text-gray-500">
+            {String(out.currency ?? "")} {Number(out.weekly_payment ?? 0).toLocaleString()}/week
+            vs ~{String(out.currency ?? "")} {Number(out.avg_weekly_revenue ?? 0).toLocaleString()}{" "}
+            weekly sales · coverage {String(out.coverage_ratio ?? "—")}×
+          </p>
+          <p className="text-xs text-gray-500">{String(out.note ?? "")}</p>
         </div>
       );
     }

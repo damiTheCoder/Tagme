@@ -34,15 +34,15 @@ export function ChatInput({
           placeholder="Type a message…"
           rows={1}
           disabled={disabled}
-          className="max-h-28 flex-1 resize-none overflow-y-auto rounded-2xl border border-input bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none disabled:opacity-50"
+          className="max-h-28 flex-1 resize-none overflow-y-auto rounded-2xl border-0 bg-gray-100 px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none disabled:opacity-50 dark:bg-zinc-800"
         />
         <button
           onClick={submit}
           disabled={disabled || !value.trim()}
           aria-label="Send"
-          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#0066ff] text-white transition-colors hover:bg-[#0052cc] disabled:bg-gray-200 disabled:text-gray-400 disabled:hover:bg-gray-200"
+          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-r from-[#0866FF] via-[#4C8DFF] to-[#00C6FF] text-white transition-opacity hover:opacity-90 disabled:bg-none disabled:bg-gray-200 disabled:text-gray-400"
         >
-          <ArrowUp size={18} />
+          <ArrowUp size={16} />
         </button>
       </div>
     </div>

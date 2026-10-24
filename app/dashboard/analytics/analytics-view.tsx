@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { Percent, Repeat, ShoppingBag, TrendingUp } from "lucide-react";
 import {
   Area,
   AreaChart,
@@ -16,7 +15,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { StatCard } from "@/components/dashboard/stat-card";
+import { SummaryStrip } from "@/components/dashboard/summary-strip";
 import { PageHeader } from "@/components/dashboard/page-header";
 import { formatCurrency, formatNumber } from "@/lib/format";
 import { useTheme } from "next-themes";
@@ -70,12 +69,14 @@ export function AnalyticsView({
         }
       />
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard title="Total orders" value={String(totalOrders)} icon={ShoppingBag} variant="white" />
-        <StatCard title="Total revenue" value={formatMoney(totalRevenue, currency)} icon={TrendingUp} variant="dark" />
-        <StatCard title="Repeat customers" value={String(repeatCustomers)} icon={Repeat} variant="white" />
-        <StatCard title="Conversion rate" value={`${conversionRate}%`} icon={Percent} variant="blue" />
-      </div>
+      <SummaryStrip
+        items={[
+          { label: "Total orders", value: String(totalOrders) },
+          { label: "Total revenue", value: formatMoney(totalRevenue, currency) },
+          { label: "Repeat customers", value: String(repeatCustomers) },
+          { label: "Conversion rate", value: `${conversionRate}%` },
+        ]}
+      />
 
       <Card>
         <CardHeader>
@@ -87,15 +88,15 @@ export function AnalyticsView({
               <AreaChart data={sliced}>
                 <defs>
                   <linearGradient id="revFill" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#006DFF" stopOpacity={0.25} />
-                    <stop offset="100%" stopColor="#006DFF" stopOpacity={0} />
+                    <stop offset="0%" stopColor="#0866FF" stopOpacity={0.25} />
+                    <stop offset="100%" stopColor="#0866FF" stopOpacity={0} />
                   </linearGradient>
                 </defs>
                 <CartesianGrid strokeDasharray="3 3" stroke={grid} />
                 <XAxis dataKey="date" tickFormatter={(d: string) => d.slice(5).replace("-", "/")} tick={{ fontSize: 12, fill: tickFill }} tickLine={false} axisLine={false} interval={Math.max(0, Math.floor(sliced.length / 8))} />
                 <YAxis tick={{ fontSize: 12, fill: tickFill }} tickLine={false} axisLine={false} tickFormatter={(v: number) => formatNumber(Number(v))} />
                 <Tooltip labelFormatter={(d) => String(d)} formatter={(v) => [`${currency} ${v}`, "Revenue"]} contentStyle={{ backgroundColor: tooltipBg, borderRadius: 12, border: "none", boxShadow: "0 1px 3px rgba(0,0,0,0.04),0 1px 2px rgba(0,0,0,0.02)", fontSize: 12 }} />
-                <Area type="monotone" dataKey="revenue" stroke="#006DFF" strokeWidth={2} fill="url(#revFill)" />
+                <Area type="monotone" dataKey="revenue" stroke="#0866FF" strokeWidth={2} fill="url(#revFill)" />
               </AreaChart>
             </ResponsiveContainer>
           </div>
@@ -113,7 +114,7 @@ export function AnalyticsView({
                 <XAxis dataKey="date" tickFormatter={(d: string) => d.slice(5).replace("-", "/")} tick={{ fontSize: 12, fill: tickFill }} tickLine={false} axisLine={false} interval={Math.max(0, Math.floor(sliced.length / 8))} />
                 <YAxis allowDecimals={false} tick={{ fontSize: 12, fill: tickFill }} tickLine={false} axisLine={false} tickFormatter={(v: number) => formatNumber(Number(v))} />
                 <Tooltip labelFormatter={(d) => String(d)} formatter={(v) => [v, "Orders"]} contentStyle={{ backgroundColor: tooltipBg, borderRadius: 12, border: "none", boxShadow: "0 1px 3px rgba(0,0,0,0.04),0 1px 2px rgba(0,0,0,0.02)", fontSize: 12 }} cursor={{ fill: cursorFill }} />
-                <Bar dataKey="orders" fill="#006DFF" radius={[8, 8, 0, 0]} />
+                <Bar dataKey="orders" fill="#0866FF" radius={[8, 8, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>

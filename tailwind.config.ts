@@ -19,7 +19,7 @@ const config: Config = {
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         primary: {
-          DEFAULT: "#006DFF",
+          DEFAULT: "#0866FF",
           foreground: "#ffffff",
         },
         secondary: {
@@ -47,17 +47,17 @@ const config: Config = {
           foreground: "hsl(var(--popover-foreground))",
         },
         brand: {
-          DEFAULT: "#006DFF",
-          hover: "#005DD9",
-          tint: "#006DFF20",
-          softer: "#006DFF15",
+          DEFAULT: "#0866FF",
+          hover: "#0052CC",
+          tint: "#0866FF20",
+          softer: "#0866FF15",
           text: "#ffffff",
           dark: "#0c4a6e",
         },
-        accentPurple: {
-          DEFAULT: "#a78bfa",
-          dark: "#7c3aed",
-          tint: "#a78bfa20",
+        accentBlue: {
+          DEFAULT: "#6EA8FF",
+          dark: "#0866FF",
+          tint: "#6EA8FF20",
         },
         dark: {
           DEFAULT: "#1a1a1a",

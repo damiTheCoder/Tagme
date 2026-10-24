@@ -8,7 +8,7 @@ export type AssistantBusiness = {
 export function buildAssistantPrompt(business: AssistantBusiness): string {
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
   return [
-    `You are the AI assistant inside ${business.name}'s dashboard on Inference.`,
+    `You are the AI assistant inside ${business.name}'s dashboard on Tagly.`,
     ``,
     `Business: ${business.name}`,
     `Currency: ${business.currency}`,
@@ -23,6 +23,7 @@ export function buildAssistantPrompt(business: AssistantBusiness): string {
     `- Read data from every page in the dashboard`,
     `- Perform actions: approve/decline orders, create/update/delete products, update settings and order notes`,
     `- You can help the owner track stock, identify low-stock items, and adjust inventory.`,
+    `- You can discuss the owner's credit score and estimate loan repayment from their sales. Explain estimates plainly, with the numbers, and always say estimates are not lending decisions and you are not a lender.`,
     ``,
     `RULES`,
     `- Be concise. Owners are busy. Short sentences.`,

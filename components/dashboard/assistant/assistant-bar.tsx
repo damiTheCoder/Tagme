@@ -53,11 +53,18 @@ function TypingDots() {
   );
 }
 
-export function AssistantBar({ business }: { business: Business }) {
+export function AssistantBar({
+  business,
+  showSuggestions = true,
+}: {
+  business: Business;
+  showSuggestions?: boolean;
+}) {
   const router = useRouter();
   const [input, setInput] = useState("");
   const [sendError, setSendError] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
   const sentRef = useRef(false);
   const lastAssistantIdRef = useRef<string | null>(null);
 
@@ -75,7 +82,64 @@ export function AssistantBar({ business }: { business: Business }) {
   const expanded = messages.length > 0;
   const canSubmit = input.trim().length > 0 && !busy;
 
-  // Refresh dashboard stats after a successful write tool.
+  // Typewriter placeholder: cycle through the example questions while the
+  // bar is empty, so the suggestions live inside the input itself.
+  const [typedPlaceholder, setTypedPlaceholder] = useState("");
+
+  useEffect(() => {
+    if (!showSuggestions || expanded || input) {
+      setTypedPlaceholder("");
+      return;
+    }
+
+    const reduceMotion =
+      typeof window !== "undefined" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduceMotion) {
+      setTypedPlaceholder(SUGGESTIONS[0]);
+      return;
+    }
+
+    let cancelled = false;
+    let timer: ReturnType<typeof setTimeout>;
+    let phraseIndex = 0;
+    let charIndex = 0;
+    let deleting = false;
+
+    const tick = () => {
+      if (cancelled) return;
+      const phrase = SUGGESTIONS[phraseIndex];
+
+      if (!deleting) {
+        charIndex += 1;
+        setTypedPlaceholder(phrase.slice(0, charIndex));
+        if (charIndex >= phrase.length) {
+          deleting = true;
+          timer = setTimeout(tick, 1800);
+          return;
+        }
+        timer = setTimeout(tick, 55);
+      } else {
+        charIndex -= 1;
+        setTypedPlaceholder(phrase.slice(0, charIndex));
+        if (charIndex <= 0) {
+          deleting = false;
+          phraseIndex = (phraseIndex + 1) % SUGGESTIONS.length;
+          timer = setTimeout(tick, 350);
+          return;
+        }
+        timer = setTimeout(tick, 25);
+      }
+    };
+
+    timer = setTimeout(tick, 400);
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+    };
+  }, [expanded, input, showSuggestions]);
+
+  // Refresh the page's server data after a successful write tool.
   useEffect(() => {
     for (const m of messages) {
       if (m.role !== "assistant") continue;
@@ -119,10 +183,11 @@ export function AssistantBar({ business }: { business: Business }) {
     }
   }, [messages, busy]);
 
-  function onChipClick(suggestion: string) {
-    setInput(suggestion);
-    inputRef.current?.focus();
-  }
+  // Keep the latest reply in view inside the scroll container.
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (el) el.scrollTop = el.scrollHeight;
+  }, [messages, busy]);
 
   function onClear() {
     setMessages([]);
@@ -146,12 +211,15 @@ export function AssistantBar({ business }: { business: Business }) {
       )}
 
       {expanded && (
-        <div className="max-h-[400px] overflow-y-auto pb-3 md:max-h-none md:overflow-visible">
+        <div
+          ref={scrollRef}
+          className="max-h-[400px] overflow-y-auto pb-3 no-scrollbar-desktop md:max-h-[420px]"
+        >
           <div className="flex flex-col gap-2">
             {messages.map((m) => (
               <div key={m.id} className="flex flex-col gap-2">
                 {m.role === "user" ? (
-                  <div className="animate-in slide-in-from-bottom-2 self-end rounded-2xl bg-[#006DFF] px-3 py-2 text-sm text-white duration-300">
+                  <div className="animate-in slide-in-from-bottom-2 self-end rounded-2xl bg-[#0866FF] px-3 py-2 text-sm text-white duration-300">
                     {messageText(m)}
                   </div>
                 ) : (
@@ -192,8 +260,8 @@ export function AssistantBar({ business }: { business: Business }) {
       <div className="rounded-2xl bg-gray-100 dark:bg-zinc-800 px-2 py-1 transition-all duration-300">
         <form onSubmit={onSubmit} className="flex min-h-[44px] items-center gap-2">
           <Image
-            src="/Inference.jpeg"
-            alt="Inference assistant"
+            src="/TagMe.jpeg"
+            alt="Tagly assistant"
             width={44}
             height={44}
             className="ml-3 h-[22px] w-[22px] shrink-0 rounded-md"
@@ -203,7 +271,7 @@ export function AssistantBar({ business }: { business: Business }) {
             ref={inputRef}
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder={expanded ? "Follow up…" : "Ask me anything about your shop…"}
+            placeholder={expanded ? "Follow up…" : typedPlaceholder || "Ask me anything about your shop…"}
             aria-label={`Ask the ${business.name} assistant`}
             className="flex-1 border-0 bg-transparent text-base text-zinc-900 dark:text-zinc-100 placeholder:text-gray-400 focus:outline-none"
           />
@@ -211,7 +279,7 @@ export function AssistantBar({ business }: { business: Business }) {
             type="submit"
             disabled={!canSubmit}
             aria-label="Send assistant message"
-            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-r from-[#f2a7e6] via-[#2b7fff] to-[#9ded33] transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:bg-none disabled:bg-gray-200"
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-r from-[#0866FF] via-[#4C8DFF] to-[#00C6FF] transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:bg-none disabled:bg-gray-200"
           >
             <ArrowUp
               size={18}
@@ -220,19 +288,6 @@ export function AssistantBar({ business }: { business: Business }) {
             />
           </button>
         </form>
-      </div>
-
-      <div className="mt-3 flex flex-wrap gap-2">
-        {SUGGESTIONS.map((s) => (
-          <button
-            key={s}
-            type="button"
-            onClick={() => onChipClick(s)}
-            className="rounded-full bg-gray-100 dark:bg-zinc-800 px-3 py-1.5 text-sm text-[#1a1a1a] dark:text-zinc-100 transition-colors hover:bg-gray-200 dark:hover:bg-zinc-700"
-          >
-            {s}
-          </button>
-        ))}
       </div>
     </div>
   );

@@ -26,8 +26,8 @@
     --card-foreground: 240 10% 3.9%;
     --popover: 0 0% 100%;
     --popover-foreground: 240 10% 3.9%;
-    /* Brand #006DFF */
-    --primary: 214 100% 50%;
+    /* Brand #0866FF */
+    --primary: 217 100% 52%;
     --primary-foreground: 0 0% 100%;
     --secondary: 240 4.8% 95.9%;
     --secondary-foreground: 240 5.9% 10%;
@@ -39,12 +39,12 @@
     --destructive-foreground: 0 0% 98%;
     --border: 240 5.9% 90%;
     --input: 240 5.9% 90%;
-    --ring: 214 100% 50%;
+    --ring: 217 100% 52%;
     --radius: 0.625rem;
-    --brand: #006DFF;
-    --brand-hover: #005DD9;
-    --brand-tint-10: #006DFF20;
-    --brand-tint-20: #006DFF15;
+    --brand: #0866FF;
+    --brand-hover: #0052CC;
+    --brand-tint-10: #0866FF20;
+    --brand-tint-20: #0866FF15;
   }
 
   .dark {
@@ -54,7 +54,7 @@
     --card-foreground: 0 0% 98%;
     --popover: 240 10% 3.9%;
     --popover-foreground: 0 0% 98%;
-    --primary: 214 100% 50%;
+    --primary: 217 100% 52%;
     --primary-foreground: 0 0% 100%;
     --secondary: 240 3.7% 15.9%;
     --secondary-foreground: 0 0% 98%;
@@ -66,7 +66,7 @@
     --destructive-foreground: 0 0% 98%;
     --border: 240 3.7% 15.9%;
     --input: 240 3.7% 15.9%;
-    --ring: 214 100% 50%;
+    --ring: 217 100% 52%;
   }
 }
 
@@ -89,31 +89,60 @@
       display: none;
     }
   }
-  /* Grey gradient border for the mobile chat modal */
-  @media (max-width: 767px) {
-    .modal-gradient-border-mobile {
-      border-style: solid;
-      border-width: 3px 3px 0 3px;
-      border-color: transparent;
-      background:
-        linear-gradient(#fff, #fff) padding-box,
-        linear-gradient(135deg, #e5e7eb, #9ca3af, #4b5563) border-box;
-    }
-  }
 }
 
 @layer utilities {
   .bg-brand {
     background-color: var(--brand);
-  }
-  .bg-brand-hover:hover {
+  }  .bg-brand-hover:hover {
     background-color: var(--brand-hover);
   }
 
   .gauge-track {
     stroke: #e5e7eb;
   }
+  /* Hide scrollbar but keep scrolling (desktop chat containers) */
+  @media (min-width: 768px) {
+    .no-scrollbar-desktop {
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+    .no-scrollbar-desktop::-webkit-scrollbar {
+      width: 0;
+      height: 0;
+      display: none;
+    }
+  }
   .dark .gauge-track {
     stroke: #27272a;
   }
+}
+
+@keyframes ascend {
+  from {
+    opacity: 0;
+    transform: translateY(0.4em);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-ascend {
+  animation: ascend 520ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Landing page: white 70% / logo-blue 30%, blue rising from the bottom */
+.landing-gradient {
+  /* White 70% / light blue 30%, with a long soft blend into the white */
+  background:
+    linear-gradient(
+      to top,
+      #d7e7ff 0%,
+      #d7e7ff 10%,
+      #eef5ff 22%,
+      #ffffff 30%
+    ),
+    #ffffff;
 }

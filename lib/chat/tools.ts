@@ -1,5 +1,6 @@
 import { tool } from "ai";
 import { z } from "zod";
+import { revalidatePath } from "next/cache";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { sendOrderNotification } from "@/lib/email/notify";
 
@@ -105,6 +106,46 @@ export function createTools(opts: {
             items: JSON.stringify(items).slice(0, 500),
           });
           const supabase = admin();
+          // Free-tier gate: free plans get 10 orders per rolling 30 days.
+          // Missing columns (pre-migration_13) fail open — sales must flow.
+          let monthlyCount = 0;
+          try {
+            const { data: gate, error: gateError } = await supabase
+              .from("businesses")
+              .select("subscription_status, orders_this_month, orders_month_reset_at")
+              .eq("id", business.id)
+              .maybeSingle();
+            if (gateError) throw gateError;
+            const resetAt = gate?.orders_month_reset_at
+              ? new Date(gate.orders_month_reset_at).getTime()
+              : 0;
+            if (Date.now() - resetAt > 30 * 24 * 3600 * 1000) {
+              monthlyCount = 0;
+              await supabase
+                .from("businesses")
+                .update({
+                  orders_this_month: 0,
+                  orders_month_reset_at: new Date().toISOString(),
+                })
+                .eq("id", business.id);
+            } else {
+              monthlyCount = Number(gate?.orders_this_month) || 0;
+            }
+            if (gate?.subscription_status !== "active" && monthlyCount >= 10) {
+              return {
+                ok: false,
+                error:
+                  "This merchant has reached their monthly order limit. Please try again next month or contact them directly.",
+              };
+            }
+          } catch (e) {
+            // Pre-migration columns missing — fail open, keep selling.
+            if (e instanceof Error && /monthly order limit/.test(e.message)) throw e;
+            console.log("[create_order] gate skipped", {
+              reason: e instanceof Error ? e.message : "unknown",
+            });
+            monthlyCount = 0;
+          }
           const keys = [
             ...new Set(
               items.map((i) =>
@@ -219,6 +260,17 @@ export function createTools(opts: {
         if (orderError) throw new Error(orderError.message);
         console.log("[create_order] SUCCESS", { order_id: order.id });
 
+        // Count this order toward the free-tier quota. Best-effort:
+        // missing columns (pre-migration) must never fail the order.
+        try {
+          await supabase
+            .from("businesses")
+            .update({ orders_this_month: monthlyCount + 1 })
+            .eq("id", business.id);
+        } catch {
+          // ignore — quota tracking is non-critical
+        }
+
         // Decrement stock now that the order exists. Validated above so
         // this cannot go negative; capped defensively. Skips untracked
         // (null) rows. Best-effort per item — a failure throws and
@@ -252,8 +304,7 @@ export function createTools(opts: {
         // Fire-and-forget owner email — never blocks the AI response.
         // sendOrderNotification swallows its own errors; the trailing
         // .catch covers any unexpected rejection at the boundary.
-        sendOrderNotification({
-          businessId: business.id,
+        sendOrderNotification({          businessId: business.id,
           orderId: order.id,
           items: orderItems.map((i) => ({
             name: i.name,
@@ -265,6 +316,12 @@ export function createTools(opts: {
           customerName: customer.name ?? customer_name?.trim() ?? null,
           customerPhone: customer.phone ?? customer_phone?.trim() ?? null,
         }).catch(() => {});
+
+        try {
+          revalidatePath("/dashboard/credit-score");
+        } catch {
+          // Revalidation is best-effort here; the order already exists.
+        }
 
         return { order_id: order.id, total, currency: business.currency };
         } catch (err) {
