@@ -96,7 +96,7 @@ export function ShareLinkDialog({ url, triggerLabel = "Share your link" }: { url
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className="h-9 w-9 p-0 sm:h-auto sm:w-auto sm:px-4 sm:py-2">
+        <Button className="h-9 w-9 p-0 rounded-xl sm:h-auto sm:w-auto sm:px-4 sm:py-2">
           <Share2 size={16} />
           <span className="hidden sm:inline">{triggerLabel}</span>
         </Button>
