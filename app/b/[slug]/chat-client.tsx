@@ -5,6 +5,8 @@ import { useChat, type UIMessage } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
 import { ChatMessages } from "./chat-messages";
 import { ChatInput } from "./chat-input";
+import { ChatHeader } from "./chat-header";
+import { ChatSkeleton } from "./chat-skeleton";
 import { IdentityForm } from "./identity-form";
 import type { CarouselProduct } from "./product-carousel";
 import { playReceiveSound, playSendSound } from "@/lib/sound/chat-sounds";
@@ -272,27 +274,25 @@ export function ChatClient({
   }
 
   if (phase === "loading") {
-    return (
-      <div className="flex flex-1 items-center justify-center">
-        <p className="text-sm text-muted-foreground">
-          Opening {businessName}…
-        </p>
-      </div>
-    );
+    return <ChatSkeleton businessName={businessName} />;
   }
 
   if (phase === "identify") {
     return (
-      <IdentityForm
-        businessName={businessName}
-        businessSlug={businessSlug}
-        onDone={handleIdentified}
-      />
+      <>
+        <ChatHeader businessName={businessName} />
+        <IdentityForm
+          businessName={businessName}
+          businessSlug={businessSlug}
+          onDone={handleIdentified}
+        />
+      </>
     );
   }
 
   return (
     <>
+      <ChatHeader businessName={businessName} />
       <ChatMessages
         messages={messages}
         busy={busy}

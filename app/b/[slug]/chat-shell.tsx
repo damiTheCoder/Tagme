@@ -27,6 +27,10 @@ export function ChatShell({
   const [dismissing, setDismissing] = useState(false);
   const [time, setTime] = useState("");
   const [inChat, setInChat] = useState(false);
+  // The entrance runs as a plain CSS animation (so it starts with the first
+  // paint, before hydration). Once it is done, Framer takes over the
+  // transform for drag-to-dismiss.
+  const [entered, setEntered] = useState(false);
 
   useEffect(() => {
     const update = () =>
@@ -41,39 +45,65 @@ export function ChatShell({
   useEffect(() => {
     const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
-    controls.start({ y: 0, opacity: 1, transition: { type: "spring", damping: 30, stiffness: 300 } });
     return () => {
       document.body.style.overflow = prev;
     };
-  }, [controls]);
+  }, []);
 
   async function onDragEnd(_: unknown, info: PanInfo) {
     if (dismissing) return;
     if (info.offset.y > 120) {
       setDismissing(true);
-      await controls.start({ y: "100%", opacity: 0, transition: { duration: 0.25 } });
+      await controls.start({
+        y: "100%",
+        opacity: 0,
+        scale: 0.95,
+        transition: { duration: 0.25 },
+      });
       router.back();
     } else {
-      controls.start({ y: 0, transition: { type: "spring", damping: 30, stiffness: 300 } });
+      controls.start({
+        y: 0,
+        scale: 1,
+        transition: { type: "spring", damping: 30, stiffness: 300 },
+      });
     }
   }
 
   return (
     <main
-      className="fixed inset-0 z-50 bg-white bg-cover bg-center px-3 pt-4 dark:bg-zinc-950 sm:flex sm:items-end sm:justify-center sm:p-0 sm:pt-6"
-      style={{ backgroundImage: "url('/page%20modal.jpeg?v=2')" }}
+      className="fixed inset-0 z-50 h-[100dvh] overflow-hidden px-3 pt-4 sm:flex sm:items-end sm:justify-center sm:p-0 sm:pt-6"
+      /* Final backdrop colour ships in the HTML, so the first paint never
+         flashes white while the stylesheet and artwork load. */
+      style={{ backgroundColor: "#ffffff" }}
     >
-      {/* Phone frame */}
+      {/* Backdrop artwork ships in the first paint — no white flash. */}
+      <div
+        aria-hidden
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat dark:bg-zinc-950"
+        style={{ backgroundImage: "url('/page%20modal.jpeg?v=2')" }}
+      />
+      {/* Room dims as the modal arrives: transparent → dark over 200ms.
+          Pure CSS so it starts with the first paint, before hydration. */}
+      <div aria-hidden className="scrim absolute inset-0 bg-black scrim-in" />
+      {/* Phone frame — the slide-in is CSS (first paint), Framer takes over
+          once it has landed so drag-to-dismiss still works. */}
       <motion.div
-        initial={{ y: "100%", opacity: 0 }}
+        initial={false}
         animate={controls}
+        onAnimationEnd={(e) => {
+          if (e.animationName === "sheet-in") setEntered(true);
+        }}
+        onDragStart={() => setEntered(true)}
         drag="y"
         dragListener={false}
         dragControls={dragControls}
         dragConstraints={{ top: 0 }}
         dragElastic={0.15}
         onDragEnd={onDragEnd}
-        className="relative h-full w-full sm:h-[calc(100dvh-1.5rem)] sm:w-auto"
+        className={`relative h-full w-full sm:h-[calc(100dvh-1.5rem)] sm:w-auto ${
+          entered ? "" : "sheet-in"
+        }`}
       >
         {/* Side buttons: silent switch + volume (left), power (right) */}
         <span
@@ -96,8 +126,8 @@ export function ChatShell({
         <div className="flex h-full flex-col rounded-t-[3rem] bg-gradient-to-b from-[#3a3a3c] via-black to-[#3a3a3c] px-[8px] pt-[8px] shadow-2xl sm:mx-auto sm:w-[420px] sm:rounded-t-[3.5rem] sm:rounded-b-none">
           {/* Screen */}
           <div className="flex h-full min-h-0 flex-col overflow-hidden rounded-t-[calc(3rem-8px)] bg-white dark:bg-zinc-950 sm:rounded-t-[calc(3.5rem-8px)] sm:rounded-b-none">
-        {/* iPhone-style status bar */}
-        <div className="flex shrink-0 items-center px-6 pt-6">
+        {/* iPhone-style status bar (sits below the notch with viewport-fit=cover) */}
+        <div className="flex shrink-0 items-center px-6 pt-[calc(1.5rem+env(safe-area-inset-top))]">
           <span className="w-16 text-sm font-semibold text-black dark:text-white">{time || "9:41"}</span>
           <span className="flex flex-1 justify-center" aria-hidden>
             <span className="flex h-[30px] w-24 items-center justify-end rounded-full bg-black">

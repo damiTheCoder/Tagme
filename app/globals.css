@@ -130,7 +130,7 @@
 }
 
 .animate-ascend {
-  animation: ascend 520ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: ascend 700ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 /* Landing page: white 70% / logo-blue 30%, blue rising from the bottom */
@@ -145,4 +145,97 @@
       #ffffff 30%
     ),
     #ffffff;
+}
+
+/*
+ * Chat shell (/b/[slug]): skeleton shown on first paint while the
+ * conversation is restored. Kept outside @layer so it is never purged.
+ */
+.shimmer {
+  position: relative;
+  overflow: hidden;
+  background-color: rgb(0 0 0 / 0.06);
+}
+
+.shimmer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background-image: linear-gradient(
+    90deg,
+    transparent,
+    rgb(255 255 255 / 0.7),
+    transparent
+  );
+  animation: shimmer-slide 1.4s ease-in-out infinite;
+}
+
+.dark .shimmer {
+  background-color: rgb(255 255 255 / 0.08);
+}
+
+.dark .shimmer::after {
+  background-image: linear-gradient(
+    90deg,
+    transparent,
+    rgb(255 255 255 / 0.12),
+    transparent
+  );
+}
+
+@keyframes shimmer-slide {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shimmer::after {
+    animation: none;
+  }
+}
+
+/*
+ * Chat shell (/b/[slug]) entrance. These are plain CSS animations so the
+ * sheet starts arriving with the very first paint, instead of waiting for
+ * JavaScript to hydrate — that is what removes the white gap on load.
+ */
+@keyframes sheet-in {
+  from {
+    transform: translateY(100%) scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
+.sheet-in {
+  animation: sheet-in 460ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.scrim {
+  opacity: 0.18;
+}
+
+@keyframes scrim-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 0.18;
+  }
+}
+
+.scrim-in {
+  animation: scrim-in 200ms ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sheet-in,
+  .scrim-in {
+    animation: none;
+  }
 }

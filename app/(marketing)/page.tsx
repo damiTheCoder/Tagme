@@ -1,6 +1,8 @@
 import Image from "next/image";
 import { ChevronRight } from "lucide-react";
 import { AscendHeadline } from "@/components/marketing/ascend-headline";
+import { CapabilityBackdrop } from "@/components/marketing/capability-backdrop";
+import { CapabilityProvider } from "@/components/marketing/capability-cycle";
 import {
   InstagramIcon,
   TikTokIcon,
@@ -14,80 +16,85 @@ const iconClass =
 
 export default function LandingPage() {
   return (
-    <main className="landing-gradient flex min-h-screen flex-col items-center justify-center px-6 py-10">
-      {/* Logo */}
-      <Image
-        src="/tagly-mark.png"
-        alt="Tagly"
-        width={520}
-        height={241}
-        priority
-        className="h-auto w-[100px] sm:w-[130px]"
-      />
+    <CapabilityProvider>
+      <main className="landing-gradient relative isolate flex min-h-screen flex-col items-center justify-center overflow-hidden px-6 py-10">
+        {/* Photo that swaps with the headline (plain gradient when there is none) */}
+        <CapabilityBackdrop />
 
-      {/* Headline with word-by-word ascend animation */}
-      <h1 className="mt-6 max-w-3xl text-center text-4xl font-semibold leading-[1.12] tracking-tight text-zinc-900 sm:text-5xl lg:text-6xl">
-        Tagly, AI that
-        <br />
-        <AscendHeadline />
-      </h1>
+        {/* Logo */}
+        <Image
+          src="/tagly-mark.png"
+          alt="Tagly"
+          width={520}
+          height={241}
+          priority
+          className="h-auto w-[100px] sm:w-[130px]"
+        />
 
-      <p className="mt-6 text-center text-sm text-gray-500 sm:text-base">
-        Log in or create an account
-      </p>
+        {/* Headline with word-by-word ascend animation */}
+        <h1 className="mt-6 max-w-3xl text-center text-4xl font-semibold leading-[1.12] tracking-tight text-zinc-900 sm:text-5xl lg:text-6xl">
+          Tagly, AI that
+          <br />
+          <AscendHeadline />
+        </h1>
 
-      {/* Account / signup card */}
-      <a
-        href="/signup"
-        className="group mt-4 flex w-full max-w-[460px] items-center gap-3 rounded-2xl bg-[#f2f2f2] px-5 py-4 text-left transition-colors hover:bg-[#eaeaea]"
-      >
-        <span className="min-w-0 flex-1">
-          <span className="block truncate text-base font-semibold text-zinc-900 sm:text-lg">
-            Continue with email
+        <p className="mt-6 text-center text-sm text-gray-500 sm:text-base">
+          Log in or create an account
+        </p>
+
+        {/* Account / signup card */}
+        <a
+          href="/signup"
+          className="group mt-4 flex w-full max-w-[460px] items-center gap-3 rounded-2xl bg-[#f2f2f2] px-5 py-4 text-left transition-colors hover:bg-[#eaeaea]"
+        >
+          <span className="min-w-0 flex-1">
+            <span className="block truncate text-base font-semibold text-zinc-900 sm:text-lg">
+              Continue with email
+            </span>
+            <span className="mt-0.5 block truncate text-xs text-gray-500 sm:text-sm">
+              Create your free shop in minutes
+            </span>
           </span>
-          <span className="mt-0.5 block truncate text-xs text-gray-500 sm:text-sm">
-            Create your free shop in minutes
+          <span className="flex shrink-0 items-center gap-2.5">
+            <span
+              aria-hidden
+              className="flex h-10 w-10 items-center justify-center rounded-full bg-[#e4e4e4] text-base font-semibold text-zinc-700"
+            >
+              T
+            </span>
+            <ChevronRight
+              className="h-4 w-4 text-gray-400 transition-transform group-hover:translate-x-0.5"
+              aria-hidden
+            />
           </span>
-        </span>
-        <span className="flex shrink-0 items-center gap-2.5">
-          <span
-            aria-hidden
-            className="flex h-10 w-10 items-center justify-center rounded-full bg-[#e4e4e4] text-base font-semibold text-zinc-700"
-          >
-            T
-          </span>
-          <ChevronRight
-            className="h-4 w-4 text-gray-400 transition-transform group-hover:translate-x-0.5"
-            aria-hidden
-          />
-        </span>
-      </a>
+        </a>
 
-      <a
-        href="/login"
-        className="mt-5 text-sm font-medium text-[#0866FF] hover:underline sm:text-base"
-      >
-        Already have an account? Log in
-      </a>
+        <a
+          href="/login"
+          className="mt-5 text-sm font-medium text-[#0866FF] hover:underline sm:text-base"
+        >
+          Already have an account? Log in
+        </a>
 
-      {/* Last sentence with platform icons */}
-      <p className="mt-8 max-w-[34rem] text-balance text-center text-xs leading-relaxed text-gray-400 sm:text-sm">
-        No app to download. Works from your{" "}
-        <span className={platformClass}>
-          <InstagramIcon className={iconClass} />
-          Instagram,
-        </span>{" "}
-        <span className={platformClass}>
-          <TikTokIcon className={iconClass} />
-          TikTok
-        </span>{" "}
-        or{" "}
-        <span className={platformClass}>
-          <WhatsAppIcon className={iconClass} />
-          WhatsApp
-        </span>{" "}
-        bio. Customers chat in English or Pidgin.
-      </p>
-    </main>
+        {/* Last sentence with platform icons */}
+        <p className="mt-8 max-w-[34rem] text-balance text-center text-xs leading-relaxed text-gray-400 sm:text-sm">
+          No app to download. Works from your{" "}
+          <span className={platformClass}>
+            <InstagramIcon className={iconClass} />
+            Instagram,
+          </span>{" "}
+          <span className={platformClass}>
+            <TikTokIcon className={iconClass} />
+            TikTok
+          </span>{" "}
+          or{" "}
+          <span className={platformClass}>
+            <WhatsAppIcon className={iconClass} />
+            WhatsApp
+          </span>{" "}
+          bio. Customers chat in English or Pidgin.
+        </p>
+      </main>
+    </CapabilityProvider>
   );
 }

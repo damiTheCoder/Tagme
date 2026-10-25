@@ -126,7 +126,15 @@ export function DashboardShell({
   const nav = (
     <div className="flex h-full flex-col">
       <Link href="/dashboard" className="flex items-center gap-2.5 px-2 py-1">
-        <Image src="/TagMe.jpeg" alt="Tagly logo" width={36} height={36} className="h-9 w-9 shrink-0 rounded-xl object-contain" />
+        <div className="flex shrink-0 items-center justify-center rounded-xl p-[1.5px] bg-gradient-to-b from-gray-200 via-gray-300 to-gray-400 dark:from-zinc-600 dark:via-zinc-700 dark:to-zinc-800 shadow-[0_2px_6px_rgba(0,0,0,0.08)] dark:shadow-[0_2px_6px_rgba(0,0,0,0.4)]">
+          <Image
+            src="/TagMe.jpeg"
+            alt="Tagly logo"
+            width={36}
+            height={36}
+            className="h-9 w-9 shrink-0 rounded-[10.5px] object-contain bg-white"
+          />
+        </div>
         <span className="text-lg font-semibold text-[#0c4a6e] dark:text-[#7dd3fc]">Tagly</span>
       </Link>
       <nav className="mt-6 flex flex-col gap-1">
@@ -223,8 +231,13 @@ export function DashboardShell({
             <div className="mx-auto flex max-w-6xl items-center gap-3 px-6 py-4">
               <Sheet>
                 <SheetTrigger asChild>
-                  <Button variant="ghost" size="icon" className="md:hidden" aria-label="Open menu">
-                    <PanelLeft size={24} />
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-10 w-10 rounded-xl bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700 md:hidden [&_svg]:size-5"
+                    aria-label="Open menu"
+                  >
+                    <PanelLeft size={20} />
                   </Button>
                 </SheetTrigger>
                 <SheetContent side="left">
@@ -238,7 +251,15 @@ export function DashboardShell({
               </Sheet>
               <h1 className="hidden text-lg font-semibold text-zinc-900 dark:text-zinc-100 md:block">{pageTitle(pathname)}</h1>
               <Link href="/dashboard" className="flex items-center gap-2 md:hidden">
-                <Image src="/TagMe.jpeg" alt="Tagly logo" width={28} height={28} className="h-7 w-7 shrink-0 rounded-xl object-contain" />
+                <div className="flex shrink-0 items-center justify-center rounded-xl p-[1.5px] bg-gradient-to-b from-gray-200 via-gray-300 to-gray-400 dark:from-zinc-600 dark:via-zinc-700 dark:to-zinc-800 shadow-[0_2px_5px_rgba(0,0,0,0.08)] dark:shadow-[0_2px_5px_rgba(0,0,0,0.4)]">
+                  <Image
+                    src="/TagMe.jpeg"
+                    alt="Tagly logo"
+                    width={28}
+                    height={28}
+                    className="h-7 w-7 shrink-0 rounded-[10.5px] object-contain bg-white"
+                  />
+                </div>
                 <span className="text-lg font-semibold text-[#0c4a6e] dark:text-[#7dd3fc]">Tagly</span>
               </Link>
               <div className="ml-auto flex items-center gap-2">
