@@ -122,10 +122,10 @@ export default async function OverviewPage() {
       {/* Secondary grid */}
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <div className="rounded-2xl bg-white dark:bg-zinc-950">
-          <StatCard title="Pending orders" value={String(pendingOrders.length)} trend={pendingOrders.length > 0 ? "Needs your review" : "All caught up"} variant="blue" icon={Bell} contentClassName="p-2 md:p-3" />
+          <StatCard title="Pending orders" value={String(pendingOrders.length)} trend={pendingOrders.length > 0 ? "Needs your review" : "All caught up"} variant="blue" icon={Bell} contentClassName="p-2 md:p-3" className="rounded-xl" />
         </div>
         <div className="rounded-2xl bg-white dark:bg-zinc-950">
-          <StatCard title="Total customers" value={String(customers.size)} variant="white" icon={Users} contentClassName="p-2 md:p-3" />
+          <StatCard title="Total customers" value={String(customers.size)} variant="white" icon={Users} contentClassName="p-2 md:p-3" className="rounded-xl" />
         </div>
 
         <div className="rounded-2xl bg-white dark:bg-zinc-950 space-y-3">

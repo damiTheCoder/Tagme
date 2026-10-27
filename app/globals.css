@@ -239,3 +239,11 @@
     animation: none;
   }
 }
+
+/* Remove focus outlines from charts */
+.recharts-wrapper,
+.recharts-surface,
+.recharts-wrapper:focus,
+.recharts-surface:focus {
+  outline: none !important;
+}
