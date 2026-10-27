@@ -6,16 +6,14 @@ export type SummaryStripItem = {
   icon?: LucideIcon;
 };
 
-/** Compact summary cards: 2x2 grid on mobile so figures are never
- *  truncated, 4-across strip on sm+. */
 export function SummaryStrip({ items }: { items: SummaryStripItem[] }) {
   return (
-    <div className="grid w-full grid-cols-2 gap-px overflow-hidden rounded-2xl bg-gray-300 dark:bg-zinc-700 sm:grid-cols-4">
+    <div className="flex w-full flex-col divide-y divide-gray-200 dark:divide-zinc-800 sm:flex-row sm:divide-y-0 sm:divide-x sm:divide-gray-200 dark:sm:divide-zinc-800">
       {items.map((it) => {
         return (
           <div
             key={it.label}
-            className="flex min-w-0 flex-col gap-1 bg-gray-100 px-4 py-3 dark:bg-zinc-800"
+            className="flex min-w-0 flex-1 flex-col gap-1 px-4 py-3"
           >
             <span
               className="truncate text-xs text-gray-500 dark:text-zinc-400 sm:text-sm"

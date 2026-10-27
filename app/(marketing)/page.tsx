@@ -23,8 +23,8 @@ export default function LandingPage() {
 
         {/* Logo */}
         <Image
-          src="/tagly-mark.png"
-          alt="Tagly"
+          src="/tagly.png"
+          alt="Logo"
           width={520}
           height={241}
           priority
@@ -33,7 +33,7 @@ export default function LandingPage() {
 
         {/* Headline with word-by-word ascend animation */}
         <h1 className="mt-6 max-w-3xl text-center text-4xl font-semibold leading-[1.12] tracking-tight text-zinc-900 sm:text-5xl lg:text-6xl">
-          Tagly, AI that
+          AI that
           <br />
           <AscendHeadline />
         </h1>

@@ -49,7 +49,7 @@ type NavItem = {
 };
 
 const NAV: NavItem[] = [
-  { href: "/dashboard", label: "Assistant", icon: Sparkles, image: "/AI.png?v=2", exact: true },
+  { href: "/dashboard", label: "Assistant", icon: Sparkles, image: "/AI.jpeg", exact: true },
   { href: "/dashboard/overview", label: "Overview", icon: LayoutDashboard, exact: true },
   { href: "/dashboard/orders", label: "Orders", icon: ShoppingBag, exact: false },
   { href: "/dashboard/inventory", label: "Inventory", icon: Package, exact: false },
@@ -125,17 +125,16 @@ export function DashboardShell({
 
   const nav = (
     <div className="flex h-full flex-col">
-      <Link href="/dashboard" className="flex items-center gap-2.5 px-2 py-1">
-        <div className="flex shrink-0 items-center justify-center rounded-xl p-[1.5px] bg-gradient-to-b from-gray-200 via-gray-300 to-gray-400 dark:from-zinc-600 dark:via-zinc-700 dark:to-zinc-800 shadow-[0_2px_6px_rgba(0,0,0,0.08)] dark:shadow-[0_2px_6px_rgba(0,0,0,0.4)]">
+      <Link href="/dashboard" className="flex items-center gap-2.5 px-2 py-0">
+        <div className="flex shrink-0 items-center justify-center">
           <Image
-            src="/TagMe.jpeg"
+            src="/tagly.png"
             alt="Tagly logo"
-            width={36}
-            height={36}
-            className="h-9 w-9 shrink-0 rounded-[10.5px] object-contain bg-white"
+            width={64}
+            height={64}
+            className="h-16 w-16 shrink-0 rounded-[10.5px] object-contain"
           />
         </div>
-        <span className="text-lg font-semibold text-[#0c4a6e] dark:text-[#7dd3fc]">Tagly</span>
       </Link>
       <nav className="mt-6 flex flex-col gap-1">
         {NAV.map((item) => {
@@ -147,7 +146,7 @@ export function DashboardShell({
               href={item.href}
               className={cn(
                 "group flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
-                active ? "bg-[#7dd3fc20] text-[#0c4a6e] dark:bg-[#7dd3fc15] dark:text-[#7dd3fc]" : "text-gray-600 hover:bg-gray-100 dark:text-zinc-400 dark:hover:bg-zinc-900"
+                active ? "bg-[#0866FF20] text-[#0866FF] dark:bg-[#0866FF15] dark:text-[#a8fe65]" : "text-gray-600 hover:bg-gray-100 dark:text-zinc-400 dark:hover:bg-zinc-900"
               )}
             >
               {item.image ? (
@@ -162,7 +161,7 @@ export function DashboardShell({
                   )}
                 />
               ) : (
-                <Icon size={20} className={active ? "text-[#0c4a6e] dark:text-[#7dd3fc]" : "text-gray-400 dark:text-zinc-500"} />
+                  <Icon size={20} className={active ? "text-[#0866FF] dark:text-[#a8fe65]" : "text-gray-400 dark:text-zinc-500"} />
               )}
               <span className="flex-1">{item.label}</span>
               {item.href === "/dashboard/orders" && pendingCount > 0 && (
@@ -214,7 +213,7 @@ export function DashboardShell({
       <div className="flex min-h-screen bg-white dark:bg-zinc-950">
         {/* Desktop sidebar */}
         <aside className="hidden w-64 shrink-0 bg-white dark:bg-zinc-950 md:block">
-          <div className="sticky top-0 h-screen overflow-hidden p-4 py-6">{nav}</div>
+          <div className="sticky top-0 h-screen overflow-hidden p-4 pt-2">{nav}</div>
         </aside>
 
         <div className="flex min-w-0 flex-1 flex-col">
@@ -228,7 +227,7 @@ export function DashboardShell({
           )}
           {/* Top bar */}
           <header className="sticky top-0 z-30 bg-white dark:bg-zinc-950">
-            <div className="mx-auto flex max-w-6xl items-center gap-3 px-6 py-4">
+            <div className="mx-auto flex max-w-6xl items-center gap-3 px-4 py-2 md:px-6 md:py-4">
               <Sheet>
                 <SheetTrigger asChild>
                   <Button
@@ -251,23 +250,22 @@ export function DashboardShell({
               </Sheet>
               <h1 className="hidden text-lg font-semibold text-zinc-900 dark:text-zinc-100 md:block">{pageTitle(pathname)}</h1>
               <Link href="/dashboard" className="flex items-center gap-2 md:hidden">
-                <div className="flex shrink-0 items-center justify-center rounded-xl p-[1.5px] bg-gradient-to-b from-gray-200 via-gray-300 to-gray-400 dark:from-zinc-600 dark:via-zinc-700 dark:to-zinc-800 shadow-[0_2px_5px_rgba(0,0,0,0.08)] dark:shadow-[0_2px_5px_rgba(0,0,0,0.4)]">
+                <div className="flex shrink-0 items-center justify-center">
                   <Image
-                    src="/TagMe.jpeg"
+                    src="/tagly.png"
                     alt="Tagly logo"
-                    width={28}
-                    height={28}
-                    className="h-7 w-7 shrink-0 rounded-[10.5px] object-contain bg-white"
+                    width={64}
+                    height={64}
+                    className="h-16 w-16 shrink-0 rounded-[10.5px] object-contain"
                   />
-                </div>
-                <span className="text-lg font-semibold text-[#0c4a6e] dark:text-[#7dd3fc]">Tagly</span>
+               </div>
               </Link>
               <div className="ml-auto flex items-center gap-2">
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <Link
                       href="/dashboard/orders?filter=pending"
-                      className="relative inline-flex h-10 w-10 items-center justify-center rounded-xl text-gray-600 hover:bg-gray-100 hover:text-gray-900 dark:text-zinc-400 dark:hover:bg-zinc-900 dark:hover:text-zinc-100"
+                      className="relative inline-flex h-10 w-10 items-center justify-center rounded-xl bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-zinc-800 dark:text-zinc-400 dark:hover:bg-zinc-700"
                       aria-label="Pending orders"
                     >
                       <Bell size={20} />

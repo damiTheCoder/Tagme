@@ -248,9 +248,7 @@ export function InventoryView({
                         className={
                           state === "out"
                             ? "bg-red-50"
-                            : state === "low"
-                              ? "bg-amber-50"
-                              : undefined
+                            : undefined
                         }
                       >
                         <TableCell>

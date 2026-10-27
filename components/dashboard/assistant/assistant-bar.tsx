@@ -8,6 +8,7 @@ import { DefaultChatTransport } from "ai";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { ArrowUp } from "lucide-react";
+import { Pacifico } from "next/font/google";
 import type { Business } from "@/lib/auth";
 import { playReceiveSound, playSendSound } from "@/lib/sound/chat-sounds";
 import {
@@ -16,6 +17,8 @@ import {
   toolNameOf,
   type ToolPart,
 } from "./assistant-message";
+
+const pacifico = Pacifico({ subsets: ["latin"], weight: "400" });
 
 const SUGGESTIONS = [
   "How much did I sell this week?",
@@ -246,7 +249,7 @@ export function AssistantBar({
     <div className="rounded-2xl bg-gray-100 dark:bg-zinc-800 px-2 py-1 shadow-[0_2px_12px_rgba(0,0,0,0.04)] transition-all duration-300">
       <form onSubmit={onSubmit} className="flex min-h-[44px] items-center gap-2">
         <Image
-          src="/AI.png?v=2"
+          src="/AI.jpeg"
           alt="Tagly assistant"
           width={44}
           height={44}
@@ -282,23 +285,9 @@ export function AssistantBar({
       <div className="flex flex-1 flex-col h-full min-h-[calc(100dvh-10rem)] max-w-3xl mx-auto w-full">
         {!expanded ? (
           <div className="my-auto flex flex-col items-center gap-6 py-8 text-center transition-all duration-300">
-            <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-blue-50 dark:bg-zinc-900 shadow-sm ring-1 ring-black/5 dark:ring-white/10">
-              <Image
-                src="/AI.png?v=2"
-                alt="Tagly assistant"
-                width={48}
-                height={48}
-                className="h-12 w-12 rounded-xl object-contain"
-              />
-            </div>
-            <div>
-              <h1 className="text-3xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">
-                Hi, {business.name}
-              </h1>
-              <p className="mx-auto mt-2 max-w-md text-sm text-gray-500">
-                Ask about your sales, orders, customers or stock — I&apos;ll pull the numbers from your shop.
-              </p>
-            </div>
+            <h1 className={`${pacifico.className} text-3xl tracking-tight text-[#0c4a6e] dark:text-[#a8fe65]`}>
+              hello
+            </h1>
             <div className="w-full max-w-2xl mt-2">
               {renderInputBar(typedPlaceholder || "Ask me anything about your shop…")}
             </div>
@@ -308,7 +297,7 @@ export function AssistantBar({
             <div className="mb-3 flex items-center justify-between border-b border-gray-100 dark:border-zinc-800 pb-3">
               <div className="flex items-center gap-2.5">
                 <Image
-                  src="/AI.png?v=2"
+                  src="/AI.jpeg"
                   alt="Tagly assistant"
                   width={24}
                   height={24}

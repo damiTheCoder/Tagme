@@ -228,7 +228,7 @@ export function ProductDialog({
               placeholder="Everything the AI should know about this product. Ingredients, size, who it's for, how long it takes to make, common questions — write it like you're explaining to a new staff member."
               value={details}
               onChange={(e) => setDetails(e.target.value)}
-              className="min-h-28 w-full rounded-lg border-0 bg-gray-50 dark:bg-zinc-800 px-3 py-2 text-sm text-zinc-900 dark:text-zinc-100 placeholder:text-gray-400 focus:bg-white dark:focus:bg-zinc-900 focus:outline-none focus:ring-1 focus:ring-[#7dd3fc]"
+              className="min-h-28 w-full rounded-lg border-0 bg-gray-50 dark:bg-zinc-800 px-3 py-2 text-sm text-zinc-900 dark:text-zinc-100 placeholder:text-gray-400 focus:bg-white dark:focus:bg-zinc-900 focus:outline-none focus:ring-1 focus:ring-[#a8fe65]"
             />
           </label>
           <p className="-mt-1 text-xs text-gray-500">

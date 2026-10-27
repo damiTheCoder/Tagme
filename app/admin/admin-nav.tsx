@@ -34,7 +34,7 @@ export function AdminNav() {
             className={cn(
               "flex items-center gap-3 border-l-2 px-3 py-2 text-sm font-medium transition-colors",
               active
-                ? "border-[#7dd3fc] bg-[#1f1f1f] text-[#e5e5e5]"
+                ? "border-[#a8fe65] bg-[#1f1f1f] text-[#e5e5e5]"
                 : "border-transparent text-neutral-400 hover:bg-[#1f1f1f] hover:text-[#e5e5e5]"
             )}
           >

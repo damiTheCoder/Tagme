@@ -298,7 +298,7 @@ export function RevenueView({
                   <span
                     className={`shrink-0 rounded-full px-2 py-0.5 text-[11px] font-medium ${
                       r.source === "checkout"
-                        ? "bg-[#0866FF20] text-[#0866FF] dark:text-[#7dd3fc]"
+                        ? "bg-[#0866FF20] text-[#0866FF] dark:text-[#a8fe65]"
                         : "bg-gray-100 text-gray-600 dark:bg-zinc-800 dark:text-zinc-400"
                     }`}
                   >
@@ -375,7 +375,7 @@ export function RevenueView({
               placeholder="Description (optional)"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="w-full rounded-lg border-0 bg-gray-50 px-3 py-2 text-sm placeholder:text-gray-400 focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#7dd3fc] dark:bg-zinc-800 dark:focus:bg-zinc-900"
+              className="w-full rounded-lg border-0 bg-gray-50 px-3 py-2 text-sm placeholder:text-gray-400 focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#a8fe65] dark:bg-zinc-800 dark:focus:bg-zinc-900"
             />
             <Input
               type="date"

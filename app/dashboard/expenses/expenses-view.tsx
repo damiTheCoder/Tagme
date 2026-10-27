@@ -55,7 +55,7 @@ const CATEGORY_COLORS = [
   "#34d399",
   "#fbbf24",
   "#f87171",
-  "#7dd3fc",
+  "#a8fe65",
   "#94a3b8",
 ];
 
@@ -377,7 +377,7 @@ export function ExpensesView({
               placeholder="What was this for? (required for expenses)"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="w-full rounded-lg border-0 bg-gray-50 px-3 py-2 text-sm placeholder:text-gray-400 focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#7dd3fc] dark:bg-zinc-800 dark:focus:bg-zinc-900"
+              className="w-full rounded-lg border-0 bg-gray-50 px-3 py-2 text-sm placeholder:text-gray-400 focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#a8fe65] dark:bg-zinc-800 dark:focus:bg-zinc-900"
             />
             <Input
               type="date"

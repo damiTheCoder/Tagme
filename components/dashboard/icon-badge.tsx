@@ -2,7 +2,7 @@ import type { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const VARIANTS = {
-  blue: "bg-[#7dd3fc20] text-[#0c4a6e] dark:text-[#7dd3fc]",
+  blue: "bg-[#a8fe6520] text-[#0c4a6e] dark:text-[#a8fe65]",
   green: "bg-[#22c55e20] text-[#15803d]",
   "purple-solid": "bg-[#0866FF] text-white",
   dark: "bg-white/10 text-white",

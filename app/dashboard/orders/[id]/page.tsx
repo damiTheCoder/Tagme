@@ -58,7 +58,7 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
 
   return (
     <div className="space-y-6">
-      <Link href="/dashboard/orders" className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-[#0c4a6e] dark:hover:text-[#7dd3fc]">
+      <Link href="/dashboard/orders" className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-[#0c4a6e] dark:hover:text-[#a8fe65]">
         <ChevronLeft size={16} /> Back to orders
       </Link>
 
