@@ -282,7 +282,7 @@ export function AssistantBar({
 
   if (fullPage) {
     return (
-      <div className="flex flex-1 flex-col h-full min-h-[calc(100dvh-10rem)] max-w-3xl mx-auto w-full">
+      <div className="flex flex-1 flex-col h-[calc(100dvh-10rem)] max-w-3xl mx-auto w-full">
         {!expanded ? (
           <div className="my-auto flex flex-col items-center gap-6 py-8 text-center transition-all duration-300">
             <h1 className={`${pacifico.className} text-3xl tracking-tight text-[#0c4a6e] dark:text-[#a8fe65]`}>
