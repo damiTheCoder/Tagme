@@ -50,13 +50,14 @@ export function createTools(opts: {
         const clean = query.replace(/[%_]/g, "").trim().slice(0, 100);
         const { data, error } = await admin()
           .from("products")
-          .select("id, name, price, in_stock, stock_count, description, details")
+          .select("id, public_id, name, price, in_stock, stock_count, description, details")
           .eq("business_id", business.id)
           .ilike("name", `%${clean}%`)
           .limit(10);
         if (error) throw new Error(error.message);
         return (data ?? []).map((p) => ({
           id: p.id,
+          public_id: p.public_id,
           name: p.name,
           price: p.price,
           in_stock: p.in_stock,
@@ -156,26 +157,62 @@ export function createTools(opts: {
             ),
           ].filter(Boolean);
           if (keys.length === 0) throw new Error("No valid product references.");
-          const list = keys.join(",");
           console.log("[create_order] looking up products", {
             item_keys: keys,
           });
-          // Accept row UUIDs and public IDs (PRD-001…) — the model may send either.
-          const { data: products, error: lookupError } = await withTimeout(
-            "product lookup",
-            supabase
-              .from("products")
-              .select("id, public_id, name, price, stock_count")
-              .eq("business_id", business.id)
-              .or(`id.in.(${list}),public_id.in.(${list})`)
-          );
+          // Accept row UUIDs and public IDs (PRD-001…) — the model may send
+          // either. They MUST be queried separately: a single .or() mixing
+          // id.in.(PRD-001) makes Postgres cast the public ID to uuid and
+          // abort the whole query with 22P02 ("invalid input syntax for
+          // type uuid"), so the public_id branch never matches and every
+          // public-ID order fails. Query each kind on its own column instead.
+          const UUID_RE =
+            /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+          const uuidKeys = keys.filter((k) => UUID_RE.test(k));
+          const publicKeys = keys.filter((k) => !UUID_RE.test(k));
+          type ProductRow = {
+            id: string;
+            public_id: string | null;
+            name: string;
+            price: number;
+            stock_count: number | null;
+          };
+          const resolved: ProductRow[] = [];
+          if (uuidKeys.length > 0) {
+            const { data, error } = await withTimeout(
+              "product lookup (by id)",
+              supabase
+                .from("products")
+                .select("id, public_id, name, price, stock_count")
+                .eq("business_id", business.id)
+                .in("id", uuidKeys)
+            );
+            if (error) throw new Error(error.message);
+            resolved.push(...(data ?? []));
+          }
+          if (publicKeys.length > 0) {
+            const { data, error } = await withTimeout(
+              "product lookup (by public_id)",
+              supabase
+                .from("products")
+                .select("id, public_id, name, price, stock_count")
+                .eq("business_id", business.id)
+                .in(
+                  "public_id",
+                  publicKeys.map((k) => k.toUpperCase())
+                )
+            );
+            if (error) throw new Error(error.message);
+            resolved.push(...(data ?? []));
+          }
           console.log("[create_order] products resolved", {
-            count: products?.length,
-            lookupError: lookupError?.message ?? null,
+            count: resolved.length,
+            uuid_keys: uuidKeys.length,
+            public_keys: publicKeys.length,
           });
-          if (lookupError) throw new Error(lookupError.message);
-          const byKey = new Map<string, (typeof products)[number]>();
-          for (const p of products ?? []) {
+          const products = resolved;
+          const byKey = new Map<string, ProductRow>();
+          for (const p of products) {
             byKey.set(p.id, p);
             if (p.public_id) byKey.set(p.public_id.toUpperCase(), p);
           }
