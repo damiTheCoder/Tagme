@@ -7,9 +7,17 @@ type BachsEvent = {
   type?: string;
   data?: {
     checkout_id?: string;
+    charge_id?: string;
+    payment_id?: string;
     subscription_id?: string;
     status?: string;
     metadata?: Record<string, string | undefined> | null;
+    meta?: Record<string, string | undefined> | null;
+    charge?: {
+      checkout_id?: string;
+      payment_id?: string;
+      meta?: Record<string, string | undefined> | null;
+    } | null;
   } | null;
 };
 
@@ -30,6 +38,37 @@ async function businessIdForSubscription(
   return null;
 }
 
+/**
+ * Bank-transfer charges only expose their reference under `meta` (not
+ * `metadata`), and it can be nested inside `charge`. Check every shape.
+ */
+function orderIdFrom(data: NonNullable<BachsEvent["data"]>): string | null {
+  return (
+    data.metadata?.order_id ??
+    data.meta?.order_id ??
+    data.charge?.meta?.order_id ??
+    null
+  );
+}
+
+/** Mark an order paid + stamp the charge id. Idempotent on repeat events. */
+async function markOrderPaid(
+  supabase: ReturnType<typeof createAdminClient>,
+  orderId: string,
+  chargeId?: string
+): Promise<void> {
+  await supabase
+    .from("orders")
+    .update({
+      payment_status: "paid",
+      status: "paid",
+      paid_at: new Date().toISOString(),
+      ...(chargeId ? { bachs_charge_id: chargeId } : {}),
+    })
+    .eq("id", orderId)
+    .neq("payment_status", "paid");
+}
+
 export async function POST(req: Request) {
   // Raw body is mandatory — parsed JSON would break signature verification.
   const rawBody = await req.text();
@@ -46,6 +85,30 @@ export async function POST(req: Request) {
     const metadata = data.metadata ?? {};
 
     switch (event.type) {
+      // Bank-transfer charges (customer chat orders) emit charge.* events.
+      case "charge.succeeded": {
+        const orderId = orderIdFrom(data);
+        if (orderId) {
+          await markOrderPaid(
+            supabase,
+            orderId,
+            data.charge_id ?? data.payment_id ?? data.charge?.payment_id
+          );
+        }
+        break;
+      }
+      case "charge.failed":
+      case "charge.expired": {
+        const orderId = orderIdFrom(data);
+        if (orderId) {
+          await supabase
+            .from("orders")
+            .update({ payment_status: "failed" })
+            .eq("id", orderId)
+            .neq("payment_status", "paid");
+        }
+        break;
+      }
       case "collection.succeeded": {
         if (metadata.order_id) {
           await supabase

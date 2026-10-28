@@ -40,20 +40,33 @@ function toDecimalString(amount: number | string): string {
   return n.toFixed(2);
 }
 
-async function bachsFetch<T>(path: string, body: Record<string, unknown>): Promise<T> {
+/** Short random tag so repeat charges for the same order don't collide. */
+function randomSuffix(): string {
+  return Math.random().toString(36).slice(2, 8);
+}
+
+async function bachsRequest<T>(
+  method: "GET" | "POST",
+  path: string,
+  body?: Record<string, unknown>
+): Promise<T> {
   const url = `${baseUrl()}${path}`;
   // Never log the key or full body (PII) — keys and shape only.
-  console.log("[bachs] request", { url, method: "POST", bodyKeys: Object.keys(body) });
+  console.log("[bachs] request", {
+    url,
+    method,
+    bodyKeys: body ? Object.keys(body) : [],
+  });
   let res: Response;
   try {
     res = await fetch(url, {
-      method: "POST",
+      method,
       headers: {
         Authorization: `Bearer ${secretKey()}`,
         "Content-Type": "application/json",
         Accept: "application/json",
       },
-      body: JSON.stringify(body),
+      ...(body ? { body: JSON.stringify(body) } : {}),
     });
   } catch (err) {
     console.error("[bachs] fetch threw", err instanceof Error ? err.message : err);
@@ -79,6 +92,142 @@ type CheckoutSessionResponse = {
   status?: string;
 };
 
+type BankTransferSessionResponse = {
+  checkout_id: string;
+  mode: string;
+  status: string;
+  amount: string;
+  currency: string;
+  reference: string;
+  expires_at: string;
+  created_at: string;
+};
+
+type ConfirmBankTransferResponse = {
+  checkout_id: string;
+  charge_id: string;
+  status: string;
+  payment_method: string;
+  currency: string;
+  amount: number;
+  next_step: {
+    type: string;
+    bank_account: {
+      account_name: string;
+      account_number: string;
+      bank_name: string;
+      bank_code: string;
+      expires_at: string;
+      reference: string;
+      payment_reference: string;
+    } | null;
+    expires_at: string;
+  } | null;
+};
+
+export type BankTransferCharge = {
+  chargeId: string;
+  checkoutId: string;
+  accountNumber: string;
+  accountName: string;
+  bankName: string;
+  bankCode: string;
+  expiresAt: string;
+  amount: string;
+  currency: string;
+  reference: string;
+  paymentReference: string;
+};
+
+/**
+ * Starts a one-time customer payment for an order via NGN bank transfer.
+ *
+ * Bachs' headless bank-transfer flow has two steps:
+ *   1. Create a `custom` ui_mode checkout session (no hosted page, so the
+ *      buyer's `customer.email` is mandatory and must pass deliverability).
+ *   2. Confirm it with `payment_method: "NGN_BANK_TRANSFER"`, which mints a
+ *      reserved virtual account and returns the instructions.
+ *
+ * Note: `POST /v1/charges` is NOT usable here — it only charges saved
+ * payment methods and rejects fresh bank-transfer charges.
+ *
+ * The returned account details are only available from this response; they
+ * are NOT retrievable later via GET or re-confirm, so callers must persist
+ * them (we store them on the order row).
+ */
+export async function createBankTransferCharge(params: {
+  orderId: string;
+  amount: string;
+  email: string;
+  customerName?: string;
+  businessName: string;
+}): Promise<BankTransferCharge> {
+  const { orderId, amount, email, customerName, businessName } = params;
+
+  const session = await bachsRequest<BankTransferSessionResponse>(
+    "POST",
+    "/v1/checkout-sessions",
+    {
+      billing: "one_time",
+      ui_mode: "custom",
+      pricing: { currency: "NGN", amount: toDecimalString(amount) },
+      customer: { email, name: customerName || businessName },
+      // Bachs enforces reference uniqueness per account. A repeat "Pay Now"
+      // (e.g. after the reserved account expired) mints a fresh session, so
+      // suffix a short random tag — the order id stays recoverable in
+      // `metadata.order_id`, which is what the webhook actually reads.
+      reference: `${orderId.slice(0, 32)}.${randomSuffix()}`,
+      metadata: {
+        kind: "order_payment",
+        order_id: orderId,
+        business_name: businessName,
+      },
+    }
+  );
+
+  const confirmed = await bachsRequest<ConfirmBankTransferResponse>(
+    "POST",
+    `/v1/checkout-sessions/${session.checkout_id}/confirm`,
+    {
+      currency: "NGN",
+      payment_method: "NGN_BANK_TRANSFER",
+    }
+  );
+
+  const account = confirmed.next_step?.bank_account;
+  if (!account?.account_number || !account?.bank_name) {
+    throw new Error("Bachs did not return bank account details for this charge.");
+  }
+
+  return {
+    chargeId: confirmed.charge_id,
+    checkoutId: confirmed.checkout_id,
+    accountNumber: account.account_number,
+    accountName: account.account_name,
+    bankName: account.bank_name,
+    bankCode: account.bank_code,
+    expiresAt: account.expires_at || confirmed.next_step?.expires_at || "",
+    amount: toDecimalString(amount),
+    currency: confirmed.currency || "NGN",
+    reference: account.reference,
+    paymentReference: account.payment_reference,
+  };
+}
+
+/** Fetch a charge's current payment status by charge id (for polling before webhooks land). */
+export async function getChargeStatus(chargeId: string): Promise<string | null> {
+  try {
+    const res = await bachsRequest<{ status?: string; payment_status?: string }>(
+      "GET",
+      `/v1/payments/${chargeId}`
+    );
+    return res.payment_status ?? res.status ?? null;
+  } catch {
+    // Non-fatal: status polling is a best-effort supplement to the webhook.
+    return null;
+  }
+}
+
 /**
  * Starts the ₦3,000/month vendor subscription. Bachs turns the session
  * into a subscription because the product carries a billing cycle; the
@@ -90,40 +239,18 @@ export async function createSubscriptionCheckout(
   successUrl: string,
   cancelUrl: string
 ): Promise<string> {
-  const session = await bachsFetch<CheckoutSessionResponse>("/v1/checkout-sessions", {
-    billing: "subscription",
-    product_cart: [{ product_id: subscriptionProductId(), quantity: 1 }],
-    customer: { email },
-    success_url: successUrl,
-    cancel_url: cancelUrl,
-    metadata: { kind: "subscription", business_id: businessId },
-  });
-  if (!session.checkout_url) throw new Error("Bachs did not return a checkout URL.");
-  return session.checkout_url;
-}
-
-/**
- * Starts a one-time customer payment for an order. Uses raw pricing since
- * order totals are computed at checkout time. The order is identified by
- * `reference` and confirmed via webhook — never via the redirect alone.
- */
-export async function createCustomerCheckout(
-  orderId: string,
-  amount: string,
-  email: string,
-  businessName: string,
-  successUrl: string,
-  cancelUrl: string
-): Promise<string> {
-  const session = await bachsFetch<CheckoutSessionResponse>("/v1/checkout-sessions", {
-    billing: "one_time",
-    pricing: { currency: "NGN", amount: toDecimalString(amount) },
-    customer: { email },
-    success_url: successUrl,
-    cancel_url: cancelUrl,
-    reference: orderId,
-    metadata: { kind: "order_payment", order_id: orderId, business_name: businessName },
-  });
+  const session = await bachsRequest<CheckoutSessionResponse>(
+    "POST",
+    "/v1/checkout-sessions",
+    {
+      billing: "subscription",
+      product_cart: [{ product_id: subscriptionProductId(), quantity: 1 }],
+      customer: { email },
+      success_url: successUrl,
+      cancel_url: cancelUrl,
+      metadata: { kind: "subscription", business_id: businessId },
+    }
+  );
   if (!session.checkout_url) throw new Error("Bachs did not return a checkout URL.");
   return session.checkout_url;
 }
