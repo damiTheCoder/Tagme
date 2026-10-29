@@ -1,10 +1,7 @@
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import {
-  createBankTransferCharge,
-  getChargeStatus,
-  type BankTransferCharge,
-} from "@/lib/bachs/client";
+import { getChargeStatus } from "@/lib/bachs/client";
+import { loadOrderRow, startOrderPayment } from "@/lib/checkout/payment";
 
 /**
  * Customer payment for an order via NGN bank transfer (anonymous buyers).
@@ -14,134 +11,13 @@ import {
  *   POST /api/checkout/order  { orderId, email?, businessName? }
  *     → 200 { ok: true, payment: { account_number, bank_name, expires_at, ... } }
  *
+ * The charge itself lives in `startOrderPayment` so the GUI-driven chat flow
+ * (`pay_now`) and this legacy route run one identical implementation.
+ *
  * Bachs mints a reserved virtual account per charge and only returns the
  * details in the confirm response, so we persist them on the order row and
  * re-serve them for repeat "Pay Now" clicks until they expire.
  */
-
-type OrderRow = {
-  id: string;
-  business_id: string;
-  total: number;
-  currency: string | null;
-  status: string | null;
-  payment_status: string | null;
-  paid_at: string | null;
-  bachs_checkout_id: string | null;
-  bachs_charge_id: string | null;
-  bank_account_number: string | null;
-  bank_account_name: string | null;
-  bank_name: string | null;
-  bank_transfer_expires_at: string | null;
-};
-
-const ORDER_COLUMNS =
-  "id, business_id, total, currency, status, payment_status, paid_at, " +
-  "bachs_checkout_id, bachs_charge_id, bank_account_number, bank_account_name, " +
-  "bank_name, bank_transfer_expires_at";
-
-// Older DBs (pre migration_13/14) lack the Bachs columns. Fall back so the
-// route still works — it just can't reuse a previously-minted account.
-const ORDER_COLUMNS_LEGACY = "id, business_id, total, currency, status";
-
-function paymentResponse(charge: {
-  chargeId: string;
-  checkoutId: string;
-  accountNumber: string;
-  accountName: string;
-  bankName: string;
-  expiresAt: string;
-  amount: string;
-  currency: string;
-  reference: string;
-  paymentReference: string;
-}) {
-  return {
-    ok: true,
-    payment: {
-      charge_id: charge.chargeId,
-      checkout_id: charge.checkoutId,
-      account_number: charge.accountNumber,
-      account_name: charge.accountName,
-      bank_name: charge.bankName,
-      expires_at: charge.expiresAt,
-      amount: charge.amount,
-      currency: charge.currency,
-      reference: charge.reference,
-      payment_reference: charge.paymentReference,
-    },
-  };
-}
-
-async function loadBusiness(
-  supabase: ReturnType<typeof createAdminClient>,
-  businessId: string
-): Promise<{ id: string; name: string; slug: string; bachs_account_id?: string | null } | null> {
-  const { data, error } = await supabase
-    .from("businesses")
-    .select("id, name, slug, bachs_account_id")
-    .eq("id", businessId)
-    .maybeSingle();
-  if (!error) return data;
-  // Migration 15 not applied yet — no Connect account, so the charge is a
-  // plain one (same as before) rather than a destination charge.
-  if (/column|schema/i.test(error.message)) {
-    const legacy = await supabase
-      .from("businesses")
-      .select("id, name, slug")
-      .eq("id", businessId)
-      .maybeSingle();
-    return legacy.error ? null : legacy.data;
-  }
-  return null;
-}
-
-async function loadOrder(
-  supabase: ReturnType<typeof createAdminClient>,
-  orderId: string
-): Promise<OrderRow | null> {
-  const { data, error } = await supabase
-    .from("orders")
-    .select(ORDER_COLUMNS)
-    .eq("id", orderId)
-    .maybeSingle();
-  if (!error) return data as OrderRow | null;
-
-  // Migration 13/14 not applied yet — retry with the legacy column set.
-  if (/column|schema/i.test(error.message)) {
-    const legacy = await supabase
-      .from("orders")
-      .select(ORDER_COLUMNS_LEGACY)
-      .eq("id", orderId)
-      .maybeSingle();
-    return legacy.data as OrderRow | null;
-  }
-  return null;
-}
-
-/** Persist the minted account details so repeat clicks reuse them. */
-async function persistCharge(
-  supabase: ReturnType<typeof createAdminClient>,
-  orderId: string,
-  charge: BankTransferCharge
-): Promise<void> {
-  const { error } = await supabase
-    .from("orders")
-    .update({
-      bachs_checkout_id: charge.checkoutId,
-      bachs_charge_id: charge.chargeId,
-      bank_account_number: charge.accountNumber,
-      bank_account_name: charge.accountName,
-      bank_name: charge.bankName,
-      bank_transfer_expires_at: charge.expiresAt || null,
-    })
-    .eq("id", orderId);
-  if (error) {
-    // Non-fatal: pre-migration DB. The charge still works; we just mint a
-    // fresh account on the next click instead of reusing this one.
-    console.warn("[checkout order] could not persist bank details:", error.message);
-  }
-}
 
 export async function POST(req: Request) {
   try {
@@ -161,75 +37,20 @@ export async function POST(req: Request) {
       return NextResponse.json({ ok: false, error: "orderId is required." }, { status: 400 });
     }
 
-    const supabase = createAdminClient();
-    const order = await loadOrder(supabase, orderId);
-    if (!order) {
-      return NextResponse.json({ ok: false, error: "Order not found." }, { status: 404 });
-    }
-    if (order.payment_status === "paid") {
-      return NextResponse.json({ ok: false, error: "Order is already paid." }, { status: 400 });
-    }
-    const business = await loadBusiness(supabase, order.business_id);
-    if (!business) {
-      return NextResponse.json({ ok: false, error: "Business not found." }, { status: 404 });
-    }
+    const result = await startOrderPayment({
+      orderId,
+      email: typeof email === "string" ? email : undefined,
+      businessName: typeof businessName === "string" ? businessName : undefined,
+      customerName: typeof customerName === "string" ? customerName : undefined,
+    });
 
-    // Repeat "Pay Now" click: reuse the still-valid account we already minted.
-    if (
-      order.bank_account_number &&
-      order.bank_name &&
-      (!order.bank_transfer_expires_at ||
-        new Date(order.bank_transfer_expires_at).getTime() > Date.now())
-    ) {
-      return NextResponse.json({
-        ok: true,
-        reused: true,
-        payment: {
-          charge_id: order.bachs_charge_id,
-          checkout_id: order.bachs_checkout_id,
-          account_number: order.bank_account_number,
-          account_name: order.bank_account_name,
-          bank_name: order.bank_name,
-          expires_at: order.bank_transfer_expires_at,
-          amount: Number(order.total).toFixed(2),
-          currency: order.currency ?? "NGN",
-        },
-      });
+    if (!result.ok) {
+      return NextResponse.json({ ok: false, error: result.error }, { status: result.status });
     }
-
-    // Bachs requires a deliverable email for custom (headless) checkouts.
-    // Prefer the buyer's, else a tagged address on our own sending domain.
-    const buyerEmail =
-      typeof email === "string" && email.includes("@")
-        ? email
-        : `checkout+${order.id.slice(0, 8)}@resend.dev`;
-
-    try {
-      const charge = await createBankTransferCharge({
-        orderId: order.id,
-        amount: String(order.total),
-        email: buyerEmail,
-        customerName:
-          typeof customerName === "string" && customerName ? customerName : undefined,
-        businessName:
-          typeof businessName === "string" && businessName ? businessName : business.name,
-        // With a Connect account on file this becomes a destination charge:
-        // the vendor's share moves to them and we keep our 1.5% platform fee.
-        vendorAccountId: business.bachs_account_id ?? null,
-      });
-      await persistCharge(supabase, order.id, charge);
-      return NextResponse.json(paymentResponse(charge));
-    } catch (e) {
-      console.error(
-        "[checkout order] failed",
-        e instanceof Error ? e.message : e,
-        e instanceof Error ? e.stack : undefined
-      );
-      return NextResponse.json(
-        { ok: false, error: e instanceof Error ? e.message : "Could not start checkout." },
-        { status: 500 }
-      );
+    if (result.reused) {
+      return NextResponse.json({ ok: true, reused: true, payment: result.payment });
     }
+    return NextResponse.json({ ok: true, payment: result.payment });
   } catch (outer) {
     console.error(
       "[checkout order] failed",
@@ -256,7 +77,7 @@ export async function GET(req: Request) {
   }
 
   const supabase = createAdminClient();
-  const order = await loadOrder(supabase, orderId);
+  const order = await loadOrderRow(supabase, orderId);
   if (!order) {
     return NextResponse.json({ ok: false, error: "Order not found." }, { status: 404 });
   }

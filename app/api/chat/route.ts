@@ -10,6 +10,12 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { signConversationToken, verifyConversationToken } from "@/lib/chat/token";
 import { buildSystemPrompt } from "@/lib/chat/prompt";
 import { createTools } from "@/lib/chat/tools";
+import {
+  clampListItems,
+  PART_TOOLNAME,
+  START_FLOW_TOOL,
+  type InteractiveListItem,
+} from "@/lib/chat/interactive";
 
 const MAX_MESSAGES = 50;
 const RATE_LIMIT_PER_HOUR = 30;
@@ -31,9 +37,14 @@ type PersistedToolPart = {
 };
 
 /**
- * Keep only what the client needs to re-render rich content
- * (currently: show_product_catalog product lists). Caps total size
- * to avoid DB bloat; drops parts entirely when over budget.
+ * Keep only what the client needs to re-render rich content.
+ * Caps total size to avoid DB bloat; drops parts entirely when over budget.
+ *
+ * The shopping-flow tool's output is normalised here: instead of storing the
+ * raw `{ok, action, items}` signal, we persist it as an `interactive-list`
+ * part. That way a reloaded transcript renders through exactly the same path
+ * as a live click, and the model never gets to substitute its own text for
+ * the product list.
  */
 function sanitizeAssistantParts(toolResults: unknown): PersistedToolPart[] {
   if (!Array.isArray(toolResults)) return [];
@@ -46,12 +57,31 @@ function sanitizeAssistantParts(toolResults: unknown): PersistedToolPart[] {
     };
     if (typeof row?.toolName !== "string") continue;
     let output: unknown = row.output;
+    let toolName: string = row.toolName;
+
+    if (toolName === START_FLOW_TOOL) {
+      const o = (output ?? {}) as { title?: unknown; body?: unknown; items?: unknown };
+      if (Array.isArray(o.items)) {
+        kept.push({
+          toolName: PART_TOOLNAME["interactive-list"],
+          output: {
+            type: "interactive-list",
+            title: typeof o.title === "string" ? o.title : "Pick a product",
+            body: typeof o.body === "string" ? o.body : undefined,
+            items: clampListItems(o.items as InteractiveListItem[]),
+          },
+        });
+        continue;
+      }
+      // Empty catalog: nothing clickable, so keep the signal as-is.
+    }
+
     // Trim large product lists; keep the rest as-is.
     const out = (output ?? {}) as { products?: unknown };
     if (Array.isArray(out.products) && out.products.length > 10) {
       output = { ...out, products: out.products.slice(0, 10) };
     }
-    kept.push({ toolName: row.toolName, output });
+    kept.push({ toolName, output });
   }
   if (kept.length === 0) return [];
   try {

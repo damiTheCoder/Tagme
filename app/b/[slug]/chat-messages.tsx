@@ -4,6 +4,12 @@ import { useEffect, useRef, useState } from "react";
 import type { UIMessage } from "ai";
 import { Copy, Check, Landmark } from "lucide-react";
 import { ProductCarousel, type CarouselProduct } from "./product-carousel";
+import {
+  InteractiveButtons,
+  InteractiveList,
+  PaymentCard,
+} from "./interactive-messages";
+import { interactiveFromParts } from "@/lib/chat/interactive";
 
 export type { CarouselProduct };
 
@@ -281,16 +287,35 @@ function catalogProducts(message: UIMessage): CarouselProduct[] | null {
   return null;
 }
 
+/**
+ * A tap on a GUI message. `action` is the opaque reply id; `meta` carries the
+ * backend context (product/order ids) so the click stays stateless.
+ */
+export type ReplyRequest = {
+  action: string;
+  label?: string;
+  meta?: Record<string, string>;
+};
+
 export function ChatMessages({
   messages,
   busy,
   onSelectProduct,
+  onReply,
+  onOrderPaid,
+  answered,
   initialProducts = [],
   businessName,
 }: {
   messages: UIMessage[];
   busy: boolean;
   onSelectProduct: (product: CarouselProduct) => void;
+  /** A button/list tap — routed to /api/chat/interact, never to the model. */
+  onReply?: (messageId: string, req: ReplyRequest) => void;
+  /** Payment confirmed → ask the backend for the AI's closing message. */
+  onOrderPaid?: (orderId: string) => void;
+  /** Message ids whose buttons have already been answered this session. */
+  answered?: Set<string>;
   initialProducts?: CarouselProduct[];
   businessName: string;
 }) {
@@ -315,10 +340,14 @@ export function ChatMessages({
         </p>
       )}
       <div className="flex flex-col gap-2">
-        {messages.map((m) => {          const text = messageText(m);
+        {messages.map((m) => {
+          const text = messageText(m);
           const catalog = m.role === "assistant" ? catalogProducts(m) : null;
           const payNow = m.role === "assistant" ? orderOutput(m) : null;
-          if (!text && !catalog && !payNow) return null;
+          // Phase 2 parts: rigid, clickable, never model-generated.
+          const interactive = m.role === "assistant" ? interactiveFromParts(m.parts) : [];
+          const isAnswered = answered?.has(m.id) ?? false;
+          if (!text && !catalog && !payNow && interactive.length === 0) return null;
           if (m.role === "system") {
             if (!text) return null;
             return (
@@ -344,6 +373,35 @@ export function ChatMessages({
                   <p className="whitespace-pre-wrap break-words">{text}</p>
                 </div>
               ) : null}
+              {interactive.map((part, idx) => {
+                if (isUser) return null;
+                const key = `${m.id}-ix${idx}`;
+                if (part.type === "interactive-list") {
+                  return (
+                    <InteractiveList
+                      key={key}
+                      part={part}
+                      answered={isAnswered}
+                      onSelect={(action, label) =>
+                        onReply?.(m.id, { action, label })
+                      }
+                    />
+                  );
+                }
+                if (part.type === "interactive-buttons") {
+                  return (
+                    <InteractiveButtons
+                      key={key}
+                      part={part}
+                      answered={isAnswered}
+                      onSelect={(action, label) =>
+                        onReply?.(m.id, { action, label, meta: part.meta })
+                      }
+                    />
+                  );
+                }
+                return <PaymentCard key={key} part={part} onPaid={onOrderPaid} />;
+              })}
               {catalog && !isUser && (
                 <div className="w-full min-w-0 self-start overflow-hidden">
                   <ProductCarousel products={catalog} onSelect={onSelectProduct} />

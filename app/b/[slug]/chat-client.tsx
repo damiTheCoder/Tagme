@@ -3,12 +3,13 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useChat, type UIMessage } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
-import { ChatMessages } from "./chat-messages";
+import { ChatMessages, type ReplyRequest } from "./chat-messages";
 import { ChatInput } from "./chat-input";
 import { ChatHeader } from "./chat-header";
 import { ChatSkeleton } from "./chat-skeleton";
 import { IdentityForm } from "./identity-form";
 import type { CarouselProduct } from "./product-carousel";
+import { conclusionOrderId } from "@/lib/chat/interactive";
 import { playReceiveSound, playSendSound } from "@/lib/sound/chat-sounds";
 
 type HistoryRow = {
@@ -99,6 +100,161 @@ export function ChatClient({
     transport,
     onError: (e) => setSendError(e.message),
   });
+
+  // ---- Phase 2: GUI clicks (never routed through /api/chat) ---------------
+  /** Message ids whose buttons/lists have already been answered. */
+  const [answered, setAnswered] = useState<Set<string>>(new Set());
+  /** Local message ids for optimistic appends (server rows use uuids). */
+  const localIdRef = useRef(0);
+  /** Orders whose Phase 3 conclusion has already been requested. */
+  const concludedRef = useRef<Set<string>>(new Set());
+
+  /** Append a message locally — no network, no "thinking" delay. */
+  const appendLocal = useCallback(
+    (role: "user" | "assistant", parts: UIMessage["parts"]) => {
+      localIdRef.current += 1;
+      const id = `local-${role}-${localIdRef.current}`;
+      setMessages((prev) => [
+        ...prev,
+        { id, role, parts } as UIMessage,
+      ]);
+      return id;
+    },
+    [setMessages]
+  );
+
+  /**
+   * A tap on a list row or pill button. POSTs to the GUI-only route —
+   * /api/chat is never touched, so the model is never woken and no tokens
+   * are spent. The user's label and the returned message are appended
+   * immediately; the server has already persisted both.
+   */
+  const handleReply = useCallback(
+    async (messageId: string, req: ReplyRequest) => {
+      const token = tokenRef.current;
+      if (!token) {
+        setSendError("Your session expired. Please refresh the page.");
+        return;
+      }
+
+      setSendError(null);
+      // Optimistic: lock the buttons right away, roll back on failure.
+      setAnswered((prev) => new Set(prev).add(messageId));
+
+      const label = req.label?.trim() || req.action;
+      playSendSound();
+      appendLocal("user", [{ type: "text", text: label }]);
+
+      try {
+        const res = await fetch("/api/chat/interact", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            businessSlug,
+            conversationToken: token,
+            action: req.action,
+            productId: req.meta?.product_id,
+            orderId: req.meta?.order_id,
+          }),
+        });
+        const data = await res.json().catch(() => null);
+        if (!res.ok || !data?.ok) {
+          throw new Error(data?.error || "Something went wrong. Try again.");
+        }
+
+        if (data.message && typeof data.message === "object") {
+          const part = data.message as { type: string };
+          playReceiveSound();
+          appendLocal("assistant", [
+            {
+              type: "dynamic-tool",
+              toolName: part.type,
+              toolCallId: `local-tool-${req.action}-${Date.now()}`,
+              state: "output-available",
+              input: {},
+              output: data.message,
+            } as UIMessage["parts"][number],
+          ]);
+        }
+        if (typeof data.text === "string" && data.text.trim()) {
+          // Cancel (and similar) reply with plain copy instead of a part.
+          playReceiveSound();
+          appendLocal("assistant", [{ type: "text", text: data.text }]);
+        }
+      } catch (e) {
+        // Roll back so the customer can try the tap again.
+        setAnswered((prev) => {
+          const next = new Set(prev);
+          next.delete(messageId);
+          return next;
+        });
+        setSendError(e instanceof Error ? e.message : "Something went wrong.");
+      }
+    },
+    [appendLocal, businessSlug]
+  );
+
+  /**
+   * Phase 3 fallback. The Bachs webhook is the primary trigger; this fires a
+   * grace period after the payment poll sees `paid`, giving the webhook time
+   * to win. `complete_flow` is idempotent server-side, and `concludedRef`
+   * keeps a refresh from re-requesting the same order's sign-off.
+   */
+  const handleOrderPaid = useCallback(
+    (orderId: string) => {
+      if (!orderId || concludedRef.current.has(orderId)) return;
+      concludedRef.current.add(orderId);
+
+      const timer = setTimeout(async () => {
+        const token = tokenRef.current;
+        if (!token) return;
+        try {
+          const res = await fetch("/api/chat/interact", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              businessSlug,
+              conversationToken: token,
+              action: "complete_flow",
+              orderId,
+            }),
+          });
+          const data = await res.json().catch(() => null);
+          // `created:false` → the webhook already wrote it; the history poll
+          // surfaces that row, so appending here would duplicate it.
+          if (
+            res.ok &&
+            data?.ok &&
+            data.created &&
+            typeof data.text === "string" &&
+            data.text.trim()
+          ) {
+            // Mark the server row seen so the history poll won't re-append it.
+            if (typeof data.message_id === "string" && data.message_id) {
+              seenIdsRef.current.add(data.message_id);
+            }
+            playReceiveSound();
+            appendLocal("assistant", [
+              {
+                type: "dynamic-tool",
+                toolName: "complete_order_flow",
+                toolCallId: `local-conclusion-${orderId}`,
+                state: "output-available",
+                input: {},
+                output: { order_id: orderId },
+              } as UIMessage["parts"][number],
+              { type: "text", text: data.text },
+            ]);
+          }
+        } catch {
+          // The webhook remains the fallback of last resort.
+        }
+      }, 6000);
+
+      return () => clearTimeout(timer);
+    },
+    [appendLocal, businessSlug]
+  );
 
   function handleSelectProduct(p: CarouselProduct) {
     setSendError(null);
@@ -213,11 +369,13 @@ export function ChatClient({
           ) {
             lastTsRef.current = m.created_at;
           }
-          if (
-            m.role === "system" &&
-            m.content &&
-            !seenIdsRef.current.has(m.id)
-          ) {
+          if (seenIdsRef.current.has(m.id)) continue;
+          // System rows (owner notifications) and the AI's Phase 3 closing
+          // message — which the webhook may have written in another process —
+          // are the only server rows this tab didn't generate itself.
+          const isConclusion =
+            m.role === "assistant" && conclusionOrderId(m.parts) !== null;
+          if (m.content && (m.role === "system" || isConclusion)) {
             seenIdsRef.current.add(m.id);
             additions.push(toUIMessage(m));
           }
@@ -297,6 +455,9 @@ export function ChatClient({
         messages={messages}
         busy={busy}
         onSelectProduct={handleSelectProduct}
+        onReply={handleReply}
+        onOrderPaid={handleOrderPaid}
+        answered={answered}
         initialProducts={initialProducts}
         businessName={businessName}
       />

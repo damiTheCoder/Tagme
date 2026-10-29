@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { verifyWebhookSignature } from "@/lib/bachs/client";
+import { completeOrderFlow } from "@/lib/chat/conclusion";
 
 type BachsEvent = {
   id?: string;
@@ -75,6 +76,31 @@ async function markOrderPaid(
     .neq("payment_status", "paid");
 }
 
+/**
+ * Phase 3 — the AI's closing message, fired the moment payment lands.
+ *
+ * This is the PRIMARY trigger; the customer's client is the fallback for when
+ * our URL isn't reachable (localhost in dev). `completeOrderFlow` is
+ * idempotent, so a webhook and a client racing on the same order produce one
+ * message, not two. Never lets a model failure break the webhook response —
+ * Bachs treats non-2xx as a retry and would re-fire everything.
+ */
+async function conclude(supabase: ReturnType<typeof createAdminClient>, orderId: string): Promise<void> {
+  try {
+    const result = await completeOrderFlow(orderId);
+    if (!result.ok) {
+      console.warn("[bachs webhook] conclusion not written:", result.error);
+    } else if (result.created) {
+      console.log("[bachs webhook] conclusion written for order", orderId);
+    }
+  } catch (e) {
+    console.error(
+      "[bachs webhook] conclusion failed:",
+      e instanceof Error ? e.message : e
+    );
+  }
+}
+
 export async function POST(req: Request) {
   // Raw body is mandatory — parsed JSON would break signature verification.
   const rawBody = await req.text();
@@ -100,6 +126,7 @@ export async function POST(req: Request) {
             orderId,
             data.charge_id ?? data.payment_id ?? data.charge?.payment_id
           );
+          await conclude(supabase, orderId);
         }
         break;
       }
@@ -125,6 +152,7 @@ export async function POST(req: Request) {
               bachs_checkout_id: data.checkout_id ?? null,
             })
             .eq("id", metadata.order_id);
+          await conclude(supabase, metadata.order_id);
         }
         if (metadata.business_id && metadata.kind === "subscription") {
           const endsAt = new Date(Date.now() + 30 * 24 * 3600 * 1000).toISOString();
