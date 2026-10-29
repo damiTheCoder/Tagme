@@ -31,7 +31,7 @@ export default function LandingPage() {
         />
 
         {/* Headline with word-by-word ascend animation */}
-        <h1 className="mt-6 max-w-3xl text-center text-4xl font-semibold leading-[1.12] tracking-tight text-zinc-900 sm:text-5xl lg:text-6xl">
+        <h1 className="mt-6 max-w-3xl text-center text-4xl font-semibold leading-[1.12] tracking-tight text-white sm:text-5xl lg:text-6xl">
           AI that
           <br />
           <AscendHeadline />
@@ -44,7 +44,7 @@ export default function LandingPage() {
         {/* Signup CTA */}
         <a
           href="/signup"
-          className="group mt-4 inline-flex w-auto items-center justify-center rounded-2xl bg-[linear-gradient(to_right,#FF0000,#FFFF00,#00FF00,#0000FF)] px-10 py-4 text-base font-bold text-white transition-opacity hover:opacity-90"
+          className="group mt-4 inline-flex w-auto items-center justify-center rounded-2xl bg-gradient-to-r from-red-500 to-yellow-400 px-10 py-4 text-base font-bold text-white transition-opacity hover:opacity-90"
         >
           Signup
         </a>
