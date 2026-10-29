@@ -1,5 +1,4 @@
 import Image from "next/image";
-import { ChevronRight } from "lucide-react";
 import { AscendHeadline } from "@/components/marketing/ascend-headline";
 import { CapabilityBackdrop } from "@/components/marketing/capability-backdrop";
 import { CapabilityProvider } from "@/components/marketing/capability-cycle";
@@ -42,31 +41,12 @@ export default function LandingPage() {
           Log in or create an account
         </p>
 
-        {/* Account / signup card */}
+        {/* Signup CTA */}
         <a
           href="/signup"
-          className="group mt-4 flex w-full max-w-[460px] items-center gap-3 rounded-2xl bg-[#f2f2f2] px-5 py-4 text-left transition-colors hover:bg-[#eaeaea]"
+          className="group mt-4 flex w-full max-w-[460px] items-center justify-center rounded-2xl bg-gradient-to-r from-[#0866FF] via-[#4C8DFF] to-[#00C6FF] px-5 py-4 text-base font-semibold text-white transition-opacity hover:opacity-90"
         >
-          <span className="min-w-0 flex-1">
-            <span className="block truncate text-base font-semibold text-zinc-900 sm:text-lg">
-              Continue with email
-            </span>
-            <span className="mt-0.5 block truncate text-xs text-gray-500 sm:text-sm">
-              Create your free shop in minutes
-            </span>
-          </span>
-          <span className="flex shrink-0 items-center gap-2.5">
-            <span
-              aria-hidden
-              className="flex h-10 w-10 items-center justify-center rounded-full bg-[#e4e4e4] text-base font-semibold text-zinc-700"
-            >
-              T
-            </span>
-            <ChevronRight
-              className="h-4 w-4 text-gray-400 transition-transform group-hover:translate-x-0.5"
-              aria-hidden
-            />
-          </span>
+          Signup
         </a>
 
         <a
