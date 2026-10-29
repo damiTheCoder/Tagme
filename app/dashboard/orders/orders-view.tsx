@@ -112,7 +112,12 @@ export function OrdersView({ orders, filter }: { orders: Order[]; filter: OrderF
                 <p className="mt-1 text-sm text-gray-500">{itemsSummary(order)}</p>
                 <div className="mt-1 flex justify-between text-sm">
                   <span className="font-medium">{formatTotal(order)}</span>
-                  <span className="text-gray-500">{timeAgo(order.created_at)}</span>
+                  {/* Relative time is computed from Date.now(), so the server
+                      and client legitimately differ (e.g. "5 min ago" ticking
+                      over to "6 min ago" between render and hydration). */}
+                  <span className="text-gray-500" suppressHydrationWarning>
+                    {timeAgo(order.created_at)}
+                  </span>
                 </div>
                 <div className="mt-3 flex flex-wrap items-center gap-2">
                   <Link href={`/dashboard/orders/${order.id}`} className="self-center text-sm text-gray-500 underline hover:text-[#0c4a6e] dark:hover:text-[#a8fe65]">

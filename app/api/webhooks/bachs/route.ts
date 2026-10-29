@@ -5,12 +5,18 @@ import { verifyWebhookSignature } from "@/lib/bachs/client";
 type BachsEvent = {
   id?: string;
   type?: string;
+  /** On Connect events this is the connected account, not our platform. */
+  account?: string;
   data?: {
     checkout_id?: string;
     charge_id?: string;
     payment_id?: string;
     subscription_id?: string;
     status?: string;
+    // Connect events (capability.updated / account.updated) carry the
+    // connected account id and the capability that changed.
+    account?: string;
+    capability?: string;
     metadata?: Record<string, string | undefined> | null;
     meta?: Record<string, string | undefined> | null;
     charge?: {
@@ -139,6 +145,25 @@ export async function POST(req: Request) {
             .from("orders")
             .update({ payment_status: "failed" })
             .eq("id", metadata.order_id);
+        }
+        break;
+      }
+      // Connect onboarding: a vendor's payouts capability changed status.
+      // This is the only trustworthy "ready" signal — the hosted flow's
+      // return redirect fires whether or not verification finished — and a
+      // capability can flip back to restricted, so treat every event as the
+      // current state rather than a one-off unlock.
+      case "capability.updated": {
+        const accountId = data.account ?? event.account ?? null;
+        const status = data.status;
+        if (accountId && data.capability === "payouts" && status) {
+          await supabase
+            .from("businesses")
+            .update({
+              bachs_payouts_status: status,
+              payouts_ready: status === "active",
+            })
+            .eq("bachs_account_id", accountId);
         }
         break;
       }

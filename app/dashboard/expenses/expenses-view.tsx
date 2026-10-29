@@ -318,7 +318,11 @@ export function ExpensesView({
                     <p className="truncate text-sm font-medium">
                       {r.description || r.category || "Expense"}
                     </p>
-                    <p className="text-xs text-gray-500">{timeAgo(r.settled_at ?? r.created_at)}</p>
+                    {/* Date.now()-based label; see orders-view for why this
+                        needs to opt out of the hydration text check. */}
+                    <p className="text-xs text-gray-500" suppressHydrationWarning>
+                      {timeAgo(r.settled_at ?? r.created_at)}
+                    </p>
                   </div>
                   <span className="shrink-0 rounded-full bg-gray-100 px-2 py-0.5 text-[11px] font-medium capitalize text-gray-600 dark:bg-zinc-800 dark:text-zinc-400">
                     {r.category ?? "other"}

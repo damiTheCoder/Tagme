@@ -73,6 +73,29 @@ function paymentResponse(charge: {
   };
 }
 
+async function loadBusiness(
+  supabase: ReturnType<typeof createAdminClient>,
+  businessId: string
+): Promise<{ id: string; name: string; slug: string; bachs_account_id?: string | null } | null> {
+  const { data, error } = await supabase
+    .from("businesses")
+    .select("id, name, slug, bachs_account_id")
+    .eq("id", businessId)
+    .maybeSingle();
+  if (!error) return data;
+  // Migration 15 not applied yet — no Connect account, so the charge is a
+  // plain one (same as before) rather than a destination charge.
+  if (/column|schema/i.test(error.message)) {
+    const legacy = await supabase
+      .from("businesses")
+      .select("id, name, slug")
+      .eq("id", businessId)
+      .maybeSingle();
+    return legacy.error ? null : legacy.data;
+  }
+  return null;
+}
+
 async function loadOrder(
   supabase: ReturnType<typeof createAdminClient>,
   orderId: string
@@ -146,11 +169,7 @@ export async function POST(req: Request) {
     if (order.payment_status === "paid") {
       return NextResponse.json({ ok: false, error: "Order is already paid." }, { status: 400 });
     }
-    const { data: business } = await supabase
-      .from("businesses")
-      .select("id, name, slug")
-      .eq("id", order.business_id)
-      .maybeSingle();
+    const business = await loadBusiness(supabase, order.business_id);
     if (!business) {
       return NextResponse.json({ ok: false, error: "Business not found." }, { status: 404 });
     }
@@ -194,6 +213,9 @@ export async function POST(req: Request) {
           typeof customerName === "string" && customerName ? customerName : undefined,
         businessName:
           typeof businessName === "string" && businessName ? businessName : business.name,
+        // With a Connect account on file this becomes a destination charge:
+        // the vendor's share moves to them and we keep our 1.5% platform fee.
+        vendorAccountId: business.bachs_account_id ?? null,
       });
       await persistCharge(supabase, order.id, charge);
       return NextResponse.json(paymentResponse(charge));

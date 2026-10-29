@@ -12,7 +12,10 @@ export default async function OnboardingPage() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-8">
       <div className="w-full max-w-sm">
-        <h1 className="text-2xl font-bold">Set up your business</h1>
+        <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+          Step 1 of 2 · Business
+        </p>
+        <h1 className="mt-1 text-2xl font-bold">Set up your business</h1>
         <OnboardingForm />
       </div>
     </main>

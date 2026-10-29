@@ -85,7 +85,6 @@ export default async function PublicChatPage({
         href="/fonts/GlacialIndifference-Bold.woff2"
         crossOrigin="anonymous"
       />
-      <link rel="preload" as="image" href="/page%20modal.jpeg?v=2" />
       <ChatShell
         businessName={business.name}
         businessSlug={business.slug}

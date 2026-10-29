@@ -155,14 +155,40 @@ export type BankTransferCharge = {
  * are NOT retrievable later via GET or re-confirm, so callers must persist
  * them (we store them on the order row).
  */
+/** Our cut of every sale: 1.5%, rounded half-up to 2 decimals. */
+export function platformFeeFor(amount: number | string): string {
+  const n = typeof amount === "string" ? Number(amount) : amount;
+  if (!Number.isFinite(n) || n <= 0) return "0.00";
+  // n * 0.015 rounded to the currency's precision.
+  return (Math.round(n * 1.5) / 100).toFixed(2);
+}
+
 export async function createBankTransferCharge(params: {
   orderId: string;
   amount: string;
   email: string;
   customerName?: string;
   businessName: string;
+  /** Vendor's Bachs Connect account, when the order has one. */
+  vendorAccountId?: string | null;
 }): Promise<BankTransferCharge> {
-  const { orderId, amount, email, customerName, businessName } = params;
+  const { orderId, amount, email, customerName, businessName, vendorAccountId } = params;
+
+  // Destination charge: the sale lands in OUR platform balance and the
+  // vendor's share is transferred down to `vendorAccountId`, with our 1.5%
+  // cut stated as `platform_fee`. Bachs requires a split on a destination
+  // charge (no fee → 400 INVALID_PLATFORM_FEE) and rejects a fee that is
+  // zero or not strictly less than the gross, so only send the pair when
+  // both sides are left something. Without a vendor account the session is
+  // a plain charge, exactly as before.
+  const platformFee = vendorAccountId ? platformFeeFor(amount) : null;
+  const split =
+    platformFee &&
+    Number(platformFee) > 0 &&
+    Number(platformFee) < Number(amount) &&
+    vendorAccountId
+      ? { platform_fee: platformFee, transfer_data: { destination: vendorAccountId } }
+      : {};
 
   const session = await bachsRequest<BankTransferSessionResponse>(
     "POST",
@@ -182,6 +208,7 @@ export async function createBankTransferCharge(params: {
         order_id: orderId,
         business_name: businessName,
       },
+      ...split,
     }
   );
 
@@ -253,6 +280,205 @@ export async function createSubscriptionCheckout(
   );
   if (!session.checkout_url) throw new Error("Bachs did not return a checkout URL.");
   return session.checkout_url;
+}
+
+// ---------------------------------------------------------------------------
+// Connect (vendor onboarding)
+//
+// A vendor gets a connected account with the `recipient` persona so customer
+// orders can be settled to it as destination charges. Capabilities live under
+// `configuration.<persona>.capabilities` — a bare top-level `capabilities` key
+// is silently ignored (Bachs returns 201 either way), so the nesting matters.
+// ---------------------------------------------------------------------------
+
+type VendorAccountResponse = {
+  id: string;
+  requirements?: { currently_due?: string[] } | null;
+};
+
+type AccountUpdateResponse = {
+  id: string;
+  requirements?: { currently_due?: string[] } | null;
+};
+
+type AccountLinkResponse = {
+  id: string;
+  url: string;
+  expires_at?: string;
+  previous_link_superseded?: boolean;
+};
+
+type ReferenceBanksResponse = {
+  country?: string;
+  banks?: { name?: string; code?: string }[];
+};
+
+type ResolveResponse = {
+  resolved?: boolean;
+  account_name?: string | null;
+  message?: string;
+};
+
+export type ReferenceBank = { name: string; code: string };
+
+/** Vendors sell from Nigeria — the NG bank list backs every payout destination. */
+const VENDOR_COUNTRY = "NG";
+
+/**
+ * Creates the vendor's Bachs Connect account with the `recipient` persona and
+ * the `payouts` + `transfers` capabilities requested (both are recipient
+ * capabilities; without naming the persona neither can be requested). Sandbox
+ * grants them `active` immediately; live lands them `restricted` until the
+ * hosted onboarding is completed, and `capability.updated` reports the flip.
+ *
+ * Bank details are NOT sent here: `fields` is only read by the account update
+ * endpoint, and `POST /v1/accounts` silently ignores what it does not know.
+ * Send them to `submitVendorPayoutDestination()` right after this returns.
+ */
+export async function createVendorAccount(params: {
+  contactEmail: string;
+  displayName: string;
+}): Promise<{ accountId: string; outstanding: string[] }> {
+  const created = await bachsRequest<VendorAccountResponse>("POST", "/v1/accounts", {
+    contact_email: params.contactEmail,
+    display_name: params.displayName,
+    country: VENDOR_COUNTRY,
+    // Vendors onboard as individuals; company requirements can be added later
+    // from the hosted flow or a follow-up account update.
+    entity_type: "individual",
+    configuration: {
+      recipient: {
+        capabilities: {
+          transfers: { requested: true },
+          payouts: { requested: true },
+        },
+      },
+    },
+  });
+  if (!created.id) throw new Error("Bachs did not return an account id.");
+  return {
+    accountId: created.id,
+    outstanding: created.requirements?.currently_due ?? [],
+  };
+}
+
+/**
+ * Best-effort lookup of the account holder's name for a bank account, so the
+ * payout destination can be submitted complete. Returns null when it cannot be
+ * resolved (unknown/test account, rate limit) — the hosted onboarding then asks
+ * the vendor to confirm the name instead. Never throws.
+ */
+export async function resolveBankAccountName(
+  accountNumber: string,
+  bankCode: string
+): Promise<string | null> {
+  try {
+    const res = await bachsRequest<ResolveResponse>("POST", "/v1/misc/bank-accounts/resolve", {
+      account_number: accountNumber,
+      bank_code: bankCode,
+    });
+    return res.resolved && res.account_name ? res.account_name : null;
+  } catch (err) {
+    console.warn(
+      "[bachs] bank resolve failed, continuing without account_name:",
+      err instanceof Error ? err.message : err
+    );
+    return null;
+  }
+}
+
+/**
+ * Submits the vendor's bank account as the account's `payout_destination`
+ * requirement (the field that actually enables withdrawing the balance).
+ *
+ * Requirement values ride on the account update endpoint, so this is a
+ * `POST /v1/accounts/{id}` — the same path used to request more capabilities
+ * later. An unresolved/omitted `account_name` is NOT a rejection: the write
+ * succeeds and the destination stays `currently_due`, so the hosted flow just
+ * asks for it. Returns whatever is still outstanding afterwards.
+ */
+export async function submitVendorPayoutDestination(params: {
+  accountId: string;
+  accountNumber: string;
+  bankCode: string;
+  bankName: string;
+  /** Pre-resolved holder name; resolved here when omitted. */
+  accountName?: string | null;
+}): Promise<{ outstanding: string[] }> {
+  const { accountId, accountNumber, bankCode, bankName } = params;
+  const accountName = params.accountName ?? (await resolveBankAccountName(accountNumber, bankCode));
+
+  const updated = await bachsRequest<AccountUpdateResponse>(
+    "POST",
+    `/v1/accounts/${accountId}`,
+    {
+      fields: {
+        payout_destination: {
+          type: "bank_account",
+          // NGN is the only rail that carries an NG local bank destination.
+          currency: "NGN",
+          account_number: accountNumber,
+          bank_code: bankCode,
+          // Legacy alias accepted alongside bank_code; keeps the destination
+          // readable (and pre-fills the hosted flow) when present.
+          bank_name: bankName,
+          ...(accountName ? { account_name: accountName } : {}),
+        },
+      },
+    }
+  );
+  return { outstanding: updated.requirements?.currently_due ?? [] };
+}
+
+/**
+ * Mints the hosted onboarding link the vendor completes their identity
+ * verification with, and returns its URL to redirect to.
+ *
+ * Single-use: a new link supersedes any previous one, so mint it at the moment
+ * the vendor is about to open it (never on page render). `refresh_url` is hit
+ * when a link is spent or expired — send them back to our payouts step, which
+ * mints a fresh one — and `return_url` is where the hosted flow drops them,
+ * whether or not they finished, so it must not claim success.
+ */
+export async function createVendorAccountLink(params: {
+  accountId: string;
+  refreshUrl: string;
+  returnUrl: string;
+  type?: "onboarding" | "update";
+}): Promise<string> {
+  const link = await bachsRequest<AccountLinkResponse>(
+    "POST",
+    `/v1/accounts/${params.accountId}/account-links`,
+    {
+      type: params.type ?? "onboarding",
+      refresh_url: params.refreshUrl,
+      return_url: params.returnUrl,
+    }
+  );
+  if (!link.url) throw new Error("Bachs did not return an onboarding URL.");
+  return link.url;
+}
+
+/**
+ * NG bank list for the payout form (name + code pairs). Best-effort: returns
+ * an empty list when unavailable so the form falls back to manual entry.
+ */
+export async function listReferenceBanks(country: string = VENDOR_COUNTRY): Promise<ReferenceBank[]> {
+  try {
+    const res = await bachsRequest<ReferenceBanksResponse>(
+      "GET",
+      `/v1/reference/banks?country=${encodeURIComponent(country)}`
+    );
+    return (res.banks ?? [])
+      .map((b) => ({ name: (b.name ?? "").trim(), code: (b.code ?? "").trim() }))
+      .filter((b) => b.name && b.code);
+  } catch (err) {
+    console.warn(
+      "[bachs] reference banks unavailable, falling back to manual entry:",
+      err instanceof Error ? err.message : err
+    );
+    return [];
+  }
 }
 
 /**
