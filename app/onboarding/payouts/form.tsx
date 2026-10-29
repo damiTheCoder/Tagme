@@ -48,19 +48,25 @@ export function PayoutsForm({
 
   return (
     <form action={onSubmit} className="mt-4 flex flex-col gap-3">
-      <input
-        name="bank_account_number"
-        required
-        inputMode="numeric"
-        autoComplete="off"
-        defaultValue={defaults.accountNumber}
-        placeholder="Bank account number"
-        className="rounded-md border border-input bg-background px-3 py-2 text-sm"
-      />
+      <label className="text-sm font-medium">
+        Account Number
+        <input
+          name="accountNumber"
+          required
+          inputMode="numeric"
+          pattern="[0-9]{10}"
+          maxLength={10}
+          autoComplete="off"
+          defaultValue={defaults.accountNumber}
+          placeholder="10-digit account number"
+          className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+        />
+      </label>
 
-      {banks.length > 0 && (
+      <label className="text-sm font-medium">
+        Bank Name
         <select
-          name="bank_code"
+          name="bankCode"
           required
           value={bankCode}
           onChange={(e) => {
@@ -68,7 +74,7 @@ export function PayoutsForm({
             setBankCode(code);
             setBankName(banks.find((b) => b.code === code)?.name ?? "");
           }}
-          className="rounded-md border border-input bg-background px-3 py-2 text-sm"
+          className="mt-1 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
         >
           <option value="" disabled>
             Select your bank
@@ -80,29 +86,29 @@ export function PayoutsForm({
           ))}
           <option value={MANUAL}>Enter bank details manually</option>
         </select>
-      )}
+      </label>
 
       {manual || banks.length === 0 ? (
         <>
           <input
-            name="bank_code"
+            name="bankCode"
             required
             defaultValue={bankCode === MANUAL ? defaults.bankCode : bankCode}
             placeholder="Bank code (e.g. 058)"
             className="rounded-md border border-input bg-background px-3 py-2 text-sm"
           />
           <input
-            name="bank_name"
+            name="bankName"
             required
             defaultValue={bankName}
-            placeholder="Bank name"
+            placeholder="Account name"
             className="rounded-md border border-input bg-background px-3 py-2 text-sm"
           />
         </>
       ) : (
         <>
           {/* Derived from the selection above; Bachs stores both. */}
-          <input type="hidden" name="bank_name" value={bankName} />
+          <input type="hidden" name="bankName" value={bankName} />
           <p className="text-xs text-muted-foreground">
             {bankName || "We'll store this bank's name and code with your account."}
           </p>

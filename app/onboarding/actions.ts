@@ -152,9 +152,11 @@ export async function createVendorBachsAccount(formData: FormData) {
   const clean = (v: FormDataEntryValue | null) =>
     typeof v === "string" ? v.replace(/\s+/g, " ").trim() : "";
 
-  const bankAccountNumber = clean(formData.get("bank_account_number")).replace(/\D/g, "");
-  const bankCode = clean(formData.get("bank_code"));
-  const bankName = clean(formData.get("bank_name"));
+  const bankAccountNumber = clean(
+    formData.get("accountNumber") ?? formData.get("bank_account_number")
+  ).replace(/\D/g, "");
+  const bankCode = clean(formData.get("bankCode") ?? formData.get("bank_code"));
+  const bankName = clean(formData.get("bankName") ?? formData.get("bank_name"));
 
   // Submitted values win; otherwise reuse what we stored (link re-mint).
   const accountNumber = bankAccountNumber || (business.bank_account_number ?? "").trim();

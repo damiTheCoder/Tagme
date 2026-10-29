@@ -38,8 +38,9 @@ export default async function PayoutsReturnPage() {
 
         {ready ? (
           <p className="mt-2 text-sm text-muted-foreground">
-            Your payouts capability is active. Orders you approve now settle straight to{" "}
-            {state.bank_name || "your bank"} {state.bank_account_number && `••${state.bank_account_number.slice(-4)}`}.
+            Payouts connected! You are ready to receive payments. Your payouts capability is active. Orders you
+            approve now settle straight to {state.bank_name || "your bank"}{" "}
+            {state.bank_account_number && `••${state.bank_account_number.slice(-4)}`}.
           </p>
         ) : (
           <p className="mt-2 text-sm text-muted-foreground">

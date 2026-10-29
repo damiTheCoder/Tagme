@@ -29,10 +29,13 @@ export default async function PayoutsPage() {
     <main className="flex min-h-screen flex-col items-center justify-center p-8">
       <div className="w-full max-w-sm">
         <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-          Step 2 of 2 · Payouts
+          Step 3: Payout Details
         </p>
         <h1 className="mt-1 text-2xl font-bold">{heading}</h1>
         <p className="mt-1 text-sm text-muted-foreground">{blurb}</p>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Enter the bank account where you want to receive payments from your customers.
+        </p>
 
         {state.payouts_ready && (
           <p className="mt-3 rounded-md bg-green-50 px-3 py-2 text-sm text-green-700 dark:bg-green-950 dark:text-green-300">
