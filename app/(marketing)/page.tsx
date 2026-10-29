@@ -44,7 +44,7 @@ export default function LandingPage() {
         {/* Signup CTA */}
         <a
           href="/signup"
-          className="group mt-4 flex w-full max-w-[460px] items-center justify-center rounded-2xl bg-gradient-to-r from-[#0866FF] via-[#4C8DFF] to-[#00C6FF] px-5 py-4 text-base font-semibold text-white transition-opacity hover:opacity-90"
+          className="group mt-4 inline-flex w-auto items-center justify-center rounded-2xl bg-[linear-gradient(to_right,#FF0000,#FFFF00,#00FF00,#0000FF)] px-10 py-4 text-base font-bold text-white transition-opacity hover:opacity-90"
         >
           Signup
         </a>
