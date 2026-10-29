@@ -287,7 +287,7 @@ export function createAssistantTools(opts: { business: AssistantBusiness }) {
       inputSchema: z.object({}),
       execute: async () => {
         const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
-        return { url: `${appUrl}/b/${business.slug}` };
+        return { url: `${appUrl}/${business.slug}` };
       },
     }),
 

@@ -19,9 +19,9 @@ export default async function AnalyticsPage() {
       <EmptyState
         icon={BarChart3}
         title="Not enough data yet"
-        description={`Share your business link to start taking orders: /b/${business.slug}`}
+        description={`Share your business link to start taking orders: /${business.slug}`}
         action={
-          <Link href={`/b/${business.slug}`} className="text-sm text-[#0c4a6e] dark:text-[#a8fe65] underline">
+          <Link href={`/${business.slug}`} className="text-sm text-[#0c4a6e] dark:text-[#a8fe65] underline">
             View your public page
           </Link>
         }

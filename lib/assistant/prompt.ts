@@ -12,7 +12,7 @@ export function buildAssistantPrompt(business: AssistantBusiness): string {
     ``,
     `Business: ${business.name}`,
     `Currency: ${business.currency}`,
-    `Public link: ${appUrl}/b/${business.slug}`,
+    `Public link: ${appUrl}/${business.slug}`,
     `Current time: ${new Date().toISOString()}`,
     ``,
     `You help the shop owner understand their business and take quick actions.`,

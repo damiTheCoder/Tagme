@@ -43,7 +43,7 @@ export default async function OrderSuccessPage({
           Your order{total ? ` (${total})` : ""} has been confirmed.{" "}
           {business?.name ?? "The vendor"} will be in touch.
         </p>
-        <Link href={`/b/${slug}`} className="mt-6">
+        <Link href={`/${slug}`} className="mt-6">
           <Button>Back to chat</Button>
         </Link>
       </div>

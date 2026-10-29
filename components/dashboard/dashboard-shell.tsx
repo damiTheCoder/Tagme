@@ -191,7 +191,7 @@ export function DashboardShell({
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
-              <a href={`/b/${businessSlug}`} target="_blank" rel="noreferrer" className="flex items-center gap-2">
+              <a href={`/${businessSlug}`} target="_blank" rel="noreferrer" className="flex items-center gap-2">
                 <ExternalLink size={16} /> View public link
               </a>
             </DropdownMenuItem>

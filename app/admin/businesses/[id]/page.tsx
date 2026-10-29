@@ -144,13 +144,13 @@ export default async function AdminBusinessDetailPage({
           )}
         </div>
         <p className="mt-1 text-sm text-gray-500">
-          /b/{business.slug} · {ownerEmail} · <span className="font-mono text-xs">{business.owner_id}</span>
+          /{business.slug} · {ownerEmail} · <span className="font-mono text-xs">{business.owner_id}</span>
         </p>
         <p className="text-xs text-gray-500">
           Created {timeAgo(business.created_at)} · {business.currency}
         </p>
         <div className="mt-3 flex flex-wrap gap-2">
-          <a href={`/b/${business.slug}`} target="_blank" rel="noreferrer">
+          <a href={`/${business.slug}`} target="_blank" rel="noreferrer">
             <Button variant="outline" size="sm">
               View public link
             </Button>

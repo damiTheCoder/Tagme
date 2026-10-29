@@ -22,7 +22,7 @@ export default async function InventoryPage() {
     <InventoryView
       products={result.products}
       currency={business.currency}
-      shareBase={`${proto}://${host}/b/${business.slug}`}
+      shareBase={`${proto}://${host}/${business.slug}`}
     />
   );
 }

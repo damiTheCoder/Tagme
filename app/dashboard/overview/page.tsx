@@ -48,7 +48,7 @@ export default async function OverviewPage() {
   const headerList = await headers();
   const proto = headerList.get("x-forwarded-proto") ?? "http";
   const host = headerList.get("x-forwarded-host") ?? headerList.get("host") ?? "localhost:3000";
-  const publicUrl = `${proto}://${host}/b/${business.slug}`;
+  const publicUrl = `${proto}://${host}/${business.slug}`;
 
   const now = Date.now();
   const weekAgo = now - 7 * 24 * 3600 * 1000;
