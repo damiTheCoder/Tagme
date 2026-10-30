@@ -12,7 +12,7 @@ type CapabilityIconProps = {
 export function AscendHeadline() {
   const { index, visible, reducedMotion } = useCapabilityCycle();
 
-  const { words, icon: Icon } = CAPABILITIES[index];
+  const { words } = CAPABILITIES[index];
 
   return (
     <span className="block">
@@ -32,12 +32,6 @@ export function AscendHeadline() {
             {word}
           </span>
         ))}
-        <Icon
-          className={`h-[0.82em] w-[0.82em] shrink-0 ${
-            reducedMotion ? "" : "animate-ascend"
-          }`}
-          style={reducedMotion ? undefined : { animationDelay: `${words.length * 120}ms` }}
-        />
       </span>
       <span className="sr-only">
         {CAPABILITIES.map((p) => p.label).join(", ")} — Tagly, AI that understands your business.

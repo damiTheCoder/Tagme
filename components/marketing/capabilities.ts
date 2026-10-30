@@ -4,6 +4,7 @@ import answersDms from "@/images/Answers Dms.jpeg";
 import collectPayments from "@/images/Collect Payments.jpeg";
 import sellProduct from "@/images/Sell Product.jpeg";
 import takeOrders from "@/images/Take Orders.jpeg";
+import growBusiness from "@/images/Grow.jpeg";
 import {
   Card3D,
   Chat3D,
@@ -57,5 +58,6 @@ export const CAPABILITIES: Capability[] = [
     words: ["grows", "your", "business"],
     icon: Growth3D,
     label: "grows your business",
+    image: growBusiness,
   },
 ];
