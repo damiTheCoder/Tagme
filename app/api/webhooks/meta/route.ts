@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextResponse, after } from "next/server";
 import { generateText } from "ai";
 import { chatModel } from "@/lib/ai/model";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -40,50 +40,59 @@ export async function GET(req: Request) {
 }
 
 export async function POST(req: Request) {
+  let body: unknown;
   try {
-    const body = await req.json();
-    const entry = body?.entry?.[0];
-    const change = entry?.changes?.[0];
-    const value = change?.value;
-    const messages = value?.messages;
-
-    if (body?.object !== "whatsapp_business_account" || !Array.isArray(messages) || !messages.length) {
-      return NextResponse.json({ received: true });
-    }
-
-    const from = messages[0]?.from as string;
-    const text = messages[0]?.text?.body as string;
-    if (!from || !text) {
-      return NextResponse.json({ received: true });
-    }
-
-    const supabase = createAdminClient();
-    const { data: business } = await supabase
-      .from("businesses")
-      .select("id, name, slug, description, hours, policies, currency, suspended_at, deleted_at")
-      .eq("id", HARDCODED_BUSINESS_ID)
-      .maybeSingle();
-
-    if (!business) {
-      await sendWhatsAppMessage(from, "Sorry, something went wrong.");
-      return NextResponse.json({ received: true });
-    }
-
-    const { data: products } = await supabase
-      .from("products")
-      .select("id, name, price, in_stock, stock_count, description, details")
-      .eq("business_id", business.id)
-      .limit(100);
-
-    const { text: reply } = await generateText({
-      model: chatModel(),
-      system: buildSystemPrompt(business, products ?? []),
-      messages: [{ role: "user", content: text }],
-    });
-
-    await sendWhatsAppMessage(from, (reply ?? "").trim() || "Got it, thanks!");
-  } catch (e) {
-    console.error("[meta webhook] error:", e instanceof Error ? e.message : e);
+    body = await req.json();
+  } catch {
+    return NextResponse.json({ received: true });
   }
+
+  const entry = (body as any)?.entry?.[0];
+  const change = entry?.changes?.[0];
+  const value = change?.value;
+  const messages = value?.messages;
+
+  if ((body as any)?.object !== "whatsapp_business_account" || !Array.isArray(messages) || !messages.length) {
+    return NextResponse.json({ received: true });
+  }
+
+  const from = messages[0]?.from as string;
+  const text = messages[0]?.text?.body as string;
+  if (!from || !text) {
+    return NextResponse.json({ received: true });
+  }
+
+  after(async () => {
+    try {
+      const supabase = createAdminClient();
+      const { data: business } = await supabase
+        .from("businesses")
+        .select("id, name, slug, description, hours, policies, currency, suspended_at, deleted_at")
+        .eq("id", HARDCODED_BUSINESS_ID)
+        .maybeSingle();
+
+      if (!business) {
+        await sendWhatsAppMessage(from, "Sorry, something went wrong.");
+        return;
+      }
+
+      const { data: products } = await supabase
+        .from("products")
+        .select("id, name, price, in_stock, stock_count, description, details")
+        .eq("business_id", business.id)
+        .limit(100);
+
+      const { text: reply } = await generateText({
+        model: chatModel(),
+        system: buildSystemPrompt(business, products ?? []),
+        messages: [{ role: "user", content: text }],
+      });
+
+      await sendWhatsAppMessage(from, (reply ?? "").trim() || "Got it, thanks!");
+    } catch (e) {
+      console.error("[meta webhook] error:", e instanceof Error ? e.message : e);
+    }
+  });
+
   return NextResponse.json({ received: true });
 }
