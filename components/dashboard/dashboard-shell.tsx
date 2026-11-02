@@ -4,7 +4,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  Award,
   BarChart3,
   Bell,
   CreditCard,
@@ -56,7 +55,6 @@ const NAV: NavItem[] = [
   { href: "/dashboard/revenue", label: "Revenue", icon: WalletMinimal, exact: true },
   { href: "/dashboard/expenses", label: "Expenses", icon: Receipt, exact: true },
   { href: "/dashboard/analytics", label: "Analytics", icon: BarChart3, exact: false },
-  { href: "/dashboard/credit-score", label: "Credit Score", icon: Award, exact: true },
   { href: "/dashboard/billing", label: "Billing", icon: CreditCard, exact: true },
   { href: "/dashboard/settings", label: "Settings", icon: Settings, exact: false },
 ];
@@ -68,7 +66,6 @@ const TITLES: { prefix: string; title: string }[] = [
   { prefix: "/dashboard/revenue", title: "Revenue" },
   { prefix: "/dashboard/expenses", title: "Expenses" },
   { prefix: "/dashboard/analytics", title: "Analytics" },
-  { prefix: "/dashboard/credit-score", title: "Credit Score" },
   { prefix: "/dashboard/billing", title: "Billing" },
   { prefix: "/dashboard/settings", title: "Settings" },
   { prefix: "/dashboard/overview", title: "Overview" },

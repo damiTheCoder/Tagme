@@ -133,8 +133,8 @@ export default async function BillingPage() {
               <p className="font-semibold">Pro — ₦3,000/month</p>
               <ul className="mt-2 space-y-1 text-sm text-gray-500">
                 <li>Unlimited orders</li>
-                <li>Online customer payments</li>
-                <li>Sales records and credit profile</li>
+                <li>AI sales assistant</li>
+                <li>Automated bank transfers</li>
               </ul>
               <div className="mt-3">
                 <UpgradeButton label="Upgrade" />
