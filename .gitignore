@@ -2,3 +2,4 @@ node_modules
 .next
 .env.local
 .DS_Store
+ngrok-v3-stable-darwin-amd64.zip
