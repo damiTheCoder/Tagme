@@ -1,7 +1,19 @@
 import { NextResponse } from "next/server";
 
-export async function GET() {
-  return Response.json({ alive: true });
+export async function GET(req: Request) {
+  const { searchParams } = new URL(req.url);
+  const mode = searchParams.get("hub.mode")?.trim();
+  const token = searchParams.get("hub.verify_token")?.trim();
+  const challenge = searchParams.get("hub.challenge");
+
+  if (mode === "subscribe" && token && token === process.env.META_VERIFY_TOKEN?.trim()) {
+    return new NextResponse(challenge ?? "", {
+      status: 200,
+      headers: { "Content-Type": "text/plain" },
+    });
+  }
+
+  return NextResponse.json({ ok: false, error: "Verification failed." }, { status: 403 });
 }
 
 export async function POST(req: Request) {
@@ -24,6 +36,7 @@ export async function POST(req: Request) {
 
   const from = messages[0]?.from as string;
   const text = messages[0]?.text?.body as string;
+  const phoneNumberId = value?.metadata?.phone_number_id as string | undefined;
   if (!from || !text) {
     return NextResponse.json({ received: true });
   }
@@ -32,7 +45,7 @@ export async function POST(req: Request) {
   void fetch(processUrl, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ from, text }),
+    body: JSON.stringify({ from, text, phoneNumberId }),
   }).catch((e) => {
     console.error("[meta webhook] process fetch failed:", e instanceof Error ? e.message : e);
   });
