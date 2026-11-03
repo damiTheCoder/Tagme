@@ -19,6 +19,7 @@ import {
   ShoppingBag,
   Sparkles,
   Sun,
+  TrendingUp,
   WalletMinimal,
 } from "lucide-react";
 import { useTheme } from "next-themes";
@@ -58,6 +59,7 @@ const NAV: NavItem[] = [
   { href: "/dashboard/expenses", label: "Expenses", icon: Receipt, exact: true },
   { href: "/dashboard/analytics", label: "Analytics", icon: BarChart3, exact: false },
   { href: "/dashboard/billing", label: "Billing", icon: CreditCard, exact: true },
+  { href: "/dashboard/credit-score", label: "Credit score", icon: TrendingUp, exact: true },
   { href: "/dashboard/settings", label: "Settings", icon: Settings, exact: false },
 ];
 

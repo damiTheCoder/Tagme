@@ -35,7 +35,13 @@ export async function POST(req: Request) {
   }
 
   const from = messages[0]?.from as string;
-  const text = messages[0]?.text?.body as string;
+  let text = messages[0]?.text?.body as string;
+  const msgType = messages[0]?.type;
+  if (!text && msgType === "interactive") {
+    const inter = messages[0]?.interactive;
+    const replyId = inter?.button_reply?.id ?? inter?.list_reply?.id;
+    if (replyId) text = `[User clicked: ${replyId}]`;
+  }
   const phoneNumberId = value?.metadata?.phone_number_id as string | undefined;
   if (!from || !text) {
     return NextResponse.json({ received: true });
