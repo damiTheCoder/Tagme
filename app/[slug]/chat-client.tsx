@@ -432,13 +432,13 @@ export function ChatClient({
   }
 
   if (phase === "loading") {
-    return <ChatSkeleton businessName={businessName} />;
+    return <ChatSkeleton businessName={businessName} businessSlug={businessSlug} />;
   }
 
   if (phase === "identify") {
     return (
       <>
-        <ChatHeader businessName={businessName} />
+        <ChatHeader businessName={businessName} businessSlug={businessSlug} />
         <IdentityForm
           businessName={businessName}
           businessSlug={businessSlug}
@@ -450,7 +450,7 @@ export function ChatClient({
 
   return (
     <>
-      <ChatHeader businessName={businessName} />
+      <ChatHeader businessName={businessName} businessSlug={businessSlug} />
       <ChatMessages
         messages={messages}
         busy={busy}

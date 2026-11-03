@@ -1,5 +1,6 @@
 import { Pacifico } from "next/font/google";
 import { ShoppingCart } from "lucide-react";
+import Link from "next/link";
 
 const pacifico = Pacifico({ subsets: ["latin"], weight: "400" });
 
@@ -9,7 +10,7 @@ const pacifico = Pacifico({ subsets: ["latin"], weight: "400" });
  * It is rendered by the skeleton, the identity form and the live chat so the
  * frame never jumps when the conversation data arrives.
  */
-export function ChatHeader({ businessName }: { businessName: string }) {
+export function ChatHeader({ businessName, businessSlug }: { businessName: string; businessSlug?: string }) {
   const initial = businessName.trim().charAt(0).toUpperCase() || "S";
 
   return (
@@ -25,10 +26,20 @@ export function ChatHeader({ businessName }: { businessName: string }) {
           {businessName}
         </span>
       </span>
-      <span className="flex shrink-0 items-center gap-1.5 text-xs font-medium text-black dark:text-zinc-50">
-        <ShoppingCart className="h-4 w-4" />
-        View shop
-      </span>
+      {businessSlug ? (
+        <Link
+          href={`/${businessSlug}/shop`}
+          className="flex shrink-0 items-center gap-1.5 text-xs font-medium text-black dark:text-zinc-50"
+        >
+          <ShoppingCart className="h-4 w-4" />
+          View shop
+        </Link>
+      ) : (
+        <span className="flex shrink-0 items-center gap-1.5 text-xs font-medium text-black dark:text-zinc-50">
+          <ShoppingCart className="h-4 w-4" />
+          View shop
+        </span>
+      )}
     </header>
   );
 }

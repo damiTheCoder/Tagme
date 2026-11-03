@@ -7,10 +7,10 @@ import { ChatHeader } from "./chat-header";
  * header, a shimmering message area and a disabled composer from the very
  * first frame instead of an empty page while the conversation loads.
  */
-export function ChatSkeleton({ businessName }: { businessName: string }) {
+export function ChatSkeleton({ businessName, businessSlug }: { businessName: string; businessSlug?: string }) {
   return (
     <>
-      <ChatHeader businessName={businessName} />
+      <ChatHeader businessName={businessName} businessSlug={businessSlug} />
 
       <div
         aria-hidden
