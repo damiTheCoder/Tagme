@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { ArrowUp } from "lucide-react";
+import Image from "next/image";
 
 /**
  * Chat composer.
@@ -50,12 +51,19 @@ export function ChatInput({
 
   return (
     <div
-      className="sticky bottom-0 z-10 shrink-0 p-3"
+      className="sticky bottom-0 z-10 shrink-0 p-2"
       style={{
         paddingBottom: `calc(0.75rem + env(safe-area-inset-bottom, 0px) + ${keyboardInset}px)`,
       }}
     >
-      <div className="flex items-end gap-2">
+      <div className="mx-3 flex items-center gap-2 rounded-2xl bg-gray-100 px-3 py-1.5 dark:bg-zinc-800">
+        <Image
+          src="/AI.jpeg"
+          alt="AI"
+          width={20}
+          height={20}
+          className="h-5 w-5 shrink-0 rounded-full"
+        />
         <textarea
           value={value}
           onChange={(e) => setValue(e.target.value)}
@@ -68,13 +76,13 @@ export function ChatInput({
           placeholder="Type a message…"
           rows={1}
           disabled={disabled}
-          className="max-h-28 flex-1 resize-none overflow-y-auto rounded-2xl border-0 bg-gray-100 px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none disabled:opacity-50 dark:bg-zinc-800"
+          className="max-h-28 flex-1 resize-none overflow-y-auto border-0 bg-transparent px-1 py-0 text-sm placeholder:text-muted-foreground focus-visible:outline-none disabled:opacity-50"
         />
         <button
           onClick={submit}
           disabled={disabled || !value.trim()}
           aria-label="Send"
-          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-r from-[#0866FF] via-[#4C8DFF] to-[#00C6FF] text-white transition-opacity hover:opacity-90 disabled:bg-none disabled:bg-gray-200 disabled:text-gray-400"
+          className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-r from-red-500 to-yellow-400 text-white transition-opacity hover:opacity-90 disabled:bg-none disabled:bg-gray-200 disabled:text-gray-400"
         >
           <ArrowUp size={16} />
         </button>

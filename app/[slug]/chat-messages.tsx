@@ -180,7 +180,7 @@ function PayNowButton({
       : null;
     const expired = remaining !== null && remaining <= 0;
     return (
-      <div className="flex w-full max-w-[300px] flex-col gap-3 self-start rounded-2xl border border-neutral-200 bg-white p-4 shadow-sm dark:border-zinc-700 dark:bg-zinc-900">
+      <div className="flex w-full max-w-[300px] flex-col gap-3 self-start rounded-2xl bg-gray-100 p-4 dark:bg-zinc-800">
         <div className="flex items-center gap-2 text-sm font-semibold">
           <Landmark size={16} className="text-[#0866FF]" />
           Pay by bank transfer
@@ -230,7 +230,7 @@ function PayNowButton({
           <button
             type="button"
             onClick={() => setPayment(null)}
-            className="rounded-full bg-gradient-to-r from-[#0866FF] via-[#4C8DFF] to-[#00C6FF] px-4 py-2 text-xs font-medium text-white transition-opacity hover:opacity-90"
+            className="rounded-full bg-gradient-to-r from-red-500 to-yellow-400 px-4 py-2 text-xs font-medium text-white transition-opacity hover:opacity-90"
           >
             Get new account details
           </button>
@@ -254,7 +254,7 @@ function PayNowButton({
         type="button"
         onClick={onPay}
         disabled={loading}
-        className="rounded-full bg-gradient-to-r from-[#0866FF] via-[#4C8DFF] to-[#00C6FF] px-5 py-2 text-sm font-medium text-white transition-opacity hover:opacity-90 disabled:opacity-50"
+        className="rounded-full bg-gradient-to-r from-red-500 to-yellow-400 px-5 py-2 text-sm font-medium text-white transition-opacity hover:opacity-90 disabled:opacity-50"
       >
         {loading ? "Preparing account…" : `Pay Now · ${naira}`}
       </button>

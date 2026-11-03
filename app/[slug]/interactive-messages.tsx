@@ -68,7 +68,7 @@ export function InteractiveList({
   if (items.length === 0) return null;
 
   return (
-    <div className="w-full self-start overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-sm dark:border-zinc-700 dark:bg-zinc-900">
+    <div className="w-full self-start overflow-hidden rounded-2xl bg-gray-100 shadow-sm dark:bg-zinc-800">
       <div className="border-b border-neutral-100 px-4 py-3 dark:border-zinc-800">
         <p className="text-sm font-semibold">{part.title}</p>
         {part.body && (
@@ -168,7 +168,7 @@ export function InteractiveButtons({
   }
 
   return (
-    <div className="flex w-full max-w-[340px] flex-col items-start gap-2 self-start rounded-2xl border border-neutral-200 bg-white px-4 py-3 shadow-sm dark:border-zinc-700 dark:bg-zinc-900">
+    <div className="flex w-full max-w-[340px] flex-col items-start gap-2 self-start rounded-2xl bg-gray-100 px-4 py-3 dark:bg-zinc-800">
       <p className="text-sm font-medium">{part.body}</p>
 
       {answered ? (
@@ -190,7 +190,7 @@ export function InteractiveButtons({
                 className={
                   b.style === "primary"
                     ? "rounded-full bg-[#0866FF] px-4 py-1.5 text-sm font-semibold text-white transition-colors hover:bg-[#0866FF]/90"
-                    : "rounded-full border border-[#0866FF]/40 bg-white px-4 py-1.5 text-sm font-semibold text-[#0866FF] transition-colors hover:bg-[#0866FF]/10 dark:bg-zinc-900"
+                    : "rounded-full bg-white px-4 py-1.5 text-sm font-semibold text-[#0866FF] transition-colors hover:bg-[#0866FF]/10 dark:bg-zinc-900"
                 }
               >
                 {b.title}
@@ -324,7 +324,7 @@ export function PaymentCard({
   }
 
   return (
-    <div className="flex w-full max-w-[300px] flex-col gap-3 self-start rounded-2xl border border-neutral-200 bg-white p-4 shadow-sm dark:border-zinc-700 dark:bg-zinc-900">
+    <div className="flex w-full max-w-[300px] flex-col gap-3 self-start rounded-2xl bg-gray-100 p-4 dark:bg-zinc-800">
       <div className="flex items-center gap-2 text-sm font-semibold">
         <Landmark size={16} className="text-[#0866FF]" />
         Pay by bank transfer

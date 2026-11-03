@@ -32,7 +32,7 @@ export function ChatShell({
   }, []);
 
   return (
-    <main className="flex h-[100dvh] flex-col overflow-hidden bg-white dark:bg-zinc-950">
+    <main className="flex h-[100dvh] flex-col overflow-hidden bg-transparent dark:bg-zinc-950">
       {/* Vendor cover shown on the pre-chat landing screen; once the
           conversation starts it makes way so the chat fills the page. */}
       {!inChat && (

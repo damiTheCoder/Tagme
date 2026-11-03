@@ -29,7 +29,7 @@ export function ProductCarousel({
         return (
           <div
             key={p.id}
-            className="w-[200px] shrink-0 snap-start overflow-hidden rounded-2xl border border-neutral-200 bg-white shadow-sm dark:border-zinc-700 dark:bg-zinc-900"
+            className="w-[200px] shrink-0 snap-start overflow-hidden rounded-2xl bg-gray-100 shadow-sm dark:bg-zinc-800"
           >
             {p.image_url ? (
               <Image

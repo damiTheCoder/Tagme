@@ -268,7 +268,7 @@ export function AssistantBar({
           type="submit"
           disabled={!canSubmit}
           aria-label="Send assistant message"
-          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-r from-[#0866FF] via-[#4C8DFF] to-[#00C6FF] transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:bg-none disabled:bg-gray-200"
+          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-r from-red-500 to-yellow-400 transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:bg-none disabled:bg-gray-200"
         >
           <ArrowUp
             size={18}

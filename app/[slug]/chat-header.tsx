@@ -1,3 +1,8 @@
+import { Pacifico } from "next/font/google";
+import { ShoppingCart } from "lucide-react";
+
+const pacifico = Pacifico({ subsets: ["latin"], weight: "400" });
+
 /**
  * Shop header shown at the top of the chat.
  *
@@ -8,10 +13,10 @@ export function ChatHeader({ businessName }: { businessName: string }) {
   const initial = businessName.trim().charAt(0).toUpperCase() || "S";
 
   return (
-    <header className="flex shrink-0 items-center gap-3 border-b border-black/[0.06] px-4 py-2.5 dark:border-white/10">
+    <header className="flex shrink-0 items-center gap-3 px-4 py-2.5">
       <span
         aria-hidden
-        className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#0866FF] via-[#4C8DFF] to-[#00C6FF] text-sm font-bold text-white shadow-sm"
+        className={`${pacifico.className} flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#0866FF] text-lg text-white shadow-sm`}
       >
         {initial}
       </span>
@@ -19,13 +24,10 @@ export function ChatHeader({ businessName }: { businessName: string }) {
         <span className="block truncate text-sm font-semibold leading-tight text-black dark:text-zinc-50">
           {businessName}
         </span>
-        <span className="mt-0.5 flex items-center gap-1.5 text-[11px] leading-none text-muted-foreground">
-          <span
-            aria-hidden
-            className="h-1.5 w-1.5 rounded-full bg-emerald-500"
-          />
-          AI assistant
-        </span>
+      </span>
+      <span className="flex shrink-0 items-center gap-1.5 text-xs font-medium text-black dark:text-zinc-50">
+        <ShoppingCart className="h-4 w-4" />
+        View shop
       </span>
     </header>
   );
