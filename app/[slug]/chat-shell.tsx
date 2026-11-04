@@ -38,7 +38,7 @@ export function ChatShell({
       {!inChat && (
         <div className="relative h-56 shrink-0 overflow-hidden">
           <Image
-            src={coverImageUrl ?? "/ads.jpeg"}
+            src={coverImageUrl ?? "/TT.png"}
             alt={`${businessName} cover`}
             fill
             priority

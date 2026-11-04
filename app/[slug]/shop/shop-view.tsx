@@ -31,6 +31,8 @@ export function ShopView({
 }) {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [open, setOpen] = useState(false);
+  const [query, setQuery] = useState("");
+  const [filter, setFilter] = useState<"all" | "available" | "soldout">("all");
 
   const add = (p: ShopProduct) => {
     setCart((prev) => {
@@ -48,6 +50,13 @@ export function ShopView({
   const totalQty = cart.reduce((s, i) => s + i.qty, 0);
   const total = cart.reduce((s, i) => s + i.price * i.qty, 0);
 
+  const filtered = products.filter((p) => {
+    if (query && !p.name.toLowerCase().includes(query.toLowerCase())) return false;
+    if (filter === "available" && !p.in_stock) return false;
+    if (filter === "soldout" && p.in_stock) return false;
+    return true;
+  });
+
   return (
     <main className="min-h-screen bg-gray-50 dark:bg-zinc-950">
       <header className="sticky top-0 z-10 flex items-center justify-between border-b border-gray-100 bg-white/80 px-4 py-3 backdrop-blur dark:border-zinc-800 dark:bg-zinc-950/80">
@@ -55,8 +64,15 @@ export function ShopView({
           <h1 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100">{businessName}</h1>
           <p className="text-xs text-muted-foreground">Shop</p>
         </div>
-        <button
-          onClick={() => setOpen(true)}
+        <div className="flex items-center gap-2">
+          <Link
+            href={`/${businessSlug}`}
+            className="rounded-full bg-gray-100 px-3 py-2 text-sm font-medium text-zinc-900 transition-colors hover:bg-gray-200 dark:bg-zinc-800 dark:text-zinc-100"
+          >
+            Chat
+          </Link>
+          <button
+            onClick={() => setOpen(true)}
           className="relative flex items-center gap-2 rounded-full bg-gray-100 px-3 py-2 text-sm font-medium text-zinc-900 transition-colors hover:bg-gray-200 dark:bg-zinc-800 dark:text-zinc-100"
         >
           <ShoppingCart className="h-4 w-4" />
@@ -67,17 +83,42 @@ export function ShopView({
             </span>
           )}
         </button>
+        </div>
       </header>
 
       <section className="mx-auto max-w-5xl px-4 py-6">
-        {products.length === 0 ? (
+        {filtered.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 text-center text-muted-foreground">
             <Package className="mb-3 h-10 w-10" />
             <p>No products yet.</p>
           </div>
         ) : (
+          <>
+            <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex gap-2">
+              {(["all", "available", "soldout"] as const).map((f) => (
+                <button
+                  key={f}
+                  onClick={() => setFilter(f)}
+                  className={`rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
+                    filter === f
+                      ? "bg-gradient-to-r from-red-500 to-yellow-400 text-white"
+                      : "bg-gray-100 text-zinc-700 hover:bg-gray-200 dark:bg-zinc-800 dark:text-zinc-200"
+                  }`}
+                >
+                  {f === "all" ? "All" : f === "available" ? "Available" : "Sold out"}
+                </button>
+              ))}
+            </div>
+            <input
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Search products…"
+              className="w-full rounded-xl border-0 bg-white px-4 py-2 text-sm shadow-sm focus-visible:outline-none dark:bg-zinc-900 sm:w-64"
+            />
+          </div>
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-            {products.map((p) => {
+            {filtered.map((p) => {
               const soldOut = !p.in_stock;
               return (
                 <div
@@ -109,7 +150,7 @@ export function ShopView({
                       type="button"
                       disabled={soldOut}
                       onClick={() => add(p)}
-                      className="mt-1 w-full rounded-xl bg-gradient-to-r from-red-500 to-yellow-400 px-3 py-2 text-sm font-medium text-white transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:bg-gray-200 disabled:text-gray-400 disabled:opacity-100"
+                      className="mt-1 w-full rounded-xl bg-green-500 px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-green-600 disabled:cursor-not-allowed disabled:bg-gray-200 disabled:text-gray-400"
                     >
                       {soldOut ? "Sold out" : "Add to cart"}
                     </button>
@@ -118,6 +159,7 @@ export function ShopView({
               );
             })}
           </div>
+          </>
         )}
       </section>
 
@@ -174,7 +216,7 @@ export function ShopView({
                 </div>
                 <Link
                   href={`/${businessSlug}`}
-                  className="flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-red-500 to-yellow-400 px-4 py-3 text-sm font-semibold text-white transition-opacity hover:opacity-90"
+                  className="flex w-full items-center justify-center gap-2 rounded-xl bg-green-500 px-4 py-3 text-sm font-semibold text-white transition-colors hover:bg-green-600"
                 >
                   Checkout via chat
                   <ArrowRight className="h-4 w-4" />
