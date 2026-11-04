@@ -3,6 +3,11 @@ import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { getAnalytics } from "@/app/dashboard/analytics/analytics";
 import {
+  getRevenueSummary,
+  getExpenseSummary,
+  getNetCashFlow,
+} from "@/app/dashboard/transactions/actions";
+import {
   listOrders,
   approveOrder,
   declineOrder,
@@ -314,6 +319,38 @@ export function createAssistantTools(opts: { business: AssistantBusiness }) {
           range: range ?? "30d",
           daily: stats.daily.slice(-days).map((d) => ({ date: d.date, revenue: d.revenue })),
         };
+      },
+    }),
+
+    get_revenue_summary: tool({
+      description: "Total revenue (income) for the last 90 days, plus count. Use for 'how much revenue' questions.",
+      inputSchema: z.object({}),
+      execute: async () => {
+        const result = await getRevenueSummary();
+        if (!result.ok) throw new Error(result.error);
+        return { ...result.data, currency: business.currency };
+      },
+    }),
+
+    get_expense_summary: tool({
+      description: "Total expenses for the last 90 days, plus count and breakdown by category. Use for 'how much did I spend' questions.",
+      inputSchema: z.object({}),
+      execute: async () => {
+        const result = await getExpenseSummary();
+        if (!result.ok) throw new Error(result.error);
+        return { ...result.data, currency: business.currency };
+      },
+    }),
+
+    get_net_cash_flow: tool({
+      description: "Net cash flow (income minus expenses) for a range. Use for 'profit' or 'net' questions.",
+      inputSchema: z.object({
+        range: z.enum(["7d", "30d", "90d", "all"]).optional().describe("Time range, default 30d"),
+      }),
+      execute: async ({ range }) => {
+        const result = await getNetCashFlow(range ?? "30d");
+        if (!result.ok) throw new Error(result.error);
+        return result.data;
       },
     }),
 
