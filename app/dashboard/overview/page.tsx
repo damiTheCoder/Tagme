@@ -84,6 +84,7 @@ export default async function OverviewPage() {
 
   return (
     <div className="space-y-8">
+      <div className="space-y-0">
       {/* Top Header */}
       <div className="flex items-start justify-between gap-4">
         <div className="flex items-center gap-3">
@@ -114,6 +115,7 @@ export default async function OverviewPage() {
             {wow >= 0 ? "+" : ""}{wow}%
           </span>
         </div>
+      </div>
       </div>
 
       {/* Chart */}
