@@ -7,7 +7,7 @@ export default async function OnboardingPage() {
   if (!user) redirect("/login");
 
   const business = await getCurrentBusiness();
-  if (business) redirect("/dashboard");
+  if (business) redirect("/dashboard/overview");
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-8">

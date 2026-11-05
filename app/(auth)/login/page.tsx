@@ -35,7 +35,7 @@ export default function LoginPage() {
         .eq("owner_id", userId)
         .limit(1)
         .maybeSingle();
-      if (business) destination = "/dashboard";
+      if (business) destination = "/dashboard/overview";
     }
     setLoading(false);
     // Full navigation (not router.push): guarantees the browser re-reads

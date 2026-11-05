@@ -44,7 +44,7 @@ export async function createBusiness(formData: FormData) {
     .eq("owner_id", user.id)
     .limit(1)
     .maybeSingle();
-  if (existing) redirect("/dashboard");
+  if (existing) redirect("/dashboard/overview");
 
   const base = generateSlug(name) || "business";
   const slug = await ensureUniqueSlug(base);

@@ -39,7 +39,7 @@ export async function impersonateBusiness(businessId: string) {
     targetId: business.id,
     metadata: { slug: business.slug, name: business.name },
   });
-  redirect("/dashboard");
+  redirect("/dashboard/overview");
 }
 
 /** Stop impersonating and return to the admin panel. */
