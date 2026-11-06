@@ -1,6 +1,16 @@
 "use client";
 
 import { useState } from "react";
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  ResponsiveContainer,
+  Tooltip as ChartTooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
+import { useTheme } from "next-themes";
 import { useRouter } from "next/navigation";
 import { Award, Info, Minus, TrendingDown, TrendingUp } from "lucide-react";
 import { toast } from "sonner";
@@ -90,6 +100,11 @@ export function CreditView({
   business: Business;
 }) {
   const router = useRouter();
+  const { resolvedTheme } = useTheme();
+  const dark = resolvedTheme === "dark";
+  const grid = dark ? "#27272a" : "#f3f4f6";
+  const tickFill = dark ? "#a1a1aa" : "#9ca3af";
+  const tooltipBg = dark ? "#18181b" : "#ffffff";
   const [consent, setConsent] = useState(summary.consent);
   const [savingConsent, setSavingConsent] = useState(false);
   const [waitlistOpen, setWaitlistOpen] = useState(false);
@@ -207,9 +222,56 @@ export function CreditView({
           <CardTitle>How we calculate your score</CardTitle>
         </CardHeader>
         <CardContent>
+          <div className="h-72 w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart
+                data={summary.signals.map((s) => ({
+                  name: s.name,
+                  points: s.points,
+                  maxPoints: s.maxPoints,
+                }))}
+                layout="vertical"
+                margin={{ top: 8, right: 16, bottom: 8, left: 0 }}
+              >
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  stroke={grid}
+                  horizontal={false}
+                />
+                <XAxis
+                  type="number"
+                  domain={[0, 25]}
+                  tick={{ fontSize: 11, fill: tickFill }}
+                  tickLine={false}
+                  axisLine={false}
+                />
+                <YAxis
+                  type="category"
+                  dataKey="name"
+                  width={150}
+                  tick={{ fontSize: 11, fill: tickFill }}
+                  tickLine={false}
+                  axisLine={false}
+                />
+                <ChartTooltip
+                  cursor={{ fill: "transparent" }}
+                  contentStyle={{
+                    backgroundColor: tooltipBg,
+                    borderRadius: 12,
+                    border: "none",
+                    fontSize: 12,
+                  }}
+                  formatter={(v, _n, p) => [
+                    `${v}/${(p?.payload as { maxPoints: number })?.maxPoints ?? ""}`,
+                    "Points",
+                  ]}
+                />
+                <Bar dataKey="points" fill="#a3e635" radius={[0, 6, 6, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
           <div className="flex flex-col gap-4">
             {summary.signals.map((s, i) => {
-              const pct = Math.max(0, Math.min(100, (s.points / s.maxPoints) * 100));
               const showGroup =
                 s.group != null &&
                 (i === 0 || summary.signals[i - 1].group !== s.group);
@@ -245,12 +307,6 @@ export function CreditView({
                         MAX
                       </span>
                     )}
-                  </div>
-                  <div className="mt-1.5 h-2 w-full overflow-hidden rounded-full bg-gray-100 dark:bg-zinc-800">
-                    <div
-                      className="h-full rounded-full bg-gradient-to-r from-[#34d399] to-[#a3e635]"
-                      style={{ width: `${pct}%` }}
-                    />
                   </div>
                   <p className="mt-1 text-xs text-gray-500">{s.meaning}</p>
                 </div>
